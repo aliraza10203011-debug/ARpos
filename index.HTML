@@ -108,6 +108,8 @@ tbody tr:last-child td{border-bottom:0}
   #printArea{position:absolute;left:0;top:0;width:100%;background:#fff!important;color:#000!important;padding:0!important}
 }
 </style>
+<!-- Supabase CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
@@ -129,7 +131,7 @@ tbody tr:last-child td{border-bottom:0}
     <div class="sidefoot">
       <b style="color:#e5e7eb">AR CUSTOMIZED</b><br>
       Full Editable Management<br>
-      <span id="dbstatus">Local workspace ready</span>
+      <span id="dbstatus">Cloud & Local ready</span>
     </div>
   </aside>
 
@@ -393,165 +395,315 @@ tbody tr:last-child td{border-bottom:0}
 <div id="printArea" class="hidden"></div>
 
 <script>
-const original={"products":[{"SKU":1,"Product Name":"Tempreture bottle","Category":"high","Material":"Metal","Color":"White and Blue","Cost Price (PKR)":600,"Sale Price (PKR)":1200,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":2,"Product Name":"Tempreture bottle","Category":"low","Material":"Metal","Color":"Black And Pink","Cost Price (PKR)":800,"Sale Price (PKR)":1500,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":3,"Product Name":"Cola","Material":"Metal","Color":"Black","Cost Price (PKR)":950,"Sale Price (PKR)":1500,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":4,"Product Name":"Matka","Material":"Metal","Color":"Black","Cost Price (PKR)":950,"Sale Price (PKR)":1500,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":5,"Product Name":"Wood","Material":"Metal","Color":"Black","Cost Price (PKR)":1150,"Sale Price (PKR)":1600,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":6,"Product Name":"Pen","Material":"Metal","Color":"Colours","Cost Price (PKR)":100,"Sale Price (PKR)":200,"Opening Stock":26,"Min Stock":5,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":7,"Product Name":"Pen","Material":"Metal","Color":"Light","Cost Price (PKR)":120,"Sale Price (PKR)":200,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":8,"Product Name":"Pen Diamond","Material":"Metal","Color":"colours","Cost Price (PKR)":150,"Sale Price (PKR)":200,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":9,"Product Name":"Pencil Diamond","Material":"Metal","Color":"Black","Cost Price (PKR)":150,"Sale Price (PKR)":200,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":10,"Product Name":"Pen","Material":"Metal","Color":"Black","Cost Price (PKR)":100,"Sale Price (PKR)":150,"Opening Stock":90,"Min Stock":10,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":11,"Product Name":"KeyChain","Category":"Normal","Material":"Metal","Color":"Colours","Cost Price (PKR)":80,"Sale Price (PKR)":150,"Opening Stock":10,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":12,"Product Name":"KeyChain","Category":"High","Material":"Metal","Color":"Black","Cost Price (PKR)":200,"Sale Price (PKR)":400,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":13,"Product Name":"KeyChain","Category":"High","Material":"Metal","Color":"Black","Cost Price (PKR)":220,"Sale Price (PKR)":400,"Opening Stock":4,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":14,"Product Name":"KeyChain","Category":"High","Material":"Metal","Color":"Black","Cost Price (PKR)":250,"Sale Price (PKR)":350,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":15,"Product Name":"KeyChain","Category":"High","Material":"Metal","Color":"Silver/Black","Cost Price (PKR)":260,"Sale Price (PKR)":400,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":16,"Product Name":"Pen Box","Category":"Local","Material":"carton","Color":"Black","Cost Price (PKR)":5,"Sale Price (PKR)":10,"Opening Stock":50,"Min Stock":10,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":17,"Product Name":"Pen Box","Category":"Normal","Material":"carton","Color":"Black","Cost Price (PKR)":20,"Sale Price (PKR)":30,"Opening Stock":12,"Min Stock":5,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":18,"Product Name":"KeyChain set box","Category":"Normal","Material":"carton","Color":"Black","Cost Price (PKR)":35,"Sale Price (PKR)":50,"Opening Stock":6,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":19,"Product Name":"Ring And Challa","Size":"16 to 20","Material":"Metal","Color":"Golden","Cost Price (PKR)":100,"Sale Price (PKR)":200,"Opening Stock":10,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":20,"Product Name":"Ring And Challa","Size":"17 to 20","Material":"Metal","Color":"Silver","Cost Price (PKR)":100,"Sale Price (PKR)":200,"Opening Stock":11,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":21,"Product Name":"Ring And Challa","Size":"18 to 20","Material":"Metal","Color":"Black","Cost Price (PKR)":100,"Sale Price (PKR)":200,"Opening Stock":24,"Min Stock":5,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":22,"Product Name":"Engraving","Material":"Metal","Color":"Black/Silver","Cost Price (PKR)":50,"Sale Price (PKR)":100,"Opening Stock":0,"Min Stock":0,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":23,"Product Name":"Royal Breclet","Material":"Metal","Color":"Mix Colour","Cost Price (PKR)":800,"Sale Price (PKR)":1200,"Opening Stock":6,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":24,"Product Name":"Lather Breclet","Material":"Metal","Color":"G/S/B","Cost Price (PKR)":400,"Sale Price (PKR)":700,"Opening Stock":3,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":25,"Product Name":"Lather Breclet Twic","Material":"Metal","Color":"G/S/B","Cost Price (PKR)":300,"Sale Price (PKR)":600,"Opening Stock":4,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":26,"Product Name":"Lather Breclet thin","Material":"Metal","Color":"Golden","Cost Price (PKR)":200,"Sale Price (PKR)":400,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":27,"Product Name":"Metal Breclet","Material":"Metal","Color":"G/S/B","Cost Price (PKR)":150,"Sale Price (PKR)":300,"Opening Stock":6,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":28,"Product Name":"Metal Breclet","Category":"High","Material":"Metal","Color":"Black","Cost Price (PKR)":600,"Sale Price (PKR)":1100,"Opening Stock":0,"Min Stock":0,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":29,"Product Name":"Metal Breclet","Material":"Metal","Color":"B/S & B/G","Cost Price (PKR)":650,"Sale Price (PKR)":1000,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":30,"Product Name":"Heart Chain","Category":"High","Material":"Metal","Color":"G/S/B","Cost Price (PKR)":250,"Sale Price (PKR)":600,"Opening Stock":3,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":31,"Product Name":"Heart Chain","Category":"Low","Material":"Metal","Color":"Silve/Golden","Cost Price (PKR)":150,"Sale Price (PKR)":400,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":32,"Product Name":"Lockit Chain Twice","Material":"Metal","Color":"Silver","Cost Price (PKR)":250,"Sale Price (PKR)":500,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":33,"Product Name":"Metal Lockit","Material":"Metal","Color":"Silver/Black","Cost Price (PKR)":120,"Sale Price (PKR)":200,"Opening Stock":12,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":34,"Product Name":"Metal Plate","Category":"Big","Material":"Metal","Color":"Silver","Cost Price (PKR)":100,"Sale Price (PKR)":200,"Opening Stock":6,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":35,"Product Name":"Metal Plate","Category":"Small","Material":"Metal","Color":"Silver","Cost Price (PKR)":100,"Sale Price (PKR)":200,"Opening Stock":5,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":36,"Product Name":"Metal Coin","Material":"Metal","Color":"Silver","Cost Price (PKR)":50,"Sale Price (PKR)":200,"Opening Stock":24,"Min Stock":5,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":37,"Product Name":"Bengal Karra","Material":"Metal","Color":"Golden","Cost Price (PKR)":250,"Sale Price (PKR)":500,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":38,"Product Name":"Name Lockit","Material":"Metal","Color":"Black","Cost Price (PKR)":200,"Sale Price (PKR)":400,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":39,"Product Name":"Thin Lockit","Material":"Metal","Color":"Black","Cost Price (PKR)":200,"Sale Price (PKR)":400,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":40,"Product Name":"Mens Breclet","Material":"Metal","Color":"Silver","Cost Price (PKR)":200,"Sale Price (PKR)":400,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":41,"Product Name":"Silver Chains","Material":"Metal","Color":"Silver","Cost Price (PKR)":100,"Sale Price (PKR)":200,"Opening Stock":12,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":"NEON-001","Product Name":"Custom Name Neon","Category":"Neon Signs","Sub-Category":"Name Neon","Size":"2 x 1 ft","Material":"Acrylic + LED","Color":"Blue","Cost Price (PKR)":1500,"Sale Price (PKR)":3500,"Opening Stock":5,"Min Stock":2,"Location":"Shop","Status":"Active"},{"SKU":"ISL-001","Product Name":"Allah Neon Sign","Category":"Islamic Signs","Sub-Category":"Calligraphy","Size":"2 x 2 ft","Material":"Acrylic + LED","Color":"White","Cost Price (PKR)":1200,"Sale Price (PKR)":2999,"Opening Stock":3,"Min Stock":2,"Location":"Shop","Status":"Active"},{"SKU":"CLK-001","Product Name":"Neon Wall Clock","Category":"Neon Clocks","Sub-Category":"Wall Clock","Size":"18 inch","Material":"Acrylic + LED","Color":"Blue","Cost Price (PKR)":1800,"Sale Price (PKR)":3499,"Opening Stock":4,"Min Stock":2,"Location":"Shop","Status":"Active"},{"SKU":"CST-001","Product Name":"Custom Logo Sign","Category":"Customized Products","Sub-Category":"Logo Sign","Size":"2 x 2 ft","Material":"Acrylic","Color":"White","Cost Price (PKR)":2000,"Sale Price (PKR)":4500,"Opening Stock":2,"Min Stock":1,"Location":"Production","Status":"Active"}],"purchases":[{"Date":"2026-10-09","Purchase No":3289,"SKU":1,"Products":"Tempreture bottle","Supplier":"low","Qty":2,"Cost Price (PKR)":600,"Total Cost":1200,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":2,"Products":"Tempreture bottle","Supplier":"high","Qty":2,"Cost Price (PKR)":800,"Total Cost":1600,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":3,"Products":"matka","Qty":1,"Cost Price (PKR)":950,"Total Cost":950,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":4,"Products":"Cola","Qty":1,"Cost Price (PKR)":950,"Total Cost":950,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":5,"Products":"wood","Qty":1,"Cost Price (PKR)":1150,"Total Cost":1150,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":6,"Products":"Pen","Qty":28,"Cost Price (PKR)":100,"Total Cost":2800,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":7,"Products":"Pen","Qty":2,"Cost Price (PKR)":120,"Total Cost":240,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":8,"Products":"Pen Diamond","Qty":3,"Cost Price (PKR)":150,"Total Cost":450,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":9,"Products":"Pencil Diamond","Qty":1,"Cost Price (PKR)":150,"Total Cost":150,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":10,"Products":"Pen","Qty":100,"Cost Price (PKR)":100,"Total Cost":10000,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":11,"Products":"KeyChain","Qty":10,"Cost Price (PKR)":80,"Total Cost":800,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":12,"Products":"KeyChain","Qty":2,"Cost Price (PKR)":200,"Total Cost":400,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":13,"Products":"KeyChain","Qty":4,"Cost Price (PKR)":220,"Total Cost":880,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":14,"Products":"KeyChain","Qty":1,"Cost Price (PKR)":250,"Total Cost":250,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":15,"Products":"KeyChain","Qty":3,"Cost Price (PKR)":260,"Total Cost":780,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":16,"Products":"Pen Box","Qty":50,"Cost Price (PKR)":5,"Total Cost":250,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":17,"Products":"Pen Box","Qty":12,"Cost Price (PKR)":20,"Total Cost":240,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":18,"Products":"KeyChain set box","Qty":6,"Cost Price (PKR)":35,"Total Cost":210,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":"-","SKU":19,"Products":"Ring And Challa","Qty":12,"Cost Price (PKR)":100,"Total Cost":1200,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":"-","SKU":20,"Products":"Ring And Challa","Qty":12,"Cost Price (PKR)":100,"Total Cost":1200,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":"-","SKU":21,"Products":"Ring And Challa","Qty":12,"Cost Price (PKR)":100,"Total Cost":1200,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":"-","SKU":22,"Products":"Engraving","Qty":2,"Cost Price (PKR)":50,"Total Cost":100,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":23,"Products":"Royal Breclet","Qty":7,"Cost Price (PKR)":800,"Total Cost":5600,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":24,"Products":"Lather Breclet","Qty":3,"Cost Price (PKR)":400,"Total Cost":1200,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":25,"Products":"Lather Breclet Twic","Qty":4,"Cost Price (PKR)":300,"Total Cost":1200,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":26,"Products":"Lather Breclet thin","Qty":1,"Cost Price (PKR)":200,"Total Cost":200,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":27,"Products":"Metal Breclet","Qty":6,"Cost Price (PKR)":150,"Total Cost":900,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":28,"Products":"Metal Breclet","Qty":1,"Cost Price (PKR)":600,"Total Cost":600,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":29,"Products":"Metal Breclet","Qty":2,"Cost Price (PKR)":650,"Total Cost":1300,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":30,"Products":"Heart Chain","Qty":3,"Cost Price (PKR)":250,"Total Cost":750,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":31,"Products":"Heart Chain","Qty":2,"Cost Price (PKR)":150,"Total Cost":300,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":32,"Products":"Lockit Chain Twice","Qty":1,"Cost Price (PKR)":250,"Total Cost":250,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":33,"Products":"Metal Lockit","Qty":12,"Cost Price (PKR)":120,"Total Cost":1440,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":34,"Products":"Metal Plate","Qty":6,"Cost Price (PKR)":100,"Total Cost":600,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":35,"Products":"Metal Plate","Qty":5,"Cost Price (PKR)":100,"Total Cost":500,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":36,"Products":"Metal Coin","Qty":24,"Cost Price (PKR)":50,"Total Cost":1200,"Payment":"Cash"},{"Date":"2026-10-19","Purchase No":2515,"SKU":23,"Products":"Royal Breclet","Qty":3,"Cost Price (PKR)":800,"Total Cost":2400,"Payment":"Cash"},{"Date":"2026-10-19","Purchase No":2515,"SKU":37,"Products":"Bengal Karra","Qty":1,"Cost Price (PKR)":250,"Total Cost":250,"Payment":"Cash"},{"Date":"2026-10-19","Purchase No":2515,"SKU":38,"Products":"Name Lockit","Qty":2,"Cost Price (PKR)":200,"Total Cost":400,"Payment":"Cash"},{"Date":"2026-10-19","Purchase No":2515,"SKU":39,"Products":"Thin Lockit","Qty":2,"Cost Price (PKR)":200,"Total Cost":400,"Payment":"Cash"},{"Date":"2026-10-19","Purchase No":2515,"SKU":40,"Products":"Mens Breclet","Qty":2,"Cost Price (PKR)":200,"Total Cost":400,"Payment":"Cash"},{"Date":"2026-10-19","Purchase No":2515,"SKU":21,"Products":"Ring And Challa","Qty":15,"Cost Price (PKR)":100,"Total Cost":1500,"Payment":"Cash"},{"Date":"2026-10-19","Purchase No":2515,"SKU":41,"Products":"Silver Chains","Qty":12,"Cost Price (PKR)":100,"Total Cost":1200,"Payment":"Cash"}],"sales":[{"Date":"2026-10-10","Invoice No":"AR-00001","Customer":"Cash","SKU":10,"Product":"Pen","Qty":6,"Sale Price (PKR)":150,"Total Sale":900,"Customer Paid":900,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-10","Invoice No":"AR-00002","Customer":"Cash","SKU":21,"Product":"Ring And Challa","Qty":3,"Sale Price (PKR)":200,"Total Sale":600,"Customer Paid":600,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-10","Invoice No":"AR-00003","Customer":"Cash","SKU":22,"Product":"Engraving","Qty":2,"Sale Price (PKR)":100,"Total Sale":200,"Customer Paid":200,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-11","Invoice No":"AR-00004","Customer":"Cash","SKU":8,"Product":"Pen Diamond","Qty":1,"Sale Price (PKR)":200,"Total Sale":200,"Customer Paid":200,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-16","Invoice No":"AR-00005","Customer":"Cash","SKU":23,"Product":"Royal Breclet","Qty":3,"Sale Price (PKR)":1200,"Total Sale":3600,"Customer Paid":3000,"Discount":600,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-16","Invoice No":"AR-00006","Customer":"Cash","SKU":8,"Product":"Pen Diamond","Qty":1,"Sale Price (PKR)":200,"Total Sale":200,"Customer Paid":200,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-16","Invoice No":"AR-00007","Customer":"Cash","SKU":15,"Product":"KeyChain","Qty":1,"Sale Price (PKR)":400,"Total Sale":400,"Customer Paid":400,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-17","Invoice No":"AR-00008","Customer":"Cash","SKU":10,"Product":"Pen","Qty":2,"Sale Price (PKR)":150,"Total Sale":300,"Customer Paid":300,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-17","Invoice No":"AR-00009","Customer":"Cash","SKU":6,"Product":"Pen","Qty":1,"Sale Price (PKR)":200,"Total Sale":200,"Customer Paid":200,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-18","Invoice No":"AR-00010","Customer":"Cash","SKU":19,"Product":"Ring And Challa","Qty":1,"Sale Price (PKR)":200,"Total Sale":200,"Customer Paid":200,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-18","Invoice No":"AR-00011","Customer":"Cash","SKU":19,"Product":"Ring And Challa","Qty":1,"Sale Price (PKR)":200,"Total Sale":200,"Customer Paid":200,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-18","Invoice No":"AR-00012","Customer":"Cash","SKU":10,"Product":"Pen","Qty":1,"Sale Price (PKR)":150,"Total Sale":150,"Customer Paid":150,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-18","Invoice No":"AR-00013","Customer":"Cash","SKU":6,"Product":"Pen","Qty":1,"Sale Price (PKR)":200,"Total Sale":200,"Customer Paid":200,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-18","Invoice No":"AR-00014","Customer":"Cash","SKU":10,"Product":"Pen","Qty":1,"Sale Price (PKR)":150,"Total Sale":150,"Customer Paid":150,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-20","Invoice No":"AR-00015","Customer":"Cash","SKU":20,"Product":"Ring And Challa","Qty":1,"Sale Price (PKR)":200,"Total Sale":200,"Customer Paid":200,"Discount":0,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-22","Invoice No":"AR-00016","Customer":"shaji","SKU":28,"Product":"Metal Breclet","Qty":1,"Sale Price (PKR)":1100,"Total Sale":1100,"Customer Paid":0,"Discount":300,"Balance":800,"Payment Status":"Unpaid","Payment Method":"Cash"},{"Date":"2026-10-23","Invoice No":"AR-00017","Customer":"Sharuk","SKU":23,"Product":"Royal Breclet","Qty":1,"Sale Price (PKR)":1200,"Total Sale":1200,"Customer Paid":1000,"Balance":200,"Payment Status":"Partial","Payment Method":"Cash"}],"expenses":[{"Date":"2026-10-10","Expense":"Persnol","Category":"Personal","Amount (PKR)":400,"Paid To":"naveed","Payment Method":"Cash","Notes":"Penaflex"},{"Date":"2026-10-18","Expense":"Persnol","Category":"Personal","Amount (PKR)":800,"Paid To":"Store","Payment Method":"Cash","Notes":"Window + Cash book"}],"suppliers":[{"Supplier ID":"Naveed","Supplier Name":"Saddar","Contact":"-","Material/Product":"Pen/Bottles/Keychain","Last Purchase Price":13690,"Payable Balance":0}],"customOrders":[]};
+// Supabase Configuration
+const SUPABASE_URL = 'https://zhehtqefcolgsxfczrjl.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_nLTSQAHzjmwi2sp8cBenzg_3_R_MV_t';
+let supabaseClient = null;
+try {
+  if (window.supabase && SUPABASE_URL && SUPABASE_ANON_KEY) {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+} catch(e) {}
 
-const key='ar_customized_pos_v3'; // Storage key updated to prevent any old loop/corruption
-function clone(x){return JSON.parse(JSON.stringify(x))}
-function loadState(){
-  try{
-    let saved=localStorage.getItem(key);
-    if(saved){
-      let x=JSON.parse(saved);
-      return {...clone(original),...x};
+const original = {
+  "products": [
+    {"SKU": 1, "Product Name": "Tempreture bottle", "Category": "high", "Material": "Metal", "Color": "White and Blue", "Cost Price (PKR)": 600, "Sale Price (PKR)": 1200, "Opening Stock": 2, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 2, "Product Name": "Tempreture bottle", "Category": "low", "Material": "Metal", "Color": "Black And Pink", "Cost Price (PKR)": 800, "Sale Price (PKR)": 1500, "Opening Stock": 2, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 3, "Product Name": "Cola", "Material": "Metal", "Color": "Black", "Cost Price (PKR)": 950, "Sale Price (PKR)": 1500, "Opening Stock": 1, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 4, "Product Name": "Matka", "Material": "Metal", "Color": "Black", "Cost Price (PKR)": 950, "Sale Price (PKR)": 1500, "Opening Stock": 1, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 5, "Product Name": "Wood", "Material": "Metal", "Color": "Black", "Cost Price (PKR)": 1150, "Sale Price (PKR)": 1600, "Opening Stock": 1, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 6, "Product Name": "Pen", "Material": "Metal", "Color": "Colours", "Cost Price (PKR)": 100, "Sale Price (PKR)": 200, "Opening Stock": 26, "Min Stock": 5, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 7, "Product Name": "Pen", "Material": "Metal", "Color": "Light", "Cost Price (PKR)": 120, "Sale Price (PKR)": 200, "Opening Stock": 2, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 8, "Product Name": "Pen Diamond", "Material": "Metal", "Color": "colours", "Cost Price (PKR)": 150, "Sale Price (PKR)": 200, "Opening Stock": 1, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 9, "Product Name": "Pencil Diamond", "Material": "Metal", "Color": "Black", "Cost Price (PKR)": 150, "Sale Price (PKR)": 200, "Opening Stock": 1, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 10, "Product Name": "Pen", "Material": "Metal", "Color": "Black", "Cost Price (PKR)": 100, "Sale Price (PKR)": 150, "Opening Stock": 90, "Min Stock": 10, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 11, "Product Name": "KeyChain", "Category": "Normal", "Material": "Metal", "Color": "Colours", "Cost Price (PKR)": 80, "Sale Price (PKR)": 150, "Opening Stock": 10, "Min Stock": 2, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 12, "Product Name": "KeyChain", "Category": "High", "Material": "Metal", "Color": "Black", "Cost Price (PKR)": 200, "Sale Price (PKR)": 400, "Opening Stock": 2, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 13, "Product Name": "KeyChain", "Category": "High", "Material": "Metal", "Color": "Black", "Cost Price (PKR)": 220, "Sale Price (PKR)": 400, "Opening Stock": 4, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 14, "Product Name": "KeyChain", "Category": "High", "Material": "Metal", "Color": "Black", "Cost Price (PKR)": 250, "Sale Price (PKR)": 350, "Opening Stock": 1, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 15, "Product Name": "KeyChain", "Category": "High", "Material": "Metal", "Color": "Silver/Black", "Cost Price (PKR)": 260, "Sale Price (PKR)": 400, "Opening Stock": 2, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 16, "Product Name": "Pen Box", "Category": "Local", "Material": "carton", "Color": "Black", "Cost Price (PKR)": 5, "Sale Price (PKR)": 10, "Opening Stock": 50, "Min Stock": 10, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 17, "Product Name": "Pen Box", "Category": "Normal", "Material": "carton", "Color": "Black", "Cost Price (PKR)": 20, "Sale Price (PKR)": 30, "Opening Stock": 12, "Min Stock": 5, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 18, "Product Name": "KeyChain set box", "Category": "Normal", "Material": "carton", "Color": "Black", "Cost Price (PKR)": 35, "Sale Price (PKR)": 50, "Opening Stock": 6, "Min Stock": 2, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 19, "Product Name": "Ring And Challa", "Size": "16 to 20", "Material": "Metal", "Color": "Golden", "Cost Price (PKR)": 100, "Sale Price (PKR)": 200, "Opening Stock": 10, "Min Stock": 2, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 20, "Product Name": "Ring And Challa", "Size": "17 to 20", "Material": "Metal", "Color": "Silver", "Cost Price (PKR)": 100, "Sale Price (PKR)": 200, "Opening Stock": 11, "Min Stock": 2, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 21, "Product Name": "Ring And Challa", "Size": "18 to 20", "Material": "Metal", "Color": "Black", "Cost Price (PKR)": 100, "Sale Price (PKR)": 200, "Opening Stock": 24, "Min Stock": 5, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 22, "Product Name": "Engraving", "Material": "Metal", "Color": "Black/Silver", "Cost Price (PKR)": 50, "Sale Price (PKR)": 100, "Opening Stock": 0, "Min Stock": 0, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 23, "Product Name": "Royal Breclet", "Material": "Metal", "Color": "Mix Colour", "Cost Price (PKR)": 800, "Sale Price (PKR)": 1200, "Opening Stock": 6, "Min Stock": 2, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 24, "Product Name": "Lather Breclet", "Material": "Metal", "Color": "G/S/B", "Cost Price (PKR)": 400, "Sale Price (PKR)": 700, "Opening Stock": 3, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 25, "Product Name": "Lather Breclet Twic", "Material": "Metal", "Color": "G/S/B", "Cost Price (PKR)": 300, "Sale Price (PKR)": 600, "Opening Stock": 4, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 26, "Product Name": "Lather Breclet thin", "Material": "Metal", "Color": "Golden", "Cost Price (PKR)": 200, "Sale Price (PKR)": 400, "Opening Stock": 1, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 27, "Product Name": "Metal Breclet", "Material": "Metal", "Color": "G/S/B", "Cost Price (PKR)": 150, "Sale Price (PKR)": 300, "Opening Stock": 6, "Min Stock": 2, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 28, "Product Name": "Metal Breclet", "Category": "High", "Material": "Metal", "Color": "Black", "Cost Price (PKR)": 600, "Sale Price (PKR)": 1100, "Opening Stock": 0, "Min Stock": 0, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 29, "Product Name": "Metal Breclet", "Material": "Metal", "Color": "B/S & B/G", "Cost Price (PKR)": 650, "Sale Price (PKR)": 1000, "Opening Stock": 2, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 30, "Product Name": "Heart Chain", "Category": "High", "Material": "Metal", "Color": "G/S/B", "Cost Price (PKR)": 250, "Sale Price (PKR)": 600, "Opening Stock": 3, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 31, "Product Name": "Heart Chain", "Category": "Low", "Material": "Metal", "Color": "Silve/Golden", "Cost Price (PKR)": 150, "Sale Price (PKR)": 400, "Opening Stock": 2, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 32, "Product Name": "Lockit Chain Twice", "Material": "Metal", "Color": "Silver", "Cost Price (PKR)": 250, "Sale Price (PKR)": 500, "Opening Stock": 1, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 33, "Product Name": "Metal Lockit", "Material": "Metal", "Color": "Silver/Black", "Cost Price (PKR)": 120, "Sale Price (PKR)": 200, "Opening Stock": 12, "Min Stock": 2, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 34, "Product Name": "Metal Plate", "Category": "Big", "Material": "Metal", "Color": "Silver", "Cost Price (PKR)": 100, "Sale Price (PKR)": 200, "Opening Stock": 6, "Min Stock": 2, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 35, "Product Name": "Metal Plate", "Category": "Small", "Material": "Metal", "Color": "Silver", "Cost Price (PKR)": 100, "Sale Price (PKR)": 200, "Opening Stock": 5, "Min Stock": 2, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 36, "Product Name": "Metal Coin", "Material": "Metal", "Color": "Silver", "Cost Price (PKR)": 50, "Sale Price (PKR)": 200, "Opening Stock": 24, "Min Stock": 5, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 37, "Product Name": "Bengal Karra", "Material": "Metal", "Color": "Golden", "Cost Price (PKR)": 250, "Sale Price (PKR)": 500, "Opening Stock": 1, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 38, "Product Name": "Name Lockit", "Material": "Metal", "Color": "Black", "Cost Price (PKR)": 200, "Sale Price (PKR)": 400, "Opening Stock": 2, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 39, "Product Name": "Thin Lockit", "Material": "Metal", "Color": "Black", "Cost Price (PKR)": 200, "Sale Price (PKR)": 400, "Opening Stock": 2, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 40, "Product Name": "Mens Breclet", "Material": "Metal", "Color": "Silver", "Cost Price (PKR)": 200, "Sale Price (PKR)": 400, "Opening Stock": 2, "Min Stock": 1, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": 41, "Product Name": "Silver Chains", "Material": "Metal", "Color": "Silver", "Cost Price (PKR)": 100, "Sale Price (PKR)": 200, "Opening Stock": 12, "Min Stock": 2, "Supplier": "out source", "Location": "Shop", "Status": "Active"},
+    {"SKU": "NEON-001", "Product Name": "Custom Name Neon", "Category": "Neon Signs", "Sub-Category": "Name Neon", "Size": "2 x 1 ft", "Material": "Acrylic + LED", "Color": "Blue", "Cost Price (PKR)": 1500, "Sale Price (PKR)": 3500, "Opening Stock": 5, "Min Stock": 2, "Location": "Shop", "Status": "Active"},
+    {"SKU": "ISL-001", "Product Name": "Allah Neon Sign", "Category": "Islamic Signs", "Sub-Category": "Calligraphy", "Size": "2 x 2 ft", "Material": "Acrylic + LED", "Color": "White", "Cost Price (PKR)": 1200, "Sale Price (PKR)": 2999, "Opening Stock": 3, "Min Stock": 2, "Location": "Shop", "Status": "Active"},
+    {"SKU": "CLK-001", "Product Name": "Neon Wall Clock", "Category": "Neon Clocks", "Sub-Category": "Wall Clock", "Size": "18 inch", "Material": "Acrylic + LED", "Color": "Blue", "Cost Price (PKR)": 1800, "Sale Price (PKR)": 3499, "Opening Stock": 4, "Min Stock": 2, "Location": "Shop", "Status": "Active"},
+    {"SKU": "CST-001", "Product Name": "Custom Logo Sign", "Category": "Customized Products", "Sub-Category": "Logo Sign", "Size": "2 x 2 ft", "Material": "Acrylic", "Color": "White", "Cost Price (PKR)": 2000, "Sale Price (PKR)": 4500, "Opening Stock": 2, "Min Stock": 1, "Location": "Production", "Status": "Active"}
+  ],
+  "purchases": [
+    {"Date": "2026-10-09", "Purchase No": 3289, "SKU": 1, "Products": "Tempreture bottle", "Supplier": "low", "Qty": 2, "Cost Price (PKR)": 600, "Total Cost": 1200, "Payment": "Cash"},
+    {"Date": "2026-10-09", "Purchase No": 3289, "SKU": 2, "Products": "Tempreture bottle", "Supplier": "high", "Qty": 2, "Cost Price (PKR)": 800, "Total Cost": 1600, "Payment": "Cash"},
+    {"Date": "2026-10-09", "Purchase No": 3289, "SKU": 3, "Products": "matka", "Qty": 1, "Cost Price (PKR)": 950, "Total Cost": 950, "Payment": "Cash"},
+    {"Date": "2026-10-09", "Purchase No": 3289, "SKU": 4, "Products": "Cola", "Qty": 1, "Cost Price (PKR)": 950, "Total Cost": 950, "Payment": "Cash"},
+    {"Date": "2026-10-09", "Purchase No": 3289, "SKU": 5, "Products": "wood", "Qty": 1, "Cost Price (PKR)": 1150, "Total Cost": 1150, "Payment": "Cash"},
+    {"Date": "2026-10-09", "Purchase No": 3289, "SKU": 6, "Products": "Pen", "Qty": 28, "Cost Price (PKR)": 100, "Total Cost": 2800, "Payment": "Cash"},
+    {"Date": "2026-10-09", "Purchase No": 3289, "SKU": 7, "Products": "Pen", "Qty": 2, "Cost Price (PKR)": 120, "Total Cost": 240, "Payment": "Cash"},
+    {"Date": "2026-10-09", "Purchase No": 3289, "SKU": 8, "Products": "Pen Diamond", "Qty": 3, "Cost Price (PKR)": 150, "Total Cost": 450, "Payment": "Cash"},
+    {"Date": "2026-10-09", "Purchase No": 3289, "SKU": 9, "Products": "Pencil Diamond", "Qty": 1, "Cost Price (PKR)": 150, "Total Cost": 150, "Payment": "Cash"},
+    {"Date": "2026-10-09", "Purchase No": 3289, "SKU": 10, "Products": "Pen", "Qty": 100, "Cost Price (PKR)": 100, "Total Cost": 10000, "Payment": "Cash"},
+    {"Date": "2026-10-09", "Purchase No": 3289, "SKU": 11, "Products": "KeyChain", "Qty": 10, "Cost Price (PKR)": 80, "Total Cost": 800, "Payment": "Cash"},
+    {"Date": "2026-10-09", "Purchase No": 3289, "SKU": 12, "Products": "KeyChain", "Qty": 2, "Cost Price (PKR)": 200, "Total Cost": 400, "Payment": "Cash"},
+    {"Date": "2026-10-09", "Purchase No": 3289, "SKU": 13, "Products": "KeyChain", "Qty": 4, "Cost Price (PKR)": 220, "Total Cost": 880, "Payment": "Cash"},
+    {"Date": "2026-10-09", "Purchase No": 3289, "SKU": 14, "Products": "KeyChain", "Qty": 1, "Cost Price (PKR)": 250, "Total Cost": 250, "Payment": "Cash"},
+    {"Date": "2026-10-09", "Purchase No": 3289, "SKU": 15, "Products": "KeyChain", "Qty": 3, "Cost Price (PKR)": 260, "Total Cost": 780, "Payment": "Cash"},
+    {"Date": "2026-10-09", "Purchase No": 3289, "SKU": 16, "Products": "Pen Box", "Qty": 50, "Cost Price (PKR)": 5, "Total Cost": 250, "Payment": "Cash"},
+    {"Date": "2026-10-09", "Purchase No": 3289, "SKU": 17, "Products": "Pen Box", "Qty": 12, "Cost Price (PKR)": 20, "Total Cost": 240, "Payment": "Cash"},
+    {"Date": "2026-10-09", "Purchase No": 3289, "SKU": 18, "Products": "KeyChain set box", "Qty": 6, "Cost Price (PKR)": 35, "Total Cost": 210, "Payment": "Cash"},
+    {"Date": "2026-10-09", "Purchase No": "-", "SKU": 19, "Products": "Ring And Challa", "Qty": 12, "Cost Price (PKR)": 100, "Total Cost": 1200, "Payment": "Cash"},
+    {"Date": "2026-10-09", "Purchase No": "-", "SKU": 20, "Products": "Ring And Challa", "Qty": 12, "Cost Price (PKR)": 100, "Total Cost": 1200, "Payment": "Cash"},
+    {"Date": "2026-10-09", "Purchase No": "-", "SKU": 21, "Products": "Ring And Challa", "Qty": 12, "Cost Price (PKR)": 100, "Total Cost": 1200, "Payment": "Cash"},
+    {"Date": "2026-10-09", "Purchase No": "-", "SKU": 22, "Products": "Engraving", "Qty": 2, "Cost Price (PKR)": 50, "Total Cost": 100, "Payment": "Cash"},
+    {"Date": "2026-10-15", "Purchase No": 2411, "SKU": 23, "Products": "Royal Breclet", "Qty": 7, "Cost Price (PKR)": 800, "Total Cost": 5600, "Payment": "Cash"},
+    {"Date": "2026-10-15", "Purchase No": 2411, "SKU": 24, "Products": "Lather Breclet", "Qty": 3, "Cost Price (PKR)": 400, "Total Cost": 1200, "Payment": "Cash"},
+    {"Date": "2026-10-15", "Purchase No": 2411, "SKU": 25, "Products": "Lather Breclet Twic", "Qty": 4, "Cost Price (PKR)": 300, "Total Cost": 1200, "Payment": "Cash"},
+    {"Date": "2026-10-15", "Purchase No": 2411, "SKU": 26, "Products": "Lather Breclet thin", "Qty": 1, "Cost Price (PKR)": 200, "Total Cost": 200, "Payment": "Cash"},
+    {"Date": "2026-10-15", "Purchase No": 2411, "SKU": 27, "Products": "Metal Breclet", "Qty": 6, "Cost Price (PKR)": 150, "Total Cost": 900, "Payment": "Cash"},
+    {"Date": "2026-10-15", "Purchase No": 2411, "SKU": 28, "Products": "Metal Breclet", "Qty": 1, "Cost Price (PKR)": 600, "Total Cost": 600, "Payment": "Cash"},
+    {"Date": "2026-10-15", "Purchase No": 2411, "SKU": 29, "Products": "Metal Breclet", "Qty": 2, "Cost Price (PKR)": 650, "Total Cost": 1300, "Payment": "Cash"},
+    {"Date": "2026-10-15", "Purchase No": 2411, "SKU": 30, "Products": "Heart Chain", "Qty": 3, "Cost Price (PKR)": 250, "Total Cost": 750, "Payment": "Cash"},
+    {"Date": "2026-10-15", "Purchase No": 2411, "SKU": 31, "Products": "Heart Chain", "Qty": 2, "Cost Price (PKR)": 150, "Total Cost": 300, "Payment": "Cash"},
+    {"Date": "2026-10-15", "Purchase No": 2411, "SKU": 32, "Products": "Lockit Chain Twice", "Qty": 1, "Cost Price (PKR)": 250, "Total Cost": 250, "Payment": "Cash"},
+    {"Date": "2026-10-15", "Purchase No": 2411, "SKU": 33, "Products": "Metal Lockit", "Qty": 12, "Cost Price (PKR)": 120, "Total Cost": 1440, "Payment": "Cash"},
+    {"Date": "2026-10-15", "Purchase No": 2411, "SKU": 34, "Products": "Metal Plate", "Qty": 6, "Cost Price (PKR)": 100, "Total Cost": 600, "Payment": "Cash"},
+    {"Date": "2026-10-15", "Purchase No": 2411, "SKU": 35, "Products": "Metal Plate", "Qty": 5, "Cost Price (PKR)": 100, "Total Cost": 500, "Payment": "Cash"},
+    {"Date": "2026-10-15", "Purchase No": 2411, "SKU": 36, "Products": "Metal Coin", "Qty": 24, "Cost Price (PKR)": 50, "Total Cost": 1200, "Payment": "Cash"},
+    {"Date": "2026-10-19", "Purchase No": 2515, "SKU": 23, "Products": "Royal Breclet", "Qty": 3, "Cost Price (PKR)": 800, "Total Cost": 2400, "Payment": "Cash"},
+    {"Date": "2026-10-19", "Purchase No": 2515, "SKU": 37, "Products": "Bengal Karra", "Qty": 1, "Cost Price (PKR)": 250, "Total Cost": 250, "Payment": "Cash"},
+    {"Date": "2026-10-19", "Purchase No": 2515, "SKU": 38, "Products": "Name Lockit", "Qty": 2, "Cost Price (PKR)": 200, "Total Cost": 400, "Payment": "Cash"},
+    {"Date": "2026-10-19", "Purchase No": 2515, "SKU": 39, "Products": "Thin Lockit", "Qty": 2, "Cost Price (PKR)": 200, "Total Cost": 400, "Payment": "Cash"},
+    {"Date": "2026-10-19", "Purchase No": 2515, "SKU": 40, "Products": "Mens Breclet", "Qty": 2, "Cost Price (PKR)": 200, "Total Cost": 400, "Payment": "Cash"},
+    {"Date": "2026-10-19", "Purchase No": 2515, "SKU": 21, "Products": "Ring And Challa", "Qty": 15, "Cost Price (PKR)": 100, "Total Cost": 1500, "Payment": "Cash"},
+    {"Date": "2026-10-19", "Purchase No": 2515, "SKU": 41, "Products": "Silver Chains", "Qty": 12, "Cost Price (PKR)": 100, "Total Cost": 1200, "Payment": "Cash"}
+  ],
+  "sales": [
+    {"Date": "2026-10-10", "Invoice No": "AR-00001", "Customer": "Cash", "SKU": 10, "Product": "Pen", "Qty": 6, "Sale Price (PKR)": 150, "Total Sale": 900, "Customer Paid": 900, "Balance": 0, "Payment Status": "Paid", "Payment Method": "Cash"},
+    {"Date": "2026-10-10", "Invoice No": "AR-00002", "Customer": "Cash", "SKU": 21, "Product": "Ring And Challa", "Qty": 3, "Sale Price (PKR)": 200, "Total Sale": 600, "Customer Paid": 600, "Balance": 0, "Payment Status": "Paid", "Payment Method": "Cash"},
+    {"Date": "2026-10-10", "Invoice No": "AR-00003", "Customer": "Cash", "SKU": 22, "Product": "Engraving", "Qty": 2, "Sale Price (PKR)": 100, "Total Sale": 200, "Customer Paid": 200, "Balance": 0, "Payment Status": "Paid", "Payment Method": "Cash"},
+    {"Date": "2026-10-11", "Invoice No": "AR-00004", "Customer": "Cash", "SKU": 8, "Product": "Pen Diamond", "Qty": 1, "Sale Price (PKR)": 200, "Total Sale": 200, "Customer Paid": 200, "Balance": 0, "Payment Status": "Paid", "Payment Method": "Cash"},
+    {"Date": "2026-10-16", "Invoice No": "AR-00005", "Customer": "Cash", "SKU": 23, "Product": "Royal Breclet", "Qty": 3, "Sale Price (PKR)": 1200, "Total Sale": 3600, "Customer Paid": 3000, "Discount": 600, "Balance": 0, "Payment Status": "Paid", "Payment Method": "Cash"},
+    {"Date": "2026-10-16", "Invoice No": "AR-00006", "Customer": "Cash", "SKU": 8, "Product": "Pen Diamond", "Qty": 1, "Sale Price (PKR)": 200, "Total Sale": 200, "Customer Paid": 200, "Balance": 0, "Payment Status": "Paid", "Payment Method": "Cash"},
+    {"Date": "2026-10-16", "Invoice No": "AR-00007", "Customer": "Cash", "SKU": 15, "Product": "KeyChain", "Qty": 1, "Sale Price (PKR)": 400, "Total Sale": 400, "Customer Paid": 400, "Balance": 0, "Payment Status": "Paid", "Payment Method": "Cash"},
+    {"Date": "2026-10-17", "Invoice No": "AR-00008", "Customer": "Cash", "SKU": 10, "Product": "Pen", "Qty": 2, "Sale Price (PKR)": 150, "Total Sale": 300, "Customer Paid": 300, "Balance": 0, "Payment Status": "Paid", "Payment Method": "Cash"},
+    {"Date": "2026-10-17", "Invoice No": "AR-00009", "Customer": "Cash", "SKU": 6, "Product": "Pen", "Qty": 1, "Sale Price (PKR)": 200, "Total Sale": 200, "Customer Paid": 200, "Balance": 0, "Payment Status": "Paid", "Payment Method": "Cash"},
+    {"Date": "2026-10-18", "Invoice No": "AR-00010", "Customer": "Cash", "SKU": 19, "Product": "Ring And Challa", "Qty": 1, "Sale Price (PKR)": 200, "Total Sale": 200, "Customer Paid": 200, "Balance": 0, "Payment Status": "Paid", "Payment Method": "Cash"},
+    {"Date": "2026-10-18", "Invoice No": "AR-00011", "Customer": "Cash", "SKU": 19, "Product": "Ring And Challa", "Qty": 1, "Sale Price (PKR)": 200, "Total Sale": 200, "Customer Paid": 200, "Balance": 0, "Payment Status": "Paid", "Payment Method": "Cash"},
+    {"Date": "2026-10-18", "Invoice No": "AR-00012", "Customer": "Cash", "SKU": 10, "Product": "Pen", "Qty": 1, "Sale Price (PKR)": 150, "Total Sale": 150, "Customer Paid": 150, "Balance": 0, "Payment Status": "Paid", "Payment Method": "Cash"},
+    {"Date": "2026-10-18", "Invoice No": "AR-00013", "Customer": "Cash", "SKU": 6, "Product": "Pen", "Qty": 1, "Sale Price (PKR)": 200, "Total Sale": 200, "Customer Paid": 200, "Balance": 0, "Payment Status": "Paid", "Payment Method": "Cash"},
+    {"Date": "2026-10-18", "Invoice No": "AR-00014", "Customer": "Cash", "SKU": 10, "Product": "Pen", "Qty": 1, "Sale Price (PKR)": 150, "Total Sale": 150, "Customer Paid": 150, "Balance": 0, "Payment Status": "Paid", "Payment Method": "Cash"},
+    {"Date": "2026-10-20", "Invoice No": "AR-00015", "Customer": "Cash", "SKU": 20, "Product": "Ring And Challa", "Qty": 1, "Sale Price (PKR)": 200, "Total Sale": 200, "Customer Paid": 200, "Discount": 0, "Balance": 0, "Payment Status": "Paid", "Payment Method": "Cash"},
+    {"Date": "2026-10-22", "Invoice No": "AR-00016", "Customer": "shaji", "SKU": 28, "Product": "Metal Breclet", "Qty": 1, "Sale Price (PKR)": 1100, "Total Sale": 1100, "Customer Paid": 0, "Discount": 300, "Balance": 800, "Payment Status": "Unpaid", "Payment Method": "Cash"},
+    {"Date": "2026-10-23", "Invoice No": "AR-00017", "Customer": "Sharuk", "SKU": 23, "Product": "Royal Breclet", "Qty": 1, "Sale Price (PKR)": 1200, "Total Sale": 1200, "Customer Paid": 1000, "Balance": 200, "Payment Status": "Partial", "Payment Method": "Cash"},
+    {"Date": "2026-10-27", "Invoice No": "AR-01001", "Customer": "Cash", "Phone": "", "Items": [{"sku": 15, "name": "KeyChain", "price": 400, "qty": 1, "cost": 260}], "Qty": 1, "Total Sale": 400, "Customer Paid": 400, "Discount": 0, "Balance": 0, "Payment Status": "Paid", "Payment Method": "Cash"},
+    {"Date": "2026-10-27", "Invoice No": "AR-01002", "Customer": "Cash", "Phone": "", "Items": [{"sku": 23, "name": "Royal Breclet", "price": 1200, "qty": 2, "cost": 800}], "Qty": 2, "Total Sale": 2000, "Customer Paid": 2000, "Discount": 400, "Balance": 0, "Payment Status": "Paid", "Payment Method": "Cash"},
+    {"Date": "2026-10-27", "Invoice No": "AR-01003", "Customer": "Cash", "Phone": "", "Items": [{"sku": 21, "name": "Ring And Challa", "price": 200, "qty": 1, "cost": 100}], "Qty": 1, "Total Sale": 150, "Customer Paid": 150, "Discount": 50, "Balance": 0, "Payment Status": "Paid", "Payment Method": "Cash"}
+  ],
+  "expenses": [
+    {"Date": "2026-10-10", "Expense": "Persnol", "Category": "Personal", "Amount (PKR)": 400, "Paid To": "naveed", "Payment Method": "Cash", "Notes": "Penaflex"},
+    {"Date": "2026-10-18", "Expense": "Persnol", "Category": "Personal", "Amount (PKR)": 800, "Paid To": "Store", "Payment Method": "Cash", "Notes": "Window + Cash book"}
+  ],
+  "suppliers": [
+    {"Supplier ID": "Naveed", "Supplier Name": "Saddar", "Contact": "-", "Material/Product": "Pen/Bottles/Keychain", "Last Purchase Price": 13690, "Payable Balance": 0}
+  ],
+  "customOrders": []
+};
+
+const key = 'ar_customized_pos_v4';
+function clone(x) { return JSON.parse(JSON.stringify(x)); }
+
+function loadState() {
+  try {
+    let saved = localStorage.getItem(key);
+    if (saved) {
+      let x = JSON.parse(saved);
+      return { ...clone(original), ...x };
     }
-  }catch(e){}
+  } catch (e) {}
   return clone(original);
 }
 
-let db=loadState();
-let cart=[];
-let invoiceCounter=Math.max(1000,...(db.sales||[]).map(s=>Number(String(s['Invoice No']||'').replace(/\D/g,''))||0))+1;
+let db = loadState();
+let cart = [];
+let invoiceCounter = Math.max(1000, ...(db.sales || []).map(s => Number(String(s['Invoice No'] || '').replace(/\D/g, '')) || 0)) + 1;
 
-const money=n=>'PKR '+Number(n||0).toLocaleString('en-PK',{maximumFractionDigits:2});
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const today=()=>new Date().toISOString().slice(0,10);
-const num=x=>Number(x)||0;
+const money = n => 'PKR ' + Number(n || 0).toLocaleString('en-PK', { maximumFractionDigits: 2 });
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const today = () => new Date().toISOString().slice(0, 10);
+const num = x => Number(x) || 0;
 
-function save(){
-  try{
-    localStorage.setItem(key,JSON.stringify(db));
-    let status=document.getElementById('dbstatus');
-    if(status) status.textContent='Saved in local browser';
-  }catch(e){
-    let status=document.getElementById('dbstatus');
-    if(status) status.textContent='Backup required (storage full)';
+function save() {
+  try {
+    localStorage.setItem(key, JSON.stringify(db));
+    let status = document.getElementById('dbstatus');
+    if (status) status.textContent = 'Saved locally & Synced';
+  } catch (e) {}
+  
+  // Try syncing to Supabase in background if client is ready
+  if (supabaseClient) {
+    supabaseClient.from('pos_storage').upsert({ id: 1, payload: db }).then(({ error }) => {
+      if (error) console.log('Cloud sync info:', error.message);
+    }).catch(err => {});
   }
 }
 
-function sum(a,f){return (a||[]).reduce((n,x)=>n+num(f(x)),0)}
+// Try loading remote Supabase state on boot
+async function initCloudSync() {
+  if (supabaseClient) {
+    try {
+      let { data, error } = await supabaseClient.from('pos_storage').select('*').eq('id', 1).single();
+      if (data && data.payload) {
+        db = { ...clone(original), ...data.payload };
+        localStorage.setItem(key, JSON.stringify(db));
+        renderAll();
+      }
+    } catch(e) {}
+  }
+}
 
-function productStock(p){
-  let sku=String(p.SKU??'');
-  let opening=num(p['Opening Stock']);
-  let bought=sum(db.purchases,x=>String(x.SKU??'')===sku?x.Qty:0);
-  let sold=sum(db.sales,s=>{
-    if(s.Items){
-      return sum(s.Items,item=>String(item.sku??'')===sku?item.qty:0);
+function sum(a, f) { return (a || []).reduce((n, x) => n + num(f(x)), 0); }
+
+function productStock(p) {
+  let sku = String(p.SKU ?? '');
+  let opening = num(p['Opening Stock']);
+  let bought = sum(db.purchases, x => String(x.SKU ?? '') === sku ? x.Qty : 0);
+  let sold = sum(db.sales, s => {
+    if (s.Items) {
+      return sum(s.Items, item => String(item.sku ?? '') === sku ? item.qty : 0);
     }
-    return String(s.SKU??'')===sku?s.Qty:0;
+    return String(s.SKU ?? '') === sku ? s.Qty : 0;
   });
-  return opening+bought-sold;
+  return opening + bought - sold;
 }
 
-function prodPrice(p){return num(p['Sale Price (PKR)'])}
-function prodName(p){return p['Product Name']||'Unnamed product'}
-function prodSKU(p){return p.SKU??''}
-function fmtDate(d){return d?String(d).slice(0,10):'—'}
+function prodPrice(p) { return num(p['Sale Price (PKR)']); }
+function prodName(p) { return p['Product Name'] || 'Unnamed product'; }
+function prodSKU(p) { return p.SKU ?? ''; }
+function fmtDate(d) { return d ? String(d).slice(0, 10) : '—'; }
 
-function toggleSidebar(){
-  let side=document.getElementById('sidebar');
-  let overlay=document.getElementById('sidebarOverlay');
-  if(side) side.classList.toggle('open');
-  if(overlay) overlay.classList.toggle('open');
+function toggleSidebar() {
+  let side = document.getElementById('sidebar');
+  let overlay = document.getElementById('sidebarOverlay');
+  if (side) side.classList.toggle('open');
+  if (overlay) overlay.classList.toggle('open');
 }
 
-function go(page){
-  document.querySelectorAll('[id^="page-"]').forEach(e=>e.classList.add('hidden'));
-  let target=document.getElementById('page-'+page);
-  if(target) target.classList.remove('hidden');
-  document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
-  let label={dashboard:'Dashboard',pos:'New Sale / POS',sales:'Sales & Invoices',products:'Products & Stock',purchases:'Stock In / Purchases',expenses:'Expenses',customers:'Custom Orders',reports:'Reports'};
-  let crumb=document.getElementById('crumb');
-  if(crumb) crumb.textContent=label[page]||page;
+function go(page) {
+  document.querySelectorAll('[id^="page-"]').forEach(e => e.classList.add('hidden'));
+  let target = document.getElementById('page-' + page);
+  if (target) target.classList.remove('hidden');
+  document.querySelectorAll('.nav').forEach(b => b.classList.toggle('active', b.dataset.page === page));
+  let label = { dashboard: 'Dashboard', pos: 'New Sale / POS', sales: 'Sales & Invoices', products: 'Products & Stock', purchases: 'Stock In / Purchases', expenses: 'Expenses', customers: 'Custom Orders', reports: 'Reports' };
+  let crumb = document.getElementById('crumb');
+  if (crumb) crumb.textContent = label[page] || page;
   renderAll();
-  window.scrollTo(0,0);
-  if(window.innerWidth<=768){
-    let side=document.getElementById('sidebar');
-    let overlay=document.getElementById('sidebarOverlay');
-    if(side) side.classList.remove('open');
-    if(overlay) overlay.classList.remove('open');
+  window.scrollTo(0, 0);
+  if (window.innerWidth <= 768) {
+    let side = document.getElementById('sidebar');
+    let overlay = document.getElementById('sidebarOverlay');
+    if (side) side.classList.remove('open');
+    if (overlay) overlay.classList.remove('open');
   }
 }
-document.querySelectorAll('.nav').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));
+document.querySelectorAll('.nav').forEach(b => b.addEventListener('click', () => go(b.dataset.page)));
 
-function metricsCard(label,value,icon,note){
+function metricsCard(label, value, icon, note) {
   return `<div class="metric"><div class="metric-top"><span>${label}</span><span class="metric-icon">${icon}</span></div><strong>${value}</strong><small>${note}</small></div>`;
 }
 
-// DASHBOARD RENDER
-function renderDashboard(){
-  let m=document.getElementById('metrics');
-  if(!m)return;
-  let salesTotal=sum(db.sales,s=>num(s['Total Sale']??s['Total Sale (PKR)'])||num(s['Sale Price (PKR)'])*num(s.Qty));
-  let purchases=sum(db.purchases,s=>num(s['Total Cost'])||num(s.Qty)*num(s['Cost Price (PKR)']));
-  let expenses=sum(db.expenses,s=>s['Amount (PKR)']);
-  let stockValue=sum(db.products,p=>productStock(p)*num(p['Cost Price (PKR)']));
+function renderDashboard() {
+  let m = document.getElementById('metrics');
+  if (!m) return;
+  let salesTotal = sum(db.sales, s => num(s['Total Sale'] ?? s['Total Sale (PKR)']) || num(s['Sale Price (PKR)']) * num(s.Qty));
+  let purchases = sum(db.purchases, s => num(s['Total Cost']) || num(s.Qty) * num(s['Cost Price (PKR)']));
+  let expenses = sum(db.expenses, s => s['Amount (PKR)']);
+  let stockValue = sum(db.products, p => productStock(p) * num(p['Cost Price (PKR)']));
   
-  m.innerHTML=
-    metricsCard('Total Revenue',money(salesTotal),'↗',(db.sales||[]).length+' transactions')+
-    metricsCard('Purchases',money(purchases),'⇩',(db.purchases||[]).length+' stock entries')+
-    metricsCard('Expenses',money(expenses),'↗',(db.expenses||[]).length+' records')+
-    metricsCard('Catalogue Stock',(db.products||[]).length,'◈',money(stockValue)+' valuation');
+  m.innerHTML =
+    metricsCard('Total Revenue', money(salesTotal), '↗', (db.sales || []).length + ' transactions') +
+    metricsCard('Purchases', money(purchases), '⇩', (db.purchases || []).length + ' stock entries') +
+    metricsCard('Expenses', money(expenses), '↗', (db.expenses || []).length + ' records') +
+    metricsCard('Catalogue Stock', (db.products || []).length, '◈', money(stockValue) + ' valuation');
 
-  let recent=[...(db.sales||[])].slice(-6).reverse();
-  let rRows=document.getElementById('recentRows');
-  if(rRows){
-    rRows.innerHTML=recent.map((s)=>{
-      let idx=db.sales.indexOf(s);
-      let total=num(s['Total Sale']??s['Total Sale (PKR)'])||num(s['Sale Price (PKR)'])*num(s.Qty);
-      let status=s['Payment Status']||(num(s.Balance)>0?'Partial':'Paid');
+  let recent = [...(db.sales || [])].slice(-6).reverse();
+  let rRows = document.getElementById('recentRows');
+  if (rRows) {
+    rRows.innerHTML = recent.map((s) => {
+      let idx = db.sales.indexOf(s);
+      let total = num(s['Total Sale'] ?? s['Total Sale (PKR)']) || num(s['Sale Price (PKR)']) * num(s.Qty);
+      let status = s['Payment Status'] || (num(s.Balance) > 0 ? 'Partial' : 'Paid');
       return `<tr>
-        <td><b>${esc(s['Invoice No']||'AR-IMP')}</b></td>
+        <td><b>${esc(s['Invoice No'] || 'AR-IMP')}</b></td>
         <td>${esc(fmtDate(s.Date))}</td>
-        <td>${esc(s.Customer||'Walk-in')}</td>
-        <td>${esc(s.Qty||(s.Items?s.Items.length:1))}</td>
+        <td>${esc(s.Customer || 'Walk-in')}</td>
+        <td>${esc(s.Qty || (s.Items ? s.Items.length : 1))}</td>
         <td><b>${money(total)}</b></td>
-        <td><span class="pill ${status==='Unpaid'?'danger':status==='Partial'?'warn':''}">${esc(status)}</span></td>
+        <td><span class="pill ${status === 'Unpaid' ? 'danger' : status === 'Partial' ? 'warn' : ''}">${esc(status)}</span></td>
         <td class="actions-cell">
           <button class="secondary btn-sm" onclick="printInvoice(db.sales[${idx}])">Print</button>
           <button class="secondary btn-sm" onclick="showEditSaleModal(${idx})">Edit</button>
         </td>
       </tr>`;
-    }).join('')||'<tr><td colspan="7" class="empty">No sales recorded yet.</td></tr>';
+    }).join('') || '<tr><td colspan="7" class="empty">No sales recorded yet.</td></tr>';
   }
 }
 
-// POS SCREEN
-function renderProductPicker(){
-  let picker=document.getElementById('productPicker');
-  if(!picker)return;
-  let q=(document.getElementById('productSearch')?.value||'').toLowerCase();
-  let arr=(db.products||[]).filter(p=>(prodName(p)+' '+prodSKU(p)+' '+(p.Category||'')).toLowerCase().includes(q)).slice(0,90);
-  picker.innerHTML=arr.map(p=>`
-    <div class="product" onclick="addToCart('${esc(String(prodSKU(p))).replace(/'/g,"\\'")}')">
+function renderProductPicker() {
+  let picker = document.getElementById('productPicker');
+  if (!picker) return;
+  let q = (document.getElementById('productSearch')?.value || '').toLowerCase();
+  let arr = (db.products || []).filter(p => (prodName(p) + ' ' + prodSKU(p) + ' ' + (p.Category || '')).toLowerCase().includes(q)).slice(0, 90);
+  picker.innerHTML = arr.map(p => `
+    <div class="product" onclick="addToCart('${esc(String(prodSKU(p))).replace(/'/g, "\\'")}')">
       <div>
-        <div class="picon">${/bottle/i.test(prodName(p))?'♧':/pen/i.test(prodName(p))?'✎':/sign|neon/i.test(prodName(p))?'✦':/key/i.test(prodName(p))?'⌘':'◈'}</div>
+        <div class="picon">${/bottle/i.test(prodName(p)) ? '♧' : /pen/i.test(prodName(p)) ? '✎' : /sign|neon/i.test(prodName(p)) ? '✦' : /key/i.test(prodName(p)) ? '⌘' : '◈'}</div>
         <b>${esc(prodName(p))}</b>
         <div class="muted">SKU ${esc(prodSKU(p))} · Stock: ${productStock(p)}</div>
       </div>
       <div style="margin-top:8px" class="price">${money(prodPrice(p))}</div>
     </div>
-  `).join('')||'<div class="empty">No products match your search.</div>';
+  `).join('') || '<div class="empty">No products match your search.</div>';
 }
 
-function addToCart(sku){
-  let p=(db.products||[]).find(p=>String(prodSKU(p))===String(sku));
-  if(!p)return;
-  let x=cart.find(x=>String(x.sku)===String(sku));
-  if(x) x.qty++;
-  else cart.push({sku:p.SKU,name:prodName(p),price:prodPrice(p),qty:1,cost:num(p['Cost Price (PKR)'])});
+function addToCart(sku) {
+  let p = (db.products || []).find(p => String(prodSKU(p)) === String(sku));
+  if (!p) return;
+  let x = cart.find(x => String(x.sku) === String(sku));
+  if (x) x.qty++;
+  else cart.push({ sku: p.SKU, name: prodName(p), price: prodPrice(p), qty: 1, cost: num(p['Cost Price (PKR)']) });
   renderCart();
 }
 
-function cartSub(){return sum(cart,x=>x.qty*x.price)}
+function cartSub() { return sum(cart, x => x.qty * x.price); }
 
-function renderCart(){
-  let box=document.getElementById('cartItems');
-  if(!box)return;
-  let countEl=document.getElementById('cartCount');
-  if(countEl) countEl.textContent=cart.reduce((n,x)=>n+x.qty,0)+' items';
+function renderCart() {
+  let box = document.getElementById('cartItems');
+  if (!box) return;
+  let countEl = document.getElementById('cartCount');
+  if (countEl) countEl.textContent = cart.reduce((n, x) => n + x.qty, 0) + ' items';
   
-  box.innerHTML=cart.length?cart.map((x,i)=>`
+  box.innerHTML = cart.length ? cart.map((x, i) => `
     <div class="cartline">
       <div>
         <b>${esc(x.name)}</b>
@@ -563,78 +715,77 @@ function renderCart(){
           <button class="danger btn-sm" onclick="cart.splice(${i},1);renderCart()">×</button>
         </div>
       </div>
-      <b>${money(x.price*x.qty)}</b>
+      <b>${money(x.price * x.qty)}</b>
     </div>
-  `).join(''):'<div class="empty">Cart is currently empty.</div>';
+  `).join('') : '<div class="empty">Cart is currently empty.</div>';
   
-  let disc=Math.min(Math.max(0,num(document.getElementById('discount')?.value)),cartSub());
-  let total=Math.max(0,cartSub()-disc);
-  let paid=document.getElementById('paidAmount')?.value;
-  let received=paid===''||paid==null?total:Math.max(0,num(paid));
-  let totalsEl=document.getElementById('cartTotals');
-  if(totalsEl){
-    totalsEl.innerHTML=`
+  let disc = Math.min(Math.max(0, num(document.getElementById('discount')?.value)), cartSub());
+  let total = Math.max(0, cartSub() - disc);
+  let paid = document.getElementById('paidAmount')?.value;
+  let received = paid === '' || paid == null ? total : Math.max(0, num(paid));
+  let totalsEl = document.getElementById('cartTotals');
+  if (totalsEl) {
+    totalsEl.innerHTML = `
       <div class="totalrow"><span>Subtotal</span><b>${money(cartSub())}</b></div>
       <div class="totalrow"><span>Discount</span><b>− ${money(disc)}</b></div>
       <div class="totalrow final"><span>Total Due</span><span>${money(total)}</span></div>
-      <div class="totalrow"><span>Received</span><b>${money(Math.min(received,total))}</b></div>
-      <div class="totalrow"><span>Balance Due</span><b>${money(Math.max(0,total-received))}</b></div>
+      <div class="totalrow"><span>Received</span><b>${money(Math.min(received, total))}</b></div>
+      <div class="totalrow"><span>Balance Due</span><b>${money(Math.max(0, total - received))}</b></div>
     `;
   }
 }
 
-function changeQty(i,d){
-  cart[i].qty+=d;
-  if(cart[i].qty<=0) cart.splice(i,1);
+function changeQty(i, d) {
+  cart[i].qty += d;
+  if (cart[i].qty <= 0) cart.splice(i, 1);
   renderCart();
 }
-function clearCart(){cart=[];renderCart()}
+function clearCart() { cart = []; renderCart(); }
 
-function completeSale(){
-  if(!cart.length){toast('Please select at least one item.');return}
-  let sub=cartSub();
-  let disc=Math.min(sub,Math.max(0,num(document.getElementById('discount').value)));
-  let total=sub-disc;
-  let paidRaw=document.getElementById('paidAmount').value;
-  let paid=paidRaw===''?total:Math.min(total,Math.max(0,num(paidRaw)));
-  let invoice='AR-'+String(invoiceCounter++).padStart(5,'0');
-  let customer=document.getElementById('customerName').value.trim()||'Cash';
+function completeSale() {
+  if (!cart.length) { toast('Please select at least one item.'); return; }
+  let sub = cartSub();
+  let disc = Math.min(sub, Math.max(0, num(document.getElementById('discount').value)));
+  let total = sub - disc;
+  let paidRaw = document.getElementById('paidAmount').value;
+  let paid = paidRaw === '' ? total : Math.min(total, Math.max(0, num(paidRaw)));
+  let invoice = 'AR-' + String(invoiceCounter++).padStart(5, '0');
+  let customer = document.getElementById('customerName').value.trim() || 'Cash';
   
-  let sale={
-    Date:today(),
-    'Invoice No':invoice,
-    Customer:customer,
-    Phone:document.getElementById('customerPhone').value,
-    Items:clone(cart),
-    Qty:cart.reduce((n,x)=>n+x.qty,0),
-    'Total Sale':total,
-    'Customer Paid':paid,
-    Discount:disc,
-    Balance:total-paid,
-    'Payment Status':paid>=total?'Paid':paid>0?'Partial':'Unpaid',
-    'Payment Method':document.getElementById('paymentMethod').value
+  let sale = {
+    Date: today(),
+    'Invoice No': invoice,
+    Customer: customer,
+    Phone: document.getElementById('customerPhone').value,
+    Items: clone(cart),
+    Qty: cart.reduce((n, x) => n + x.qty, 0),
+    'Total Sale': total,
+    'Customer Paid': paid,
+    Discount: disc,
+    Balance: total - paid,
+    'Payment Status': paid >= total ? 'Paid' : paid > 0 ? 'Partial' : 'Unpaid',
+    'Payment Method': document.getElementById('paymentMethod').value
   };
   
   db.sales.push(sale);
   save();
   printInvoice(sale);
-  cart=[];
-  document.getElementById('customerName').value='Cash';
-  document.getElementById('customerPhone').value='';
-  document.getElementById('discount').value=0;
-  document.getElementById('paidAmount').value='';
+  cart = [];
+  document.getElementById('customerName').value = 'Cash';
+  document.getElementById('customerPhone').value = '';
+  document.getElementById('discount').value = 0;
+  document.getElementById('paidAmount').value = '';
   renderCart();
   renderAll();
-  toast('Invoice '+invoice+' generated successfully.');
+  toast('Invoice ' + invoice + ' generated successfully.');
 }
 
-// INVOICE PRINT TEMPLATE
-function invoiceHTML(s){
-  let items=s.Items||[{name:s.Product||s.Products||'Item',qty:s.Qty||1,price:num(s['Sale Price (PKR)']),sku:s.SKU||''}];
-  let total=num(s['Total Sale']??s['Total Sale (PKR)'])||sum(items,x=>num(x.qty)*num(x.price));
-  let paid=num(s['Customer Paid']??s.Paid);
-  let disc=num(s.Discount??s['Dis Rate']);
-  if(!s.Items&&s['Customer Paid']==null) paid=total-num(s.Balance);
+function invoiceHTML(s) {
+  let items = s.Items || [{ name: s.Product || s.Products || 'Item', qty: s.Qty || 1, price: num(s['Sale Price (PKR)']), sku: s.SKU || '' }];
+  let total = num(s['Total Sale'] ?? s['Total Sale (PKR)']) || sum(items, x => num(x.qty) * num(x.price));
+  let paid = num(s['Customer Paid'] ?? s.Paid);
+  let disc = num(s.Discount ?? s['Dis Rate']);
+  if (!s.Items && s['Customer Paid'] == null) paid = total - num(s.Balance);
 
   return `<div style="font-family:Inter,Arial,sans-serif;color:#172033;max-width:760px;margin:auto;padding:24px">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #315efb;padding-bottom:16px">
@@ -647,20 +798,20 @@ function invoiceHTML(s){
       </div>
       <div style="text-align:right">
         <div style="font-size:22px;font-weight:800">INVOICE</div>
-        <div style="font-weight:700;margin-top:2px">${esc(s['Invoice No']||'AR-IMP')}</div>
-        <div style="color:#667085;font-size:12px">${esc(fmtDate(s.Date)||today())}</div>
+        <div style="font-weight:700;margin-top:2px">${esc(s['Invoice No'] || 'AR-IMP')}</div>
+        <div style="color:#667085;font-size:12px">${esc(fmtDate(s.Date) || today())}</div>
       </div>
     </div>
     <div style="display:flex;justify-content:space-between;margin:20px 0;font-size:13px">
       <div>
         <div style="font-size:11px;color:#667085;text-transform:uppercase;font-weight:700">Billed To</div>
-        <b>${esc(s.Customer||'Walk-in customer')}</b>
-        ${s.Phone?`<div>Phone: ${esc(s.Phone)}</div>`:''}
+        <b>${esc(s.Customer || 'Walk-in customer')}</b>
+        ${s.Phone ? `<div>Phone: ${esc(s.Phone)}</div>` : ''}
       </div>
       <div style="text-align:right">
         <div style="font-size:11px;color:#667085;text-transform:uppercase;font-weight:700">Payment Status</div>
-        <b>${esc(s['Payment Status']||'Paid')}</b>
-        <div style="color:#667085">${esc(s['Payment Method']||'Cash')}</div>
+        <b>${esc(s['Payment Status'] || 'Paid')}</b>
+        <div style="color:#667085">${esc(s['Payment Method'] || 'Cash')}</div>
       </div>
     </div>
     <table style="width:100%;border-collapse:collapse;margin-bottom:20px">
@@ -673,25 +824,25 @@ function invoiceHTML(s){
         </tr>
       </thead>
       <tbody style="font-size:13px">
-        ${items.map(x=>`
+        ${items.map(x => `
           <tr>
             <td style="padding:10px;border-bottom:1px solid #e5e7eb">
-              ${esc(x.name||x.Product||'Item')}
-              ${x.sku?`<div style="font-size:11px;color:#667085">SKU: ${esc(x.sku)}</div>`:''}
+              ${esc(x.name || x.Product || 'Item')}
+              ${x.sku ? `<div style="font-size:11px;color:#667085">SKU: ${esc(x.sku)}</div>` : ''}
             </td>
-            <td style="padding:10px;text-align:center;border-bottom:1px solid #e5e7eb">${num(x.qty||x.Qty)||1}</td>
-            <td style="padding:10px;text-align:right;border-bottom:1px solid #e5e7eb">${money(x.price??x['Sale Price (PKR)'])}</td>
-            <td style="padding:10px;text-align:right;border-bottom:1px solid #e5e7eb">${money(num(x.qty||x.Qty||1)*num(x.price??x['Sale Price (PKR)']))}</td>
+            <td style="padding:10px;text-align:center;border-bottom:1px solid #e5e7eb">${num(x.qty || x.Qty) || 1}</td>
+            <td style="padding:10px;text-align:right;border-bottom:1px solid #e5e7eb">${money(x.price ?? x['Sale Price (PKR)'])}</td>
+            <td style="padding:10px;text-align:right;border-bottom:1px solid #e5e7eb">${money(num(x.qty || x.Qty || 1) * num(x.price ?? x['Sale Price (PKR)']))}</td>
           </tr>
         `).join('')}
       </tbody>
     </table>
     <div style="margin-left:auto;max-width:280px;font-size:13px">
-      <div style="display:flex;justify-content:space-between;padding:4px 0"><span>Subtotal</span><b>${money(total+disc)}</b></div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0"><span>Subtotal</span><b>${money(total + disc)}</b></div>
       <div style="display:flex;justify-content:space-between;padding:4px 0"><span>Discount</span><b>− ${money(disc)}</b></div>
       <div style="display:flex;justify-content:space-between;border-top:2px solid #172033;padding:8px 0;font-size:16px;font-weight:800"><span>Total</span><span>${money(total)}</span></div>
       <div style="display:flex;justify-content:space-between;padding:4px 0"><span>Paid Amount</span><b>${money(paid)}</b></div>
-      <div style="display:flex;justify-content:space-between;padding:4px 0"><span>Balance</span><b>${money(Math.max(0,total-paid))}</b></div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0"><span>Balance</span><b>${money(Math.max(0, total - paid))}</b></div>
     </div>
     <div style="margin-top:30px;padding-top:15px;border-top:1px solid #e5e7eb;text-align:center;color:#667085;font-size:12px">
       Thank you for your business!
@@ -699,65 +850,64 @@ function invoiceHTML(s){
   </div>`;
 }
 
-function printInvoice(s){
-  let a=document.getElementById('printArea');
-  if(!a)return;
-  a.innerHTML=invoiceHTML(s);
+function printInvoice(s) {
+  let a = document.getElementById('printArea');
+  if (!a) return;
+  a.innerHTML = invoiceHTML(s);
   a.classList.remove('hidden');
   window.print();
-  setTimeout(()=>a.classList.add('hidden'),700);
+  setTimeout(() => a.classList.add('hidden'), 700);
 }
 
-// SALES & INVOICES MANAGEMENT
-function renderSales(){
-  let sRows=document.getElementById('salesRows');
-  if(!sRows)return;
-  let q=(document.getElementById('salesSearch')?.value||'').toLowerCase();
-  let arr=(db.sales||[]).filter(s=>
-    String(s['Invoice No']||'').toLowerCase().includes(q) ||
-    String(s.Customer||'').toLowerCase().includes(q) ||
-    String(s.Product||'').toLowerCase().includes(q)
+function renderSales() {
+  let sRows = document.getElementById('salesRows');
+  if (!sRows) return;
+  let q = (document.getElementById('salesSearch')?.value || '').toLowerCase();
+  let arr = (db.sales || []).filter(s =>
+    String(s['Invoice No'] || '').toLowerCase().includes(q) ||
+    String(s.Customer || '').toLowerCase().includes(q) ||
+    String(s.Product || '').toLowerCase().includes(q)
   ).slice().reverse();
 
-  sRows.innerHTML=arr.map(s=>{
-    let idx=db.sales.indexOf(s);
-    let total=num(s['Total Sale']??s['Total Sale (PKR)'])||num(s['Sale Price (PKR)'])*num(s.Qty);
-    let paid=num(s['Customer Paid']??s.Paid);
-    let bal=num(s.Balance);
-    let status=s['Payment Status']||(bal>0?'Partial':'Paid');
+  sRows.innerHTML = arr.map(s => {
+    let idx = db.sales.indexOf(s);
+    let total = num(s['Total Sale'] ?? s['Total Sale (PKR)']) || num(s['Sale Price (PKR)']) * num(s.Qty);
+    let paid = num(s['Customer Paid'] ?? s.Paid);
+    let bal = num(s.Balance);
+    let status = s['Payment Status'] || (bal > 0 ? 'Partial' : 'Paid');
 
     return `<tr>
-      <td><b>${esc(s['Invoice No']||'AR-IMP')}</b></td>
+      <td><b>${esc(s['Invoice No'] || 'AR-IMP')}</b></td>
       <td>${esc(fmtDate(s.Date))}</td>
-      <td>${esc(s.Customer||'Cash')}</td>
-      <td>${esc(s.Qty||(s.Items?s.Items.length:1))}</td>
+      <td>${esc(s.Customer || 'Cash')}</td>
+      <td>${esc(s.Qty || (s.Items ? s.Items.length : 1))}</td>
       <td><b>${money(total)}</b></td>
       <td>${money(paid)}</td>
       <td>${money(bal)}</td>
-      <td><span class="pill ${status==='Unpaid'?'danger':status==='Partial'?'warn':''}">${esc(status)}</span></td>
+      <td><span class="pill ${status === 'Unpaid' ? 'danger' : status === 'Partial' ? 'warn' : ''}">${esc(status)}</span></td>
       <td class="actions-cell">
         <button class="secondary btn-sm" onclick="printInvoice(db.sales[${idx}])">Print</button>
         <button class="secondary btn-sm" onclick="showEditSaleModal(${idx})">Edit</button>
         <button class="danger btn-sm" onclick="deleteSale(${idx})">Delete</button>
       </td>
     </tr>`;
-  }).join('')||'<tr><td colspan="9" class="empty">No sales records found.</td></tr>';
+  }).join('') || '<tr><td colspan="9" class="empty">No sales records found.</td></tr>';
 }
 
-function showEditSaleModal(idx){
-  let s=db.sales[idx];
-  let total=num(s['Total Sale']??s['Total Sale (PKR)'])||num(s['Sale Price (PKR)'])*num(s.Qty);
-  let paid=num(s['Customer Paid']??s.Paid);
+function showEditSaleModal(idx) {
+  let s = db.sales[idx];
+  let total = num(s['Total Sale'] ?? s['Total Sale (PKR)']) || num(s['Sale Price (PKR)']) * num(s.Qty);
+  let paid = num(s['Customer Paid'] ?? s.Paid);
   
   modal('Edit Sale / Invoice', `
     <form onsubmit="saveEditSale(event, ${idx})">
       <div class="formrow">
-        <div class="field"><label>Invoice No</label><input name="invoice" value="${esc(s['Invoice No']||'')}" required></div>
+        <div class="field"><label>Invoice No</label><input name="invoice" value="${esc(s['Invoice No'] || '')}" required></div>
         <div class="field"><label>Date</label><input name="date" type="date" value="${fmtDate(s.Date)}"></div>
       </div>
       <div class="formrow">
-        <div class="field"><label>Customer Name</label><input name="customer" value="${esc(s.Customer||'')}" required></div>
-        <div class="field"><label>Phone</label><input name="phone" value="${esc(s.Phone||'')}"></div>
+        <div class="field"><label>Customer Name</label><input name="customer" value="${esc(s.Customer || '')}" required></div>
+        <div class="field"><label>Phone</label><input name="phone" value="${esc(s.Phone || '')}"></div>
       </div>
       <div class="formrow">
         <div class="field"><label>Total Sale Amount (PKR)</label><input name="total" type="number" min="0" value="${total}" required></div>
@@ -767,20 +917,20 @@ function showEditSaleModal(idx){
         <div class="field">
           <label>Payment Status</label>
           <select name="status">
-            <option ${s['Payment Status']==='Paid'?'selected':''}>Paid</option>
-            <option ${s['Payment Status']==='Partial'?'selected':''}>Partial</option>
-            <option ${s['Payment Status']==='Unpaid'?'selected':''}>Unpaid</option>
+            <option ${s['Payment Status'] === 'Paid' ? 'selected' : ''}>Paid</option>
+            <option ${s['Payment Status'] === 'Partial' ? 'selected' : ''}>Partial</option>
+            <option ${s['Payment Status'] === 'Unpaid' ? 'selected' : ''}>Unpaid</option>
           </select>
         </div>
         <div class="field">
           <label>Payment Method</label>
           <select name="method">
-            <option ${s['Payment Method']==='Cash'?'selected':''}>Cash</option>
-            <option ${s['Payment Method']==='Bank Transfer'?'selected':''}>Bank Transfer</option>
-            <option ${s['Payment Method']==='Easypaisa'?'selected':''}>Easypaisa</option>
-            <option ${s['Payment Method']==='JazzCash'?'selected':''}>JazzCash</option>
-            <option ${s['Payment Method']==='Card'?'selected':''}>Card</option>
-            <option ${s['Payment Method']==='Credit'?'selected':''}>Credit</option>
+            <option ${s['Payment Method'] === 'Cash' ? 'selected' : ''}>Cash</option>
+            <option ${s['Payment Method'] === 'Bank Transfer' ? 'selected' : ''}>Bank Transfer</option>
+            <option ${s['Payment Method'] === 'Easypaisa' ? 'selected' : ''}>Easypaisa</option>
+            <option ${s['Payment Method'] === 'JazzCash' ? 'selected' : ''}>JazzCash</option>
+            <option ${s['Payment Method'] === 'Card' ? 'selected' : ''}>Card</option>
+            <option ${s['Payment Method'] === 'Credit' ? 'selected' : ''}>Credit</option>
           </select>
         </div>
       </div>
@@ -789,22 +939,22 @@ function showEditSaleModal(idx){
   `);
 }
 
-function saveEditSale(e, idx){
+function saveEditSale(e, idx) {
   e.preventDefault();
-  let f=new FormData(e.target);
-  let total=num(f.get('total'));
-  let paid=num(f.get('paid'));
-  let s=db.sales[idx];
+  let f = new FormData(e.target);
+  let total = num(f.get('total'));
+  let paid = num(f.get('paid'));
+  let s = db.sales[idx];
 
-  s['Invoice No']=f.get('invoice');
-  s.Date=f.get('date');
-  s.Customer=f.get('customer');
-  s.Phone=f.get('phone');
-  s['Total Sale']=total;
-  s['Customer Paid']=paid;
-  s.Balance=Math.max(0, total-paid);
-  s['Payment Status']=f.get('status');
-  s['Payment Method']=f.get('method');
+  s['Invoice No'] = f.get('invoice');
+  s.Date = f.get('date');
+  s.Customer = f.get('customer');
+  s.Phone = f.get('phone');
+  s['Total Sale'] = total;
+  s['Customer Paid'] = paid;
+  s.Balance = Math.max(0, total - paid);
+  s['Payment Status'] = f.get('status');
+  s['Payment Method'] = f.get('method');
 
   save();
   closeModal();
@@ -812,44 +962,43 @@ function saveEditSale(e, idx){
   toast('Sale record updated successfully.');
 }
 
-function deleteSale(idx){
-  if(confirm('Are you sure you want to delete this sale record?')){
-    db.sales.splice(idx,1);
+function deleteSale(idx) {
+  if (confirm('Are you sure you want to delete this sale record?')) {
+    db.sales.splice(idx, 1);
     save();
     renderAll();
     toast('Sale record deleted.');
   }
 }
 
-// PRODUCTS & STOCK MANAGEMENT
-function renderInventory(){
-  let iRows=document.getElementById('inventoryRows');
-  if(!iRows)return;
-  let q=(document.getElementById('inventorySearch')?.value||'').toLowerCase();
-  let arr=(db.products||[]).filter(p=>(prodName(p)+' '+prodSKU(p)+' '+(p.Category||'')).toLowerCase().includes(q));
+function renderInventory() {
+  let iRows = document.getElementById('inventoryRows');
+  if (!iRows) return;
+  let q = (document.getElementById('inventorySearch')?.value || '').toLowerCase();
+  let arr = (db.products || []).filter(p => (prodName(p) + ' ' + prodSKU(p) + ' ' + (p.Category || '')).toLowerCase().includes(q));
 
-  iRows.innerHTML=arr.map(p=>{
-    let idx=db.products.indexOf(p);
-    let stock=productStock(p);
-    let isLow=stock<=num(p['Min Stock']);
+  iRows.innerHTML = arr.map(p => {
+    let idx = db.products.indexOf(p);
+    let stock = productStock(p);
+    let isLow = stock <= num(p['Min Stock']);
     return `<tr>
       <td>${esc(prodSKU(p))}</td>
       <td><b>${esc(prodName(p))}</b></td>
-      <td>${esc(p.Category||'—')}</td>
-      <td>${esc([p.Material,p.Color].filter(Boolean).join(' / ')||'—')}</td>
+      <td>${esc(p.Category || '—')}</td>
+      <td>${esc([p.Material, p.Color].filter(Boolean).join(' / ') || '—')}</td>
       <td>${money(p['Cost Price (PKR)'])}</td>
       <td><b>${money(prodPrice(p))}</b></td>
-      <td><span class="pill ${isLow?'warn':''}">${stock}</span></td>
+      <td><span class="pill ${isLow ? 'warn' : ''}">${stock}</span></td>
       <td class="actions-cell">
-        <button class="secondary btn-sm" onclick="addToCart('${esc(String(prodSKU(p))).replace(/'/g,"\\'")}');go('pos')">Sell</button>
+        <button class="secondary btn-sm" onclick="addToCart('${esc(String(prodSKU(p))).replace(/'/g, "\\'")}');go('pos')">Sell</button>
         <button class="secondary btn-sm" onclick="showEditProductModal(${idx})">Edit</button>
         <button class="danger btn-sm" onclick="deleteProduct(${idx})">Delete</button>
       </td>
     </tr>`;
-  }).join('')||'<tr><td colspan="8" class="empty">No products match search criteria.</td></tr>';
+  }).join('') || '<tr><td colspan="8" class="empty">No products match search criteria.</td></tr>';
 }
 
-function showProductModal(){
+function showProductModal() {
   modal('Add New Product', `
     <form onsubmit="addProduct(event)">
       <div class="field"><label>Product Name *</label><input name="name" required></div>
@@ -874,16 +1023,16 @@ function showProductModal(){
   `);
 }
 
-function addProduct(e){
+function addProduct(e) {
   e.preventDefault();
-  let f=new FormData(e.target);
-  let sku=f.get('sku')||('PROD-'+(Math.max(0,...(db.products||[]).map(p=>num(p.SKU)))+1));
-  if(db.products.some(p=>String(p.SKU)===String(sku))){
+  let f = new FormData(e.target);
+  let sku = f.get('sku') || ('PROD-' + (Math.max(0, ...(db.products || []).map(p => num(p.SKU))) + 1));
+  if (db.products.some(p => String(p.SKU) === String(sku))) {
     toast('Error: A product with this SKU already exists.');
     return;
   }
   db.products.push({
-    SKU: isNaN(sku)?sku:num(sku),
+    SKU: isNaN(sku) ? sku : num(sku),
     'Product Name': f.get('name'),
     Category: f.get('category'),
     Material: f.get('material'),
@@ -900,18 +1049,18 @@ function addProduct(e){
   toast('Product added to catalogue.');
 }
 
-function showEditProductModal(idx){
-  let p=db.products[idx];
+function showEditProductModal(idx) {
+  let p = db.products[idx];
   modal('Edit Product Details', `
     <form onsubmit="saveEditProduct(event, ${idx})">
       <div class="field"><label>Product Name *</label><input name="name" value="${esc(prodName(p))}" required></div>
       <div class="formrow">
         <div class="field"><label>SKU / Item Code</label><input name="sku" value="${esc(prodSKU(p))}" readonly style="background:#f3f4f6"></div>
-        <div class="field"><label>Category</label><input name="category" value="${esc(p.Category||'')}"></div>
+        <div class="field"><label>Category</label><input name="category" value="${esc(p.Category || '')}"></div>
       </div>
       <div class="formrow">
-        <div class="field"><label>Material</label><input name="material" value="${esc(p.Material||'')}"></div>
-        <div class="field"><label>Color</label><input name="color" value="${esc(p.Color||'')}"></div>
+        <div class="field"><label>Material</label><input name="material" value="${esc(p.Material || '')}"></div>
+        <div class="field"><label>Color</label><input name="color" value="${esc(p.Color || '')}"></div>
       </div>
       <div class="formrow">
         <div class="field"><label>Cost Price (PKR)</label><input name="cost" type="number" min="0" value="${num(p['Cost Price (PKR)'])}"></div>
@@ -926,18 +1075,18 @@ function showEditProductModal(idx){
   `);
 }
 
-function saveEditProduct(e, idx){
+function saveEditProduct(e, idx) {
   e.preventDefault();
-  let f=new FormData(e.target);
-  let p=db.products[idx];
-  p['Product Name']=f.get('name');
-  p.Category=f.get('category');
-  p.Material=f.get('material');
-  p.Color=f.get('color');
-  p['Cost Price (PKR)']=num(f.get('cost'));
-  p['Sale Price (PKR)']=num(f.get('price'));
-  p['Opening Stock']=num(f.get('stock'));
-  p['Min Stock']=num(f.get('min'));
+  let f = new FormData(e.target);
+  let p = db.products[idx];
+  p['Product Name'] = f.get('name');
+  p.Category = f.get('category');
+  p.Material = f.get('material');
+  p.Color = f.get('color');
+  p['Cost Price (PKR)'] = num(f.get('cost'));
+  p['Sale Price (PKR)'] = num(f.get('price'));
+  p['Opening Stock'] = num(f.get('stock'));
+  p['Min Stock'] = num(f.get('min'));
 
   save();
   closeModal();
@@ -945,49 +1094,48 @@ function saveEditProduct(e, idx){
   toast('Product updated.');
 }
 
-function deleteProduct(idx){
-  if(confirm('Delete this product from inventory catalogue?')){
-    db.products.splice(idx,1);
+function deleteProduct(idx) {
+  if (confirm('Delete this product from inventory catalogue?')) {
+    db.products.splice(idx, 1);
     save();
     renderAll();
     toast('Product removed.');
   }
 }
 
-// STOCK IN / PURCHASES MANAGEMENT
-function renderPurchases(){
-  let pRows=document.getElementById('purchaseRows');
-  if(!pRows)return;
-  let q=(document.getElementById('purchaseSearch')?.value||'').toLowerCase();
-  let arr=(db.purchases||[]).filter(p=>[p.Products,p.Supplier,p['Purchase No']].join(' ').toLowerCase().includes(q)).slice().reverse();
+function renderPurchases() {
+  let pRows = document.getElementById('purchaseRows');
+  if (!pRows) return;
+  let q = (document.getElementById('purchaseSearch')?.value || '').toLowerCase();
+  let arr = (db.purchases || []).filter(p => [p.Products, p.Supplier, p['Purchase No']].join(' ').toLowerCase().includes(q)).slice().reverse();
 
-  pRows.innerHTML=arr.map(p=>{
-    let idx=db.purchases.indexOf(p);
-    let total=num(p['Total Cost'])||num(p.Qty)*num(p['Cost Price (PKR)']);
+  pRows.innerHTML = arr.map(p => {
+    let idx = db.purchases.indexOf(p);
+    let total = num(p['Total Cost']) || num(p.Qty) * num(p['Cost Price (PKR)']);
     return `<tr>
       <td>${esc(fmtDate(p.Date))}</td>
-      <td>${esc(p['Purchase No']||'—')}</td>
-      <td>${esc(p.Products||'—')}</td>
-      <td>${esc(p.Supplier||'—')}</td>
-      <td>${esc(p.Qty||0)}</td>
+      <td>${esc(p['Purchase No'] || '—')}</td>
+      <td>${esc(p.Products || '—')}</td>
+      <td>${esc(p.Supplier || '—')}</td>
+      <td>${esc(p.Qty || 0)}</td>
       <td>${money(p['Cost Price (PKR)'])}</td>
       <td><b>${money(total)}</b></td>
-      <td>${esc(p.Payment||'—')}</td>
+      <td>${esc(p.Payment || '—')}</td>
       <td class="actions-cell">
         <button class="secondary btn-sm" onclick="showEditPurchaseModal(${idx})">Edit</button>
         <button class="danger btn-sm" onclick="deletePurchase(${idx})">Delete</button>
       </td>
     </tr>`;
-  }).join('')||'<tr><td colspan="9" class="empty">No purchase entries recorded.</td></tr>';
+  }).join('') || '<tr><td colspan="9" class="empty">No purchase entries recorded.</td></tr>';
 }
 
-function showPurchaseModal(){
+function showPurchaseModal() {
   modal('Record Stock Purchase', `
     <form onsubmit="addPurchase(event)">
       <div class="field">
         <label>Product *</label>
         <select name="sku" required>
-          ${(db.products||[]).map(p=>`<option value="${esc(p.SKU)}">${esc(prodName(p))} (SKU: ${esc(p.SKU)})</option>`).join('')}
+          ${(db.products || []).map(p => `<option value="${esc(p.SKU)}">${esc(prodName(p))} (SKU: ${esc(p.SKU)})</option>`).join('')}
         </select>
       </div>
       <div class="formrow">
@@ -1011,19 +1159,19 @@ function showPurchaseModal(){
   `);
 }
 
-function addPurchase(e){
+function addPurchase(e) {
   e.preventDefault();
-  let f=new FormData(e.target);
-  let p=(db.products||[]).find(p=>String(p.SKU)===f.get('sku'));
+  let f = new FormData(e.target);
+  let p = (db.products || []).find(p => String(p.SKU) === f.get('sku'));
   db.purchases.push({
     Date: today(),
-    'Purchase No': 'PUR-'+Date.now().toString().slice(-6),
-    SKU: p?p.SKU:f.get('sku'),
-    Products: p?prodName(p):'Purchased Item',
+    'Purchase No': 'PUR-' + Date.now().toString().slice(-6),
+    SKU: p ? p.SKU : f.get('sku'),
+    Products: p ? prodName(p) : 'Purchased Item',
     Supplier: f.get('supplier'),
     Qty: num(f.get('qty')),
     'Cost Price (PKR)': num(f.get('cost')),
-    'Total Cost': num(f.get('qty'))*num(f.get('cost')),
+    'Total Cost': num(f.get('qty')) * num(f.get('cost')),
     Payment: f.get('payment')
   });
   save();
@@ -1032,28 +1180,28 @@ function addPurchase(e){
   toast('Stock purchase recorded.');
 }
 
-function showEditPurchaseModal(idx){
-  let p=db.purchases[idx];
+function showEditPurchaseModal(idx) {
+  let p = db.purchases[idx];
   modal('Edit Purchase Entry', `
     <form onsubmit="saveEditPurchase(event, ${idx})">
       <div class="formrow">
         <div class="field"><label>Date</label><input name="date" type="date" value="${fmtDate(p.Date)}"></div>
-        <div class="field"><label>Purchase No</label><input name="no" value="${esc(p['Purchase No']||'')}"></div>
+        <div class="field"><label>Purchase No</label><input name="no" value="${esc(p['Purchase No'] || '')}"></div>
       </div>
-      <div class="field"><label>Product Name</label><input name="product" value="${esc(p.Products||'')}" required></div>
+      <div class="field"><label>Product Name</label><input name="product" value="${esc(p.Products || '')}" required></div>
       <div class="formrow">
         <div class="field"><label>Quantity</label><input name="qty" type="number" min="1" value="${num(p.Qty)}" required></div>
         <div class="field"><label>Unit Cost Price (PKR)</label><input name="cost" type="number" min="0" value="${num(p['Cost Price (PKR)'])}" required></div>
       </div>
       <div class="formrow">
-        <div class="field"><label>Supplier</label><input name="supplier" value="${esc(p.Supplier||'')}"></div>
+        <div class="field"><label>Supplier</label><input name="supplier" value="${esc(p.Supplier || '')}"></div>
         <div class="field">
           <label>Payment Method</label>
           <select name="payment">
-            <option ${p.Payment==='Cash'?'selected':''}>Cash</option>
-            <option ${p.Payment==='Bank Transfer'?'selected':''}>Bank Transfer</option>
-            <option ${p.Payment==='Credit'?'selected':''}>Credit</option>
-            <option ${p.Payment==='Easypaisa'?'selected':''}>Easypaisa</option>
+            <option ${p.Payment === 'Cash' ? 'selected' : ''}>Cash</option>
+            <option ${p.Payment === 'Bank Transfer' ? 'selected' : ''}>Bank Transfer</option>
+            <option ${p.Payment === 'Credit' ? 'selected' : ''}>Credit</option>
+            <option ${p.Payment === 'Easypaisa' ? 'selected' : ''}>Easypaisa</option>
           </select>
         </div>
       </div>
@@ -1062,18 +1210,18 @@ function showEditPurchaseModal(idx){
   `);
 }
 
-function saveEditPurchase(e, idx){
+function saveEditPurchase(e, idx) {
   e.preventDefault();
-  let f=new FormData(e.target);
-  let pur=db.purchases[idx];
-  pur.Date=f.get('date');
-  pur['Purchase No']=f.get('no');
-  pur.Products=f.get('product');
-  pur.Qty=num(f.get('qty'));
-  pur['Cost Price (PKR)']=num(f.get('cost'));
-  pur['Total Cost']=num(f.get('qty'))*num(f.get('cost'));
-  pur.Supplier=f.get('supplier');
-  pur.Payment=f.get('payment');
+  let f = new FormData(e.target);
+  let pur = db.purchases[idx];
+  pur.Date = f.get('date');
+  pur['Purchase No'] = f.get('no');
+  pur.Products = f.get('product');
+  pur.Qty = num(f.get('qty'));
+  pur['Cost Price (PKR)'] = num(f.get('cost'));
+  pur['Total Cost'] = num(f.get('qty')) * num(f.get('cost'));
+  pur.Supplier = f.get('supplier');
+  pur.Payment = f.get('payment');
 
   save();
   closeModal();
@@ -1081,40 +1229,39 @@ function saveEditPurchase(e, idx){
   toast('Purchase record updated.');
 }
 
-function deletePurchase(idx){
-  if(confirm('Delete this purchase record?')){
-    db.purchases.splice(idx,1);
+function deletePurchase(idx) {
+  if (confirm('Delete this purchase record?')) {
+    db.purchases.splice(idx, 1);
     save();
     renderAll();
     toast('Purchase record deleted.');
   }
 }
 
-// EXPENSES MANAGEMENT
-function renderExpenses(){
-  let eMetric=document.getElementById('expenseMetric');
-  let eRows=document.getElementById('expenseRows');
-  if(!eRows)return;
-  let total=sum(db.expenses,x=>x['Amount (PKR)']);
-  if(eMetric) eMetric.innerHTML=metricsCard('Total Expenses',money(total),'↗',(db.expenses||[]).length+' entries');
+function renderExpenses() {
+  let eMetric = document.getElementById('expenseMetric');
+  let eRows = document.getElementById('expenseRows');
+  if (!eRows) return;
+  let total = sum(db.expenses, x => x['Amount (PKR)']);
+  if (eMetric) eMetric.innerHTML = metricsCard('Total Expenses', money(total), '↗', (db.expenses || []).length + ' entries');
 
-  eRows.innerHTML=(db.expenses||[]).map((x,idx)=>`
+  eRows.innerHTML = (db.expenses || []).map((x, idx) => `
     <tr>
       <td>${esc(fmtDate(x.Date))}</td>
-      <td><b>${esc(x.Expense||'—')}</b></td>
-      <td>${esc(x.Category||'—')}</td>
-      <td>${esc(x['Paid To']||'—')}</td>
+      <td><b>${esc(x.Expense || '—')}</b></td>
+      <td>${esc(x.Category || '—')}</td>
+      <td>${esc(x['Paid To'] || '—')}</td>
       <td><b>${money(x['Amount (PKR)'])}</b></td>
-      <td>${esc(x['Payment Method']||'—')}</td>
+      <td>${esc(x['Payment Method'] || '—')}</td>
       <td class="actions-cell">
         <button class="secondary btn-sm" onclick="showEditExpenseModal(${idx})">Edit</button>
         <button class="danger btn-sm" onclick="deleteExpense(${idx})">Delete</button>
       </td>
     </tr>
-  `).join('')||'<tr><td colspan="7" class="empty">No expenses recorded yet.</td></tr>';
+  `).join('') || '<tr><td colspan="7" class="empty">No expenses recorded yet.</td></tr>';
 }
 
-function showExpenseModal(){
+function showExpenseModal() {
   modal('Add Expense Record', `
     <form onsubmit="addExpense(event)">
       <div class="formrow">
@@ -1153,9 +1300,9 @@ function showExpenseModal(){
   `);
 }
 
-function addExpense(e){
+function addExpense(e) {
   e.preventDefault();
-  let f=new FormData(e.target);
+  let f = new FormData(e.target);
   db.expenses.push({
     Date: f.get('date'),
     Expense: f.get('expense'),
@@ -1170,8 +1317,8 @@ function addExpense(e){
   toast('Expense recorded.');
 }
 
-function showEditExpenseModal(idx){
-  let x=db.expenses[idx];
+function showEditExpenseModal(idx) {
+  let x = db.expenses[idx];
   modal('Edit Expense', `
     <form onsubmit="saveEditExpense(event, ${idx})">
       <div class="formrow">
@@ -1179,29 +1326,29 @@ function showEditExpenseModal(idx){
         <div class="field"><label>Amount (PKR) *</label><input name="amount" type="number" min="0" value="${num(x['Amount (PKR)'])}" required></div>
       </div>
       <div class="formrow">
-        <div class="field"><label>Expense Description *</label><input name="expense" value="${esc(x.Expense||'')}" required></div>
+        <div class="field"><label>Expense Description *</label><input name="expense" value="${esc(x.Expense || '')}" required></div>
         <div class="field">
           <label>Category</label>
           <select name="category">
-            <option ${x.Category==='General'?'selected':''}>General</option>
-            <option ${x.Category==='Rent'?'selected':''}>Rent</option>
-            <option ${x.Category==='Electricity'?'selected':''}>Electricity</option>
-            <option ${x.Category==='Salaries'?'selected':''}>Salaries</option>
-            <option ${x.Category==='Transport'?'selected':''}>Transport</option>
-            <option ${x.Category==='Personal'?'selected':''}>Personal</option>
-            <option ${x.Category==='Supplies'?'selected':''}>Supplies</option>
+            <option ${x.Category === 'General' ? 'selected' : ''}>General</option>
+            <option ${x.Category === 'Rent' ? 'selected' : ''}>Rent</option>
+            <option ${x.Category === 'Electricity' ? 'selected' : ''}>Electricity</option>
+            <option ${x.Category === 'Salaries' ? 'selected' : ''}>Salaries</option>
+            <option ${x.Category === 'Transport' ? 'selected' : ''}>Transport</option>
+            <option ${x.Category === 'Personal' ? 'selected' : ''}>Personal</option>
+            <option ${x.Category === 'Supplies' ? 'selected' : ''}>Supplies</option>
           </select>
         </div>
       </div>
       <div class="formrow">
-        <div class="field"><label>Paid To</label><input name="to" value="${esc(x['Paid To']||'')}"></div>
+        <div class="field"><label>Paid To</label><input name="to" value="${esc(x['Paid To'] || '')}"></div>
         <div class="field">
           <label>Payment Method</label>
           <select name="method">
-            <option ${x['Payment Method']==='Cash'?'selected':''}>Cash</option>
-            <option ${x['Payment Method']==='Bank Transfer'?'selected':''}>Bank Transfer</option>
-            <option ${x['Payment Method']==='Easypaisa'?'selected':''}>Easypaisa</option>
-            <option ${x['Payment Method']==='JazzCash'?'selected':''}>JazzCash</option>
+            <option ${x['Payment Method'] === 'Cash' ? 'selected' : ''}>Cash</option>
+            <option ${x['Payment Method'] === 'Bank Transfer' ? 'selected' : ''}>Bank Transfer</option>
+            <option ${x['Payment Method'] === 'Easypaisa' ? 'selected' : ''}>Easypaisa</option>
+            <option ${x['Payment Method'] === 'JazzCash' ? 'selected' : ''}>JazzCash</option>
           </select>
         </div>
       </div>
@@ -1210,16 +1357,16 @@ function showEditExpenseModal(idx){
   `);
 }
 
-function saveEditExpense(e, idx){
+function saveEditExpense(e, idx) {
   e.preventDefault();
-  let f=new FormData(e.target);
-  let x=db.expenses[idx];
-  x.Date=f.get('date');
-  x['Amount (PKR)']=num(f.get('amount'));
-  x.Expense=f.get('expense');
-  x.Category=f.get('category');
-  x['Paid To']=f.get('to');
-  x['Payment Method']=f.get('method');
+  let f = new FormData(e.target);
+  let x = db.expenses[idx];
+  x.Date = f.get('date');
+  x['Amount (PKR)'] = num(f.get('amount'));
+  x.Expense = f.get('expense');
+  x.Category = f.get('category');
+  x['Paid To'] = f.get('to');
+  x['Payment Method'] = f.get('method');
 
   save();
   closeModal();
@@ -1227,38 +1374,37 @@ function saveEditExpense(e, idx){
   toast('Expense record updated.');
 }
 
-function deleteExpense(idx){
-  if(confirm('Delete this expense entry?')){
-    db.expenses.splice(idx,1);
+function deleteExpense(idx) {
+  if (confirm('Delete this expense entry?')) {
+    db.expenses.splice(idx, 1);
     save();
     renderAll();
     toast('Expense record deleted.');
   }
 }
 
-// CUSTOM ORDERS MANAGEMENT
-function renderCustom(){
-  let cRows=document.getElementById('customRows');
-  if(!cRows)return;
-  cRows.innerHTML=(db.customOrders||[]).map((x,idx)=>`
+function renderCustom() {
+  let cRows = document.getElementById('customRows');
+  if (!cRows) return;
+  cRows.innerHTML = (db.customOrders || []).map((x, idx) => `
     <tr>
       <td><b>${esc(x['Order ID'])}</b></td>
       <td>${esc(fmtDate(x.Date))}</td>
       <td>${esc(x.Customer)}</td>
-      <td>${esc(x.Phone||'—')}</td>
+      <td>${esc(x.Phone || '—')}</td>
       <td>${money(x['Order Total'])}</td>
-      <td>${money(x['Total Received']||x['Advance Received'])}</td>
+      <td>${money(x['Total Received'] || x['Advance Received'])}</td>
       <td><b>${money(x.Balance)}</b></td>
-      <td><span class="pill ${x['Order Status']==='Delivered'?'':x['Order Status']==='Processing'?'blue':'warn'}">${esc(x['Order Status']||'Pending')}</span></td>
+      <td><span class="pill ${x['Order Status'] === 'Delivered' ? '' : x['Order Status'] === 'Processing' ? 'blue' : 'warn'}">${esc(x['Order Status'] || 'Pending')}</span></td>
       <td class="actions-cell">
         <button class="secondary btn-sm" onclick="showEditCustomModal(${idx})">Edit</button>
         <button class="danger btn-sm" onclick="deleteCustom(${idx})">Delete</button>
       </td>
     </tr>
-  `).join('')||'<tr><td colspan="9" class="empty">No custom orders found. Create one to start tracking customization orders.</td></tr>';
+  `).join('') || '<tr><td colspan="9" class="empty">No custom orders found. Create one to start tracking customization orders.</td></tr>';
 }
 
-function showCustomModal(){
+function showCustomModal() {
   modal('New Custom Order', `
     <form onsubmit="addCustom(event)">
       <div class="formrow">
@@ -1288,20 +1434,20 @@ function showCustomModal(){
   `);
 }
 
-function addCustom(e){
+function addCustom(e) {
   e.preventDefault();
-  let f=new FormData(e.target);
-  let total=num(f.get('total'));
-  let advance=num(f.get('advance'));
+  let f = new FormData(e.target);
+  let total = num(f.get('total'));
+  let advance = num(f.get('advance'));
   db.customOrders.push({
-    'Order ID': f.get('id')||('CUS-'+Date.now().toString().slice(-6)),
+    'Order ID': f.get('id') || ('CUS-' + Date.now().toString().slice(-6)),
     Date: f.get('date'),
     Customer: f.get('customer'),
     Phone: f.get('phone'),
     'Order Total': total,
     'Advance Received': advance,
     'Total Received': advance,
-    Balance: Math.max(0, total-advance),
+    Balance: Math.max(0, total - advance),
     'Order Status': f.get('status')
   });
   save();
@@ -1310,10 +1456,10 @@ function addCustom(e){
   toast('Custom order created.');
 }
 
-function showEditCustomModal(idx){
-  let x=db.customOrders[idx];
-  let total=num(x['Order Total']);
-  let received=num(x['Total Received']||x['Advance Received']);
+function showEditCustomModal(idx) {
+  let x = db.customOrders[idx];
+  let total = num(x['Order Total']);
+  let received = num(x['Total Received'] || x['Advance Received']);
   modal('Edit Custom Order', `
     <form onsubmit="saveEditCustom(event, ${idx})">
       <div class="formrow">
@@ -1322,7 +1468,7 @@ function showEditCustomModal(idx){
       </div>
       <div class="formrow">
         <div class="field"><label>Customer Name *</label><input name="customer" value="${esc(x.Customer)}" required></div>
-        <div class="field"><label>Phone</label><input name="phone" value="${esc(x.Phone||'')}"></div>
+        <div class="field"><label>Phone</label><input name="phone" value="${esc(x.Phone || '')}"></div>
       </div>
       <div class="formrow">
         <div class="field"><label>Order Total (PKR) *</label><input name="total" type="number" min="0" value="${total}" required></div>
@@ -1331,11 +1477,11 @@ function showEditCustomModal(idx){
       <div class="field">
         <label>Status</label>
         <select name="status">
-          <option ${x['Order Status']==='Pending'?'selected':''}>Pending</option>
-          <option ${x['Order Status']==='Processing'?'selected':''}>Processing</option>
-          <option ${x['Order Status']==='Ready'?'selected':''}>Ready</option>
-          <option ${x['Order Status']==='Shipped'?'selected':''}>Shipped</option>
-          <option ${x['Order Status']==='Delivered'?'selected':''}>Delivered</option>
+          <option ${x['Order Status'] === 'Pending' ? 'selected' : ''}>Pending</option>
+          <option ${x['Order Status'] === 'Processing' ? 'selected' : ''}>Processing</option>
+          <option ${x['Order Status'] === 'Ready' ? 'selected' : ''}>Ready</option>
+          <option ${x['Order Status'] === 'Shipped' ? 'selected' : ''}>Shipped</option>
+          <option ${x['Order Status'] === 'Delivered' ? 'selected' : ''}>Delivered</option>
         </select>
       </div>
       <button class="primary" style="width:100%;margin-top:10px">Save Changes</button>
@@ -1343,21 +1489,21 @@ function showEditCustomModal(idx){
   `);
 }
 
-function saveEditCustom(e, idx){
+function saveEditCustom(e, idx) {
   e.preventDefault();
-  let f=new FormData(e.target);
-  let total=num(f.get('total'));
-  let received=num(f.get('received'));
-  let x=db.customOrders[idx];
+  let f = new FormData(e.target);
+  let total = num(f.get('total'));
+  let received = num(f.get('received'));
+  let x = db.customOrders[idx];
 
-  x.Date=f.get('date');
-  x.Customer=f.get('customer');
-  x.Phone=f.get('phone');
-  x['Order Total']=total;
-  x['Total Received']=received;
-  x['Advance Received']=received;
-  x.Balance=Math.max(0, total-received);
-  x['Order Status']=f.get('status');
+  x.Date = f.get('date');
+  x.Customer = f.get('customer');
+  x.Phone = f.get('phone');
+  x['Order Total'] = total;
+  x['Total Received'] = received;
+  x['Advance Received'] = received;
+  x.Balance = Math.max(0, total - received);
+  x['Order Status'] = f.get('status');
 
   save();
   closeModal();
@@ -1365,30 +1511,29 @@ function saveEditCustom(e, idx){
   toast('Custom order updated.');
 }
 
-function deleteCustom(idx){
-  if(confirm('Delete this custom order record?')){
-    db.customOrders.splice(idx,1);
+function deleteCustom(idx) {
+  if (confirm('Delete this custom order record?')) {
+    db.customOrders.splice(idx, 1);
     save();
     renderAll();
     toast('Custom order deleted.');
   }
 }
 
-// REPORTS SCREEN
-function renderReports(){
-  let rMetrics=document.getElementById('reportMetrics');
-  let lowRows=document.getElementById('lowStockRows');
-  if(!lowRows)return;
-  let lows=(db.products||[]).filter(p=>productStock(p)<=num(p['Min Stock']));
-  if(rMetrics){
-    rMetrics.innerHTML=
-      metricsCard('Catalogue Size',(db.products||[]).length,'◈','Product items')+
-      metricsCard('Low Stock Items',lows.length,'⚠','Needs reorder')+
-      metricsCard('Recorded Invoices',(db.sales||[]).length,'▤','Sales total')+
-      metricsCard('Custom Orders',(db.customOrders||[]).length,'✦','Customization tasks');
+function renderReports() {
+  let rMetrics = document.getElementById('reportMetrics');
+  let lowRows = document.getElementById('lowStockRows');
+  if (!lowRows) return;
+  let lows = (db.products || []).filter(p => productStock(p) <= num(p['Min Stock']));
+  if (rMetrics) {
+    rMetrics.innerHTML =
+      metricsCard('Catalogue Size', (db.products || []).length, '◈', 'Product items') +
+      metricsCard('Low Stock Items', lows.length, '⚠', 'Needs reorder') +
+      metricsCard('Recorded Invoices', (db.sales || []).length, '▤', 'Sales total') +
+      metricsCard('Custom Orders', (db.customOrders || []).length, '✦', 'Customization tasks');
   }
 
-  lowRows.innerHTML=lows.map(p=>`
+  lowRows.innerHTML = lows.map(p => `
     <tr>
       <td>${esc(prodSKU(p))}</td>
       <td><b>${esc(prodName(p))}</b></td>
@@ -1396,11 +1541,11 @@ function renderReports(){
       <td>${num(p['Min Stock'])}</td>
       <td><span class="pill warn">Low Stock</span></td>
     </tr>
-  `).join('')||'<tr><td colspan="5" class="empty">All inventory levels are optimal.</td></tr>';
+  `).join('') || '<tr><td colspan="5" class="empty">All inventory levels are optimal.</td></tr>';
 }
 
-function renderAll(){
-  try{
+function renderAll() {
+  try {
     renderDashboard();
     renderProductPicker();
     renderCart();
@@ -1410,23 +1555,23 @@ function renderAll(){
     renderExpenses();
     renderCustom();
     renderReports();
-  }catch(err){
+  } catch (err) {
     console.error(err);
   }
 }
 
-function toast(t){
-  let el=document.getElementById('toastRoot');
-  if(el){
-    el.innerHTML=`<div class="toast">${esc(t)}</div>`;
-    setTimeout(()=>el.innerHTML='',3200);
+function toast(t) {
+  let el = document.getElementById('toastRoot');
+  if (el) {
+    el.innerHTML = `<div class="toast">${esc(t)}</div>`;
+    setTimeout(() => el.innerHTML = '', 3200);
   }
 }
 
-function modal(title,body){
-  let root=document.getElementById('modalRoot');
-  if(root){
-    root.innerHTML=
+function modal(title, body) {
+  let root = document.getElementById('modalRoot');
+  if (root) {
+    root.innerHTML =
       `<div class="modalbg" onclick="if(event.target===this)closeModal()">
         <div class="modal">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
@@ -1439,44 +1584,45 @@ function modal(title,body){
   }
 }
 
-function closeModal(){
-  let root=document.getElementById('modalRoot');
-  if(root) root.innerHTML='';
+function closeModal() {
+  let root = document.getElementById('modalRoot');
+  if (root) root.innerHTML = '';
 }
 
-function exportBackup(){
-  let blob=new Blob([JSON.stringify({app:'AR Customized POS',version:3,exportedAt:new Date().toISOString(),data:db},null,2)],{type:'application/json'});
-  let a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='AR-Customized-POS-backup.json';
+function exportBackup() {
+  let blob = new Blob([JSON.stringify({ app: 'AR Customized POS', version: 4, exportedAt: new Date().toISOString(), data: db }, null, 2)], { type: 'application/json' });
+  let a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'AR-Customized-POS-backup.json';
   a.click();
   URL.revokeObjectURL(a.href);
   toast('Data backup downloaded.');
 }
 
-function restoreBackup(e){
-  let f=e.target.files[0];
-  if(!f)return;
-  let r=new FileReader();
-  r.onload=()=>{
-    try{
-      let x=JSON.parse(r.result);
-      let d=x.data||x;
-      if(!d.products||!d.sales) throw new Error();
-      if(!confirm('Restore data backup and update browser records?')) return;
-      db=d;
+function restoreBackup(e) {
+  let f = e.target.files[0];
+  if (!f) return;
+  let r = new FileReader();
+  r.onload = () => {
+    try {
+      let x = JSON.parse(r.result);
+      let d = x.data || x;
+      if (!d.products || !d.sales) throw new Error();
+      if (!confirm('Restore data backup and update records?')) return;
+      db = d;
       save();
       renderAll();
       toast('Data backup restored successfully.');
-    }catch(err){
+    } catch (err) {
       toast('Invalid backup file.');
     }
   };
   r.readAsText(f);
 }
 
-// Initial render call
+// Initial render & background cloud load attempt
 renderAll();
+initCloudSync();
 </script>
 </body>
 </html>
