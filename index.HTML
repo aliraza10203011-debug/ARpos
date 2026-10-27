@@ -4,8 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AR Customized | POS & Billing</title>
-<!-- Supabase JS Library -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--navy:#111827;--blue:#315efb;--blue-hover:#244adb;--bg:#f4f6fb;--muted:#6b7280;--line:#e5e7eb;--green:#0f9f6e;--orange:#f59e0b;--red:#ef4444}
 *{box-sizing:border-box}
@@ -131,7 +129,7 @@ tbody tr:last-child td{border-bottom:0}
     <div class="sidefoot">
       <b style="color:#e5e7eb">AR CUSTOMIZED</b><br>
       Full Editable Management<br>
-      <span id="dbstatus">Connecting Cloud DB...</span>
+      <span id="dbstatus">Local workspace ready</span>
     </div>
   </aside>
 
@@ -398,73 +396,36 @@ tbody tr:last-child td{border-bottom:0}
 <div id="printArea" class="hidden"></div>
 
 <script>
-// Supabase Client Setup
-const SUPABASE_URL = "https://zhehtqefcolgsxfczrjl.supabase.co";
-const SUPABASE_KEY = "sb_publishable_nLTSQAHzjmwi2sp8cBenzg_3_R_MV_t";
-const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
 const original={"products":[{"SKU":1,"Product Name":"Tempreture bottle","Category":"high","Material":"Metal","Color":"White and Blue","Cost Price (PKR)":600,"Sale Price (PKR)":1200,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":2,"Product Name":"Tempreture bottle","Category":"low","Material":"Metal","Color":"Black And Pink","Cost Price (PKR)":800,"Sale Price (PKR)":1500,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":3,"Product Name":"Cola","Material":"Metal","Color":"Black","Cost Price (PKR)":950,"Sale Price (PKR)":1500,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":4,"Product Name":"Matka","Material":"Metal","Color":"Black","Cost Price (PKR)":950,"Sale Price (PKR)":1500,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":5,"Product Name":"Wood","Material":"Metal","Color":"Black","Cost Price (PKR)":1150,"Sale Price (PKR)":1600,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":6,"Product Name":"Pen","Material":"Metal","Color":"Colours","Cost Price (PKR)":100,"Sale Price (PKR)":200,"Opening Stock":26,"Min Stock":5,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":7,"Product Name":"Pen","Material":"Metal","Color":"Light","Cost Price (PKR)":120,"Sale Price (PKR)":200,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":8,"Product Name":"Pen Diamond","Material":"Metal","Color":"colours","Cost Price (PKR)":150,"Sale Price (PKR)":200,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":9,"Product Name":"Pencil Diamond","Material":"Metal","Color":"Black","Cost Price (PKR)":150,"Sale Price (PKR)":200,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":10,"Product Name":"Pen","Material":"Metal","Color":"Black","Cost Price (PKR)":100,"Sale Price (PKR)":150,"Opening Stock":90,"Min Stock":10,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":11,"Product Name":"KeyChain","Category":"Normal","Material":"Metal","Color":"Colours","Cost Price (PKR)":80,"Sale Price (PKR)":150,"Opening Stock":10,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":12,"Product Name":"KeyChain","Category":"High","Material":"Metal","Color":"Black","Cost Price (PKR)":200,"Sale Price (PKR)":400,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":13,"Product Name":"KeyChain","Category":"High","Material":"Metal","Color":"Black","Cost Price (PKR)":220,"Sale Price (PKR)":400,"Opening Stock":4,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":14,"Product Name":"KeyChain","Category":"High","Material":"Metal","Color":"Black","Cost Price (PKR)":250,"Sale Price (PKR)":350,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":15,"Product Name":"KeyChain","Category":"High","Material":"Metal","Color":"Silver/Black","Cost Price (PKR)":260,"Sale Price (PKR)":400,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":16,"Product Name":"Pen Box","Category":"Local","Material":"carton","Color":"Black","Cost Price (PKR)":5,"Sale Price (PKR)":10,"Opening Stock":50,"Min Stock":10,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":17,"Product Name":"Pen Box","Category":"Normal","Material":"carton","Color":"Black","Cost Price (PKR)":20,"Sale Price (PKR)":30,"Opening Stock":12,"Min Stock":5,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":18,"Product Name":"KeyChain set box","Category":"Normal","Material":"carton","Color":"Black","Cost Price (PKR)":35,"Sale Price (PKR)":50,"Opening Stock":6,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":19,"Product Name":"Ring And Challa","Size":"16 to 20","Material":"Metal","Color":"Golden","Cost Price (PKR)":100,"Sale Price (PKR)":200,"Opening Stock":10,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":20,"Product Name":"Ring And Challa","Size":"17 to 20","Material":"Metal","Color":"Silver","Cost Price (PKR)":100,"Sale Price (PKR)":200,"Opening Stock":11,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":21,"Product Name":"Ring And Challa","Size":"18 to 20","Material":"Metal","Color":"Black","Cost Price (PKR)":100,"Sale Price (PKR)":200,"Opening Stock":24,"Min Stock":5,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":22,"Product Name":"Engraving","Material":"Metal","Color":"Black/Silver","Cost Price (PKR)":50,"Sale Price (PKR)":100,"Opening Stock":0,"Min Stock":0,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":23,"Product Name":"Royal Breclet","Material":"Metal","Color":"Mix Colour","Cost Price (PKR)":800,"Sale Price (PKR)":1200,"Opening Stock":6,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":24,"Product Name":"Lather Breclet","Material":"Metal","Color":"G/S/B","Cost Price (PKR)":400,"Sale Price (PKR)":700,"Opening Stock":3,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":25,"Product Name":"Lather Breclet Twic","Material":"Metal","Color":"G/S/B","Cost Price (PKR)":300,"Sale Price (PKR)":600,"Opening Stock":4,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":26,"Product Name":"Lather Breclet thin","Material":"Metal","Color":"Golden","Cost Price (PKR)":200,"Sale Price (PKR)":400,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":27,"Product Name":"Metal Breclet","Material":"Metal","Color":"G/S/B","Cost Price (PKR)":150,"Sale Price (PKR)":300,"Opening Stock":6,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":28,"Product Name":"Metal Breclet","Category":"High","Material":"Metal","Color":"Black","Cost Price (PKR)":600,"Sale Price (PKR)":1100,"Opening Stock":0,"Min Stock":0,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":29,"Product Name":"Metal Breclet","Material":"Metal","Color":"B/S & B/G","Cost Price (PKR)":650,"Sale Price (PKR)":1000,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":30,"Product Name":"Heart Chain","Category":"High","Material":"Metal","Color":"G/S/B","Cost Price (PKR)":250,"Sale Price (PKR)":600,"Opening Stock":3,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":31,"Product Name":"Heart Chain","Category":"Low","Material":"Metal","Color":"Silve/Golden","Cost Price (PKR)":150,"Sale Price (PKR)":400,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":32,"Product Name":"Lockit Chain Twice","Material":"Metal","Color":"Silver","Cost Price (PKR)":250,"Sale Price (PKR)":500,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":33,"Product Name":"Metal Lockit","Material":"Metal","Color":"Silver/Black","Cost Price (PKR)":120,"Sale Price (PKR)":200,"Opening Stock":12,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":34,"Product Name":"Metal Plate","Category":"Big","Material":"Metal","Color":"Silver","Cost Price (PKR)":100,"Sale Price (PKR)":200,"Opening Stock":6,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":35,"Product Name":"Metal Plate","Category":"Small","Material":"Metal","Color":"Silver","Cost Price (PKR)":100,"Sale Price (PKR)":200,"Opening Stock":5,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":36,"Product Name":"Metal Coin","Material":"Metal","Color":"Silver","Cost Price (PKR)":50,"Sale Price (PKR)":200,"Opening Stock":24,"Min Stock":5,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":37,"Product Name":"Bengal Karra","Material":"Metal","Color":"Golden","Cost Price (PKR)":250,"Sale Price (PKR)":500,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":38,"Product Name":"Name Lockit","Material":"Metal","Color":"Black","Cost Price (PKR)":200,"Sale Price (PKR)":400,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":39,"Product Name":"Thin Lockit","Material":"Metal","Color":"Black","Cost Price (PKR)":200,"Sale Price (PKR)":400,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":40,"Product Name":"Mens Breclet","Material":"Metal","Color":"Silver","Cost Price (PKR)":200,"Sale Price (PKR)":400,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":41,"Product Name":"Silver Chains","Material":"Metal","Color":"Silver","Cost Price (PKR)":100,"Sale Price (PKR)":200,"Opening Stock":12,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":"NEON-001","Product Name":"Custom Name Neon","Category":"Neon Signs","Sub-Category":"Name Neon","Size":"2 x 1 ft","Material":"Acrylic + LED","Color":"Blue","Cost Price (PKR)":1500,"Sale Price (PKR)":3500,"Opening Stock":5,"Min Stock":2,"Location":"Shop","Status":"Active"},{"SKU":"ISL-001","Product Name":"Allah Neon Sign","Category":"Islamic Signs","Sub-Category":"Calligraphy","Size":"2 x 2 ft","Material":"Acrylic + LED","Color":"White","Cost Price (PKR)":1200,"Sale Price (PKR)":2999,"Opening Stock":3,"Min Stock":2,"Location":"Shop","Status":"Active"},{"SKU":"CLK-001","Product Name":"Neon Wall Clock","Category":"Neon Clocks","Sub-Category":"Wall Clock","Size":"18 inch","Material":"Acrylic + LED","Color":"Blue","Cost Price (PKR)":1800,"Sale Price (PKR)":3499,"Opening Stock":4,"Min Stock":2,"Location":"Shop","Status":"Active"},{"SKU":"CST-001","Product Name":"Custom Logo Sign","Category":"Customized Products","Sub-Category":"Logo Sign","Size":"2 x 2 ft","Material":"Acrylic","Color":"White","Cost Price (PKR)":2000,"Sale Price (PKR)":4500,"Opening Stock":2,"Min Stock":1,"Location":"Production","Status":"Active"}],"purchases":[{"Date":"2026-10-09","Purchase No":3289,"SKU":1,"Products":"Tempreture bottle","Supplier":"low","Qty":2,"Cost Price (PKR)":600,"Total Cost":1200,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":2,"Products":"Tempreture bottle","Supplier":"high","Qty":2,"Cost Price (PKR)":800,"Total Cost":1600,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":3,"Products":"matka","Qty":1,"Cost Price (PKR)":950,"Total Cost":950,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":4,"Products":"Cola","Qty":1,"Cost Price (PKR)":950,"Total Cost":950,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":5,"Products":"wood","Qty":1,"Cost Price (PKR)":1150,"Total Cost":1150,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":6,"Products":"Pen","Qty":28,"Cost Price (PKR)":100,"Total Cost":2800,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":7,"Products":"Pen","Qty":2,"Cost Price (PKR)":120,"Total Cost":240,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":8,"Products":"Pen Diamond","Qty":3,"Cost Price (PKR)":150,"Total Cost":450,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":9,"Products":"Pencil Diamond","Qty":1,"Cost Price (PKR)":150,"Total Cost":150,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":10,"Products":"Pen","Qty":100,"Cost Price (PKR)":100,"Total Cost":10000,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":11,"Products":"KeyChain","Qty":10,"Cost Price (PKR)":80,"Total Cost":800,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":12,"Products":"KeyChain","Qty":2,"Cost Price (PKR)":200,"Total Cost":400,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":13,"Products":"KeyChain","Qty":4,"Cost Price (PKR)":220,"Total Cost":880,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":14,"Products":"KeyChain","Qty":1,"Cost Price (PKR)":250,"Total Cost":250,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":15,"Products":"KeyChain","Qty":3,"Cost Price (PKR)":260,"Total Cost":780,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":16,"Products":"Pen Box","Qty":50,"Cost Price (PKR)":5,"Total Cost":250,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":17,"Products":"Pen Box","Qty":12,"Cost Price (PKR)":20,"Total Cost":240,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":18,"Products":"KeyChain set box","Qty":6,"Cost Price (PKR)":35,"Total Cost":210,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":"-","SKU":19,"Products":"Ring And Challa","Qty":12,"Cost Price (PKR)":100,"Total Cost":1200,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":"-","SKU":20,"Products":"Ring And Challa","Qty":12,"Cost Price (PKR)":100,"Total Cost":1200,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":"-","SKU":21,"Products":"Ring And Challa","Qty":12,"Cost Price (PKR)":100,"Total Cost":1200,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":"-","SKU":22,"Products":"Engraving","Qty":2,"Cost Price (PKR)":50,"Total Cost":100,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":23,"Products":"Royal Breclet","Qty":7,"Cost Price (PKR)":800,"Total Cost":5600,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":24,"Products":"Lather Breclet","Qty":3,"Cost Price (PKR)":400,"Total Cost":1200,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":25,"Products":"Lather Breclet Twic","Qty":4,"Cost Price (PKR)":300,"Total Cost":1200,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":26,"Products":"Lather Breclet thin","Qty":1,"Cost Price (PKR)":200,"Total Cost":200,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":27,"Products":"Metal Breclet","Qty":6,"Cost Price (PKR)":150,"Total Cost":900,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":28,"Products":"Metal Breclet","Qty":1,"Cost Price (PKR)":600,"Total Cost":600,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":29,"Products":"Metal Breclet","Qty":2,"Cost Price (PKR)":650,"Total Cost":1300,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":30,"Products":"Heart Chain","Qty":3,"Cost Price (PKR)":250,"Total Cost":750,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":31,"Products":"Heart Chain","Qty":2,"Cost Price (PKR)":150,"Total Cost":300,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":32,"Products":"Lockit Chain Twice","Qty":1,"Cost Price (PKR)":250,"Total Cost":250,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":33,"Products":"Metal Lockit","Qty":12,"Cost Price (PKR)":120,"Total Cost":1440,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":34,"Products":"Metal Plate","Qty":6,"Cost Price (PKR)":100,"Total Cost":600,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":35,"Products":"Metal Plate","Qty":5,"Cost Price (PKR)":100,"Total Cost":500,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":36,"Products":"Metal Coin","Qty":24,"Cost Price (PKR)":50,"Total Cost":1200,"Payment":"Cash"},{"Date":"2026-10-19","Purchase No":2515,"SKU":23,"Products":"Royal Breclet","Qty":3,"Cost Price (PKR)":800,"Total Cost":2400,"Payment":"Cash"},{"Date":"2026-10-19","Purchase No":2515,"SKU":37,"Products":"Bengal Karra","Qty":1,"Cost Price (PKR)":250,"Total Cost":250,"Payment":"Cash"},{"Date":"2026-10-19","Purchase No":2515,"SKU":38,"Products":"Name Lockit","Qty":2,"Cost Price (PKR)":200,"Total Cost":400,"Payment":"Cash"},{"Date":"2026-10-19","Purchase No":2515,"SKU":39,"Products":"Thin Lockit","Qty":2,"Cost Price (PKR)":200,"Total Cost":400,"Payment":"Cash"},{"Date":"2026-10-19","Purchase No":2515,"SKU":40,"Products":"Mens Breclet","Qty":2,"Cost Price (PKR)":200,"Total Cost":400,"Payment":"Cash"},{"Date":"2026-10-19","Purchase No":2515,"SKU":21,"Products":"Ring And Challa","Qty":15,"Cost Price (PKR)":100,"Total Cost":1500,"Payment":"Cash"},{"Date":"2026-10-19","Purchase No":2515,"SKU":41,"Products":"Silver Chains","Qty":12,"Cost Price (PKR)":100,"Total Cost":1200,"Payment":"Cash"}],"sales":[{"Date":"2026-10-10","Invoice No":"AR-00001","Customer":"Cash","SKU":10,"Product":"Pen","Qty":6,"Sale Price (PKR)":150,"Total Sale":900,"Customer Paid":900,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-10","Invoice No":"AR-00002","Customer":"Cash","SKU":21,"Product":"Ring And Challa","Qty":3,"Sale Price (PKR)":200,"Total Sale":600,"Customer Paid":600,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-10","Invoice No":"AR-00003","Customer":"Cash","SKU":22,"Product":"Engraving","Qty":2,"Sale Price (PKR)":100,"Total Sale":200,"Customer Paid":200,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-11","Invoice No":"AR-00004","Customer":"Cash","SKU":8,"Product":"Pen Diamond","Qty":1,"Sale Price (PKR)":200,"Total Sale":200,"Customer Paid":200,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-16","Invoice No":"AR-00005","Customer":"Cash","SKU":23,"Product":"Royal Breclet","Qty":3,"Sale Price (PKR)":1200,"Total Sale":3600,"Customer Paid":3000,"Discount":600,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-16","Invoice No":"AR-00006","Customer":"Cash","SKU":8,"Product":"Pen Diamond","Qty":1,"Sale Price (PKR)":200,"Total Sale":200,"Customer Paid":200,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-16","Invoice No":"AR-00007","Customer":"Cash","SKU":15,"Product":"KeyChain","Qty":1,"Sale Price (PKR)":400,"Total Sale":400,"Customer Paid":400,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-17","Invoice No":"AR-00008","Customer":"Cash","SKU":10,"Product":"Pen","Qty":2,"Sale Price (PKR)":150,"Total Sale":300,"Customer Paid":300,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-17","Invoice No":"AR-00009","Customer":"Cash","SKU":6,"Product":"Pen","Qty":1,"Sale Price (PKR)":200,"Total Sale":200,"Customer Paid":200,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-18","Invoice No":"AR-00010","Customer":"Cash","SKU":19,"Product":"Ring And Challa","Qty":1,"Sale Price (PKR)":200,"Total Sale":200,"Customer Paid":200,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-18","Invoice No":"AR-00011","Customer":"Cash","SKU":19,"Product":"Ring And Challa","Qty":1,"Sale Price (PKR)":200,"Total Sale":200,"Customer Paid":200,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-18","Invoice No":"AR-00012","Customer":"Cash","SKU":10,"Product":"Pen","Qty":1,"Sale Price (PKR)":150,"Total Sale":150,"Customer Paid":150,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-18","Invoice No":"AR-00013","Customer":"Cash","SKU":6,"Product":"Pen","Qty":1,"Sale Price (PKR)":200,"Total Sale":200,"Customer Paid":200,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-18","Invoice No":"AR-00014","Customer":"Cash","SKU":10,"Product":"Pen","Qty":1,"Sale Price (PKR)":150,"Total Sale":150,"Customer Paid":150,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-20","Invoice No":"AR-00015","Customer":"Cash","SKU":20,"Product":"Ring And Challa","Qty":1,"Sale Price (PKR)":200,"Total Sale":200,"Customer Paid":200,"Discount":0,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-22","Invoice No":"AR-00016","Customer":"shaji","SKU":28,"Product":"Metal Breclet","Qty":1,"Sale Price (PKR)":1100,"Total Sale":1100,"Customer Paid":0,"Discount":300,"Balance":800,"Payment Status":"Unpaid","Payment Method":"Cash"},{"Date":"2026-10-23","Invoice No":"AR-00017","Customer":"Sharuk","SKU":23,"Product":"Royal Breclet","Qty":1,"Sale Price (PKR)":1200,"Total Sale":1200,"Customer Paid":1000,"Balance":200,"Payment Status":"Partial","Payment Method":"Cash"}],"expenses":[{"Date":"2026-10-10","Expense":"Persnol","Category":"Personal","Amount (PKR)":400,"Paid To":"naveed","Payment Method":"Cash","Notes":"Penaflex"},{"Date":"2026-10-18","Expense":"Persnol","Category":"Personal","Amount (PKR)":800,"Paid To":"Store","Payment Method":"Cash","Notes":"Window + Cash book"}],"suppliers":[{"Supplier ID":"Naveed","Supplier Name":"Saddar","Contact":"-","Material/Product":"Pen/Bottles/Keychain","Last Purchase Price":13690,"Payable Balance":0}],"customOrders":[]};
 
 const key='ar_customized_pos_v2';
 function clone(x){return JSON.parse(JSON.stringify(x))}
+function loadState(){
+  try{
+    let saved=localStorage.getItem(key);
+    if(saved){
+      let x=JSON.parse(saved);
+      return {...clone(original),...x};
+    }
+  }catch(e){}
+  return clone(original);
+}
 
-let db=clone(original);
+let db=loadState();
 let cart=[];
-let invoiceCounter=1001;
+let invoiceCounter=Math.max(1000,...db.sales.map(s=>Number(String(s['Invoice No']||'').replace(/\D/g,''))||0))+1;
 
 const money=n=>'PKR '+Number(n||0).toLocaleString('en-PK',{maximumFractionDigits:2});
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;}[c]));
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const today=()=>new Date().toISOString().slice(0,10);
 const num=x=>Number(x)||0;
 
-// Load Data from Supabase
-async function initData(){
-  try{
-    let { data, error } = await _supabase.from('pos_data').select('*').eq('id', 'main_store').single();
-    if(data){
-      db = {
-        products: data.products || original.products,
-        purchases: data.purchases || original.purchases,
-        sales: data.sales || original.sales,
-        expenses: data.expenses || original.expenses,
-        suppliers: data.suppliers || original.suppliers,
-        customOrders: data.custom_orders || original.customOrders
-      };
-      document.getElementById('dbstatus').textContent='Cloud DB Connected ✓';
-    } else {
-      await save();
-      document.getElementById('dbstatus').textContent='Cloud DB Initialized ✓';
-    }
-  }catch(e){
-    let saved=localStorage.getItem(key);
-    if(saved) db = JSON.parse(saved);
-    document.getElementById('dbstatus').textContent='Offline (Saved locally)';
-  }
-  invoiceCounter=Math.max(1000,...db.sales.map(s=>Number(String(s['Invoice No']||'').replace(/\D/g,''))||0))+1;
-  renderAll();
-}
-
-// Save Data to Supabase & LocalStorage
-async function save(){
+function save(){
   try{
     localStorage.setItem(key,JSON.stringify(db));
-    document.getElementById('dbstatus').textContent='Syncing to Cloud...';
-    
-    const { error } = await _supabase.from('pos_data').upsert({
-      id: 'main_store',
-      products: db.products,
-      purchases: db.purchases,
-      sales: db.sales,
-      expenses: db.expenses,
-      suppliers: db.suppliers,
-      custom_orders: db.customOrders,
-      updated_at: new Date()
-    });
-    
-    if(error) throw error;
-    document.getElementById('dbstatus').textContent='Cloud DB Connected ✓';
+    document.getElementById('dbstatus').textContent='Saved in local browser';
   }catch(e){
-    document.getElementById('dbstatus').textContent='Saved locally (Cloud retry)';
+    document.getElementById('dbstatus').textContent='Backup required (storage full)';
   }
 }
 
@@ -612,7 +573,7 @@ function changeQty(i,d){
 }
 function clearCart(){cart=[];renderCart()}
 
-async function completeSale(){
+function completeSale(){
   if(!cart.length){toast('Please select at least one item.');return}
   let sub=cartSub();
   let disc=Math.min(sub,Math.max(0,num(document.getElementById('discount').value)));
@@ -638,7 +599,7 @@ async function completeSale(){
   };
   
   db.sales.push(sale);
-  await save();
+  save();
   printInvoice(sale);
   cart=[];
   document.getElementById('customerName').value='Cash';
@@ -647,7 +608,7 @@ async function completeSale(){
   document.getElementById('paidAmount').value='';
   renderCart();
   renderAll();
-  toast('Invoice '+invoice+' generated & saved to Cloud!');
+  toast('Invoice '+invoice+' generated successfully.');
 }
 
 // INVOICE PRINT TEMPLATE
@@ -701,7 +662,7 @@ function invoiceHTML(s){
               ${esc(x.name||x.Product||'Item')}
               ${x.sku?`<div style="font-size:11px;color:#667085">SKU: ${esc(x.sku)}</div>`:''}
             </td>
-            <td style="padding:10px;text-align:center;border-bottom:1px solid #e5e7eb">${num(x.qty||x.Qty||1)}</td>
+            <td style="padding:10px;text-align:center;border-bottom:1px solid #e5e7eb">${num(x.qty||x.Qty)||1}</td>
             <td style="padding:10px;text-align:right;border-bottom:1px solid #e5e7eb">${money(x.price??x['Sale Price (PKR)'])}</td>
             <td style="padding:10px;text-align:right;border-bottom:1px solid #e5e7eb">${money(num(x.qty||x.Qty||1)*num(x.price??x['Sale Price (PKR)']))}</td>
           </tr>
@@ -808,7 +769,7 @@ function showEditSaleModal(idx){
   `);
 }
 
-async function saveEditSale(e, idx){
+function saveEditSale(e, idx){
   e.preventDefault();
   let f=new FormData(e.target);
   let total=num(f.get('total'));
@@ -825,16 +786,16 @@ async function saveEditSale(e, idx){
   s['Payment Status']=f.get('status');
   s['Payment Method']=f.get('method');
 
-  await save();
+  save();
   closeModal();
   renderAll();
   toast('Sale record updated successfully.');
 }
 
-async function deleteSale(idx){
+function deleteSale(idx){
   if(confirm('Are you sure you want to delete this sale record?')){
     db.sales.splice(idx,1);
-    await save();
+    save();
     renderAll();
     toast('Sale record deleted.');
   }
@@ -891,7 +852,7 @@ function showProductModal(){
   `);
 }
 
-async function addProduct(e){
+function addProduct(e){
   e.preventDefault();
   let f=new FormData(e.target);
   let sku=f.get('sku')||('PROD-'+(Math.max(0,...db.products.map(p=>num(p.SKU)))+1));
@@ -911,7 +872,7 @@ async function addProduct(e){
     'Min Stock': num(f.get('min')),
     Status: 'Active'
   });
-  await save();
+  save();
   closeModal();
   renderAll();
   toast('Product added to catalogue.');
@@ -943,7 +904,7 @@ function showEditProductModal(idx){
   `);
 }
 
-async function saveEditProduct(e, idx){
+function saveEditProduct(e, idx){
   e.preventDefault();
   let f=new FormData(e.target);
   let p=db.products[idx];
@@ -956,16 +917,16 @@ async function saveEditProduct(e, idx){
   p['Opening Stock']=num(f.get('stock'));
   p['Min Stock']=num(f.get('min'));
 
-  await save();
+  save();
   closeModal();
   renderAll();
   toast('Product updated.');
 }
 
-async function deleteProduct(idx){
+function deleteProduct(idx){
   if(confirm('Delete this product from inventory catalogue?')){
     db.products.splice(idx,1);
-    await save();
+    save();
     renderAll();
     toast('Product removed.');
   }
@@ -1026,7 +987,7 @@ function showPurchaseModal(){
   `);
 }
 
-async function addPurchase(e){
+function addPurchase(e){
   e.preventDefault();
   let f=new FormData(e.target);
   let p=db.products.find(p=>String(p.SKU)===f.get('sku'));
@@ -1041,7 +1002,7 @@ async function addPurchase(e){
     'Total Cost': num(f.get('qty'))*num(f.get('cost')),
     Payment: f.get('payment')
   });
-  await save();
+  save();
   closeModal();
   renderAll();
   toast('Stock purchase recorded.');
@@ -1077,7 +1038,7 @@ function showEditPurchaseModal(idx){
   `);
 }
 
-async function saveEditPurchase(e, idx){
+function saveEditPurchase(e, idx){
   e.preventDefault();
   let f=new FormData(e.target);
   let pur=db.purchases[idx];
@@ -1090,16 +1051,16 @@ async function saveEditPurchase(e, idx){
   pur.Supplier=f.get('supplier');
   pur.Payment=f.get('payment');
 
-  await save();
+  save();
   closeModal();
   renderAll();
   toast('Purchase record updated.');
 }
 
-async function deletePurchase(idx){
+function deletePurchase(idx){
   if(confirm('Delete this purchase record?')){
     db.purchases.splice(idx,1);
-    await save();
+    save();
     renderAll();
     toast('Purchase record deleted.');
   }
@@ -1165,7 +1126,7 @@ function showExpenseModal(){
   `);
 }
 
-async function addExpense(e){
+function addExpense(e){
   e.preventDefault();
   let f=new FormData(e.target);
   db.expenses.push({
@@ -1176,7 +1137,7 @@ async function addExpense(e){
     'Paid To': f.get('to'),
     'Payment Method': f.get('method')
   });
-  await save();
+  save();
   closeModal();
   renderAll();
   toast('Expense recorded.');
@@ -1222,7 +1183,7 @@ function showEditExpenseModal(idx){
   `);
 }
 
-async function saveEditExpense(e, idx){
+function saveEditExpense(e, idx){
   e.preventDefault();
   let f=new FormData(e.target);
   let x=db.expenses[idx];
@@ -1233,16 +1194,16 @@ async function saveEditExpense(e, idx){
   x['Paid To']=f.get('to');
   x['Payment Method']=f.get('method');
 
-  await save();
+  save();
   closeModal();
   renderAll();
   toast('Expense record updated.');
 }
 
-async function deleteExpense(idx){
+function deleteExpense(idx){
   if(confirm('Delete this expense entry?')){
     db.expenses.splice(idx,1);
-    await save();
+    save();
     renderAll();
     toast('Expense record deleted.');
   }
@@ -1298,7 +1259,7 @@ function showCustomModal(){
   `);
 }
 
-async function addCustom(e){
+function addCustom(e){
   e.preventDefault();
   let f=new FormData(e.target);
   let total=num(f.get('total'));
@@ -1314,7 +1275,7 @@ async function addCustom(e){
     Balance: Math.max(0, total-advance),
     'Order Status': f.get('status')
   });
-  await save();
+  save();
   closeModal();
   renderAll();
   toast('Custom order created.');
@@ -1353,7 +1314,7 @@ function showEditCustomModal(idx){
   `);
 }
 
-async function saveEditCustom(e, idx){
+function saveEditCustom(e, idx){
   e.preventDefault();
   let f=new FormData(e.target);
   let total=num(f.get('total'));
@@ -1369,16 +1330,16 @@ async function saveEditCustom(e, idx){
   x.Balance=Math.max(0, total-received);
   x['Order Status']=f.get('status');
 
-  await save();
+  save();
   closeModal();
   renderAll();
   toast('Custom order updated.');
 }
 
-async function deleteCustom(idx){
+function deleteCustom(idx){
   if(confirm('Delete this custom order record?')){
     db.customOrders.splice(idx,1);
-    await save();
+    save();
     renderAll();
     toast('Custom order deleted.');
   }
@@ -1447,18 +1408,18 @@ function exportBackup(){
   toast('Data backup downloaded.');
 }
 
-async function restoreBackup(e){
+function restoreBackup(e){
   let f=e.target.files[0];
   if(!f)return;
   let r=new FileReader();
-  r.onload=async ()=>{
+  r.onload=()=>{
     try{
       let x=JSON.parse(r.result);
       let d=x.data||x;
       if(!d.products||!d.sales) throw new Error();
-      if(!confirm('Restore data backup and update database?')) return;
+      if(!confirm('Restore data backup and update browser records?')) return;
       db=d;
-      await save();
+      save();
       renderAll();
       toast('Data backup restored successfully.');
     }catch(err){
@@ -1468,8 +1429,8 @@ async function restoreBackup(e){
   r.readAsText(f);
 }
 
-// Start app by loading data from cloud
-initData();
+renderAll();
 </script>
 </body>
 </html>
+```eof
