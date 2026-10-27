@@ -158,6 +158,9 @@ tbody tr:last-child td{border-bottom:0}
           </div>
           <button class="primary" onclick="go('pos')">＋ Create New Bill</button>
         </div>
+        <div class="notice">
+          Imported from <b>MO Traders Accounts & Inventory</b>. All records are preserved and editable.
+        </div>
         <div class="cards" id="metrics"></div>
         <div class="panel">
           <div class="panelhead">
@@ -376,7 +379,7 @@ tbody tr:last-child td{border-bottom:0}
         </div>
         <div class="panel">
           <div class="panelhead"><h2>Data Backup & Restore</h2></div>
-          <p class="sub">Store local copies or restore records instantly[cite: 1].</p>
+          <p class="sub">Store local copies or restore records instantly.</p>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
             <button class="primary" onclick="exportBackup()">Download Backup</button>
             <button class="secondary" onclick="document.getElementById('backupInput').click()">Restore Backup</button>
@@ -413,7 +416,7 @@ let cart=[];
 let invoiceCounter=Math.max(1000,...db.sales.map(s=>Number(String(s['Invoice No']||'').replace(/\D/g,''))||0))+1;
 
 const money=n=>'PKR '+Number(n||0).toLocaleString('en-PK',{maximumFractionDigits:2});
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;}[c]));
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const today=()=>new Date().toISOString().slice(0,10);
 const num=x=>Number(x)||0;
 
@@ -659,7 +662,7 @@ function invoiceHTML(s){
               ${esc(x.name||x.Product||'Item')}
               ${x.sku?`<div style="font-size:11px;color:#667085">SKU: ${esc(x.sku)}</div>`:''}
             </td>
-            <td style="padding:10px;text-align:center;border-bottom:1px solid #e5e7eb">${num(x.qty||x.Qty||1)}</td>
+            <td style="padding:10px;text-align:center;border-bottom:1px solid #e5e7eb">${num(x.qty||x.Qty)||1}</td>
             <td style="padding:10px;text-align:right;border-bottom:1px solid #e5e7eb">${money(x.price??x['Sale Price (PKR)'])}</td>
             <td style="padding:10px;text-align:right;border-bottom:1px solid #e5e7eb">${money(num(x.qty||x.Qty||1)*num(x.price??x['Sale Price (PKR)']))}</td>
           </tr>
@@ -1430,3 +1433,4 @@ renderAll();
 </script>
 </body>
 </html>
+```eof
