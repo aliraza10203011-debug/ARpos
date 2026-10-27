@@ -81,6 +81,12 @@ tbody tr:last-child td{border-bottom:0}
 .mobile-btn{display:none;background:transparent;border:0;font-size:22px;cursor:pointer;padding:4px}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:#00000050;z-index:25}
 .actions-cell{display:flex;gap:6px;align-items:center}
+.login-screen{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at top right,#e7edff,transparent 45%),var(--bg)}
+.login-card{width:min(420px,100%);background:#fff;border:1px solid var(--line);border-radius:18px;padding:30px;box-shadow:0 20px 50px #17203312}
+.login-brand{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.login-card h1{font-size:22px;margin:0 0 6px}
+.login-card .sub{margin-bottom:20px}
+.login-error{min-height:18px;color:#dc2626;font-size:12px;margin:0 0 10px}
 
 @media(max-width:1050px){
   .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -112,8 +118,22 @@ tbody tr:last-child td{border-bottom:0}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+<div class="login-screen" id="loginScreen">
+  <form class="login-card" onsubmit="login(event)">
+    <div class="login-brand">
+      <div class="logo">AR</div>
+      <div><b>AR Customized</b><small>POS & Billing Suite</small></div>
+    </div>
+    <h1>Welcome back</h1>
+    <div class="sub">Sign in to access your business dashboard.</div>
+    <div class="field"><label for="loginUsername">Username</label><input id="loginUsername" autocomplete="username" required></div>
+    <div class="field"><label for="loginPassword">Password</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
+    <div class="login-error" id="loginError" role="alert"></div>
+    <button class="primary" type="submit" style="width:100%">Sign in</button>
+  </form>
+</div>
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-<div class="app">
+<div class="app hidden" id="appRoot">
   <aside class="side" id="sidebar">
     <div class="brand">
       <div class="logo">AR</div>
@@ -146,6 +166,7 @@ tbody tr:last-child td{border-bottom:0}
       </div>
       <div class="topright">
         <button class="secondary btn-sm" onclick="exportBackup()">↧ Backup</button>
+        <button class="secondary btn-sm" onclick="logout()">Log out</button>
         <div class="avatar">AR</div>
       </div>
     </header>
@@ -395,6 +416,35 @@ tbody tr:last-child td{border-bottom:0}
 <div id="printArea" class="hidden"></div>
 
 <script>
+// Frontend demo login only; use Supabase Auth for real access control.
+const LOGIN_USERNAME = 'admin';
+const LOGIN_PASSWORD = 'AR@2026';
+const LOGIN_SESSION_KEY = 'ar_pos_logged_in';
+
+function setLoginView(isLoggedIn) {
+  document.getElementById('loginScreen').classList.toggle('hidden', isLoggedIn);
+  document.getElementById('appRoot').classList.toggle('hidden', !isLoggedIn);
+}
+
+function login(event) {
+  event.preventDefault();
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  if (username === LOGIN_USERNAME && password === LOGIN_PASSWORD) {
+    sessionStorage.setItem(LOGIN_SESSION_KEY, 'yes');
+    document.getElementById('loginError').textContent = '';
+    setLoginView(true);
+  } else {
+    document.getElementById('loginError').textContent = 'Incorrect username or password.';
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem(LOGIN_SESSION_KEY);
+  setLoginView(false);
+  document.getElementById('loginPassword').value = '';
+}
+
 // Supabase Configuration
 const SUPABASE_URL = 'https://zhehtqefcolgsxfczrjl.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_nLTSQAHzjmwi2sp8cBenzg_3_R_MV_t';
@@ -1677,7 +1727,8 @@ function restoreBackup(e) {
   r.readAsText(f);
 }
 
-// Initial render & background cloud load attempt
+// Restore this tab's login state, then render and initialize cloud sync.
+setLoginView(sessionStorage.getItem(LOGIN_SESSION_KEY) === 'yes');
 renderAll();
 initCloudSync();
 </script>
