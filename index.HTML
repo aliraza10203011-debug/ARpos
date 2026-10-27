@@ -158,9 +158,6 @@ tbody tr:last-child td{border-bottom:0}
           </div>
           <button class="primary" onclick="go('pos')">＋ Create New Bill</button>
         </div>
-        <div class="notice">
-          Imported from <b>MO Traders Accounts & Inventory</b>. All records are preserved and editable.
-        </div>
         <div class="cards" id="metrics"></div>
         <div class="panel">
           <div class="panelhead">
@@ -398,7 +395,7 @@ tbody tr:last-child td{border-bottom:0}
 <script>
 const original={"products":[{"SKU":1,"Product Name":"Tempreture bottle","Category":"high","Material":"Metal","Color":"White and Blue","Cost Price (PKR)":600,"Sale Price (PKR)":1200,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":2,"Product Name":"Tempreture bottle","Category":"low","Material":"Metal","Color":"Black And Pink","Cost Price (PKR)":800,"Sale Price (PKR)":1500,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":3,"Product Name":"Cola","Material":"Metal","Color":"Black","Cost Price (PKR)":950,"Sale Price (PKR)":1500,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":4,"Product Name":"Matka","Material":"Metal","Color":"Black","Cost Price (PKR)":950,"Sale Price (PKR)":1500,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":5,"Product Name":"Wood","Material":"Metal","Color":"Black","Cost Price (PKR)":1150,"Sale Price (PKR)":1600,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":6,"Product Name":"Pen","Material":"Metal","Color":"Colours","Cost Price (PKR)":100,"Sale Price (PKR)":200,"Opening Stock":26,"Min Stock":5,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":7,"Product Name":"Pen","Material":"Metal","Color":"Light","Cost Price (PKR)":120,"Sale Price (PKR)":200,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":8,"Product Name":"Pen Diamond","Material":"Metal","Color":"colours","Cost Price (PKR)":150,"Sale Price (PKR)":200,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":9,"Product Name":"Pencil Diamond","Material":"Metal","Color":"Black","Cost Price (PKR)":150,"Sale Price (PKR)":200,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":10,"Product Name":"Pen","Material":"Metal","Color":"Black","Cost Price (PKR)":100,"Sale Price (PKR)":150,"Opening Stock":90,"Min Stock":10,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":11,"Product Name":"KeyChain","Category":"Normal","Material":"Metal","Color":"Colours","Cost Price (PKR)":80,"Sale Price (PKR)":150,"Opening Stock":10,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":12,"Product Name":"KeyChain","Category":"High","Material":"Metal","Color":"Black","Cost Price (PKR)":200,"Sale Price (PKR)":400,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":13,"Product Name":"KeyChain","Category":"High","Material":"Metal","Color":"Black","Cost Price (PKR)":220,"Sale Price (PKR)":400,"Opening Stock":4,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":14,"Product Name":"KeyChain","Category":"High","Material":"Metal","Color":"Black","Cost Price (PKR)":250,"Sale Price (PKR)":350,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":15,"Product Name":"KeyChain","Category":"High","Material":"Metal","Color":"Silver/Black","Cost Price (PKR)":260,"Sale Price (PKR)":400,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":16,"Product Name":"Pen Box","Category":"Local","Material":"carton","Color":"Black","Cost Price (PKR)":5,"Sale Price (PKR)":10,"Opening Stock":50,"Min Stock":10,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":17,"Product Name":"Pen Box","Category":"Normal","Material":"carton","Color":"Black","Cost Price (PKR)":20,"Sale Price (PKR)":30,"Opening Stock":12,"Min Stock":5,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":18,"Product Name":"KeyChain set box","Category":"Normal","Material":"carton","Color":"Black","Cost Price (PKR)":35,"Sale Price (PKR)":50,"Opening Stock":6,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":19,"Product Name":"Ring And Challa","Size":"16 to 20","Material":"Metal","Color":"Golden","Cost Price (PKR)":100,"Sale Price (PKR)":200,"Opening Stock":10,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":20,"Product Name":"Ring And Challa","Size":"17 to 20","Material":"Metal","Color":"Silver","Cost Price (PKR)":100,"Sale Price (PKR)":200,"Opening Stock":11,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":21,"Product Name":"Ring And Challa","Size":"18 to 20","Material":"Metal","Color":"Black","Cost Price (PKR)":100,"Sale Price (PKR)":200,"Opening Stock":24,"Min Stock":5,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":22,"Product Name":"Engraving","Material":"Metal","Color":"Black/Silver","Cost Price (PKR)":50,"Sale Price (PKR)":100,"Opening Stock":0,"Min Stock":0,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":23,"Product Name":"Royal Breclet","Material":"Metal","Color":"Mix Colour","Cost Price (PKR)":800,"Sale Price (PKR)":1200,"Opening Stock":6,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":24,"Product Name":"Lather Breclet","Material":"Metal","Color":"G/S/B","Cost Price (PKR)":400,"Sale Price (PKR)":700,"Opening Stock":3,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":25,"Product Name":"Lather Breclet Twic","Material":"Metal","Color":"G/S/B","Cost Price (PKR)":300,"Sale Price (PKR)":600,"Opening Stock":4,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":26,"Product Name":"Lather Breclet thin","Material":"Metal","Color":"Golden","Cost Price (PKR)":200,"Sale Price (PKR)":400,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":27,"Product Name":"Metal Breclet","Material":"Metal","Color":"G/S/B","Cost Price (PKR)":150,"Sale Price (PKR)":300,"Opening Stock":6,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":28,"Product Name":"Metal Breclet","Category":"High","Material":"Metal","Color":"Black","Cost Price (PKR)":600,"Sale Price (PKR)":1100,"Opening Stock":0,"Min Stock":0,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":29,"Product Name":"Metal Breclet","Material":"Metal","Color":"B/S & B/G","Cost Price (PKR)":650,"Sale Price (PKR)":1000,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":30,"Product Name":"Heart Chain","Category":"High","Material":"Metal","Color":"G/S/B","Cost Price (PKR)":250,"Sale Price (PKR)":600,"Opening Stock":3,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":31,"Product Name":"Heart Chain","Category":"Low","Material":"Metal","Color":"Silve/Golden","Cost Price (PKR)":150,"Sale Price (PKR)":400,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":32,"Product Name":"Lockit Chain Twice","Material":"Metal","Color":"Silver","Cost Price (PKR)":250,"Sale Price (PKR)":500,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":33,"Product Name":"Metal Lockit","Material":"Metal","Color":"Silver/Black","Cost Price (PKR)":120,"Sale Price (PKR)":200,"Opening Stock":12,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":34,"Product Name":"Metal Plate","Category":"Big","Material":"Metal","Color":"Silver","Cost Price (PKR)":100,"Sale Price (PKR)":200,"Opening Stock":6,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":35,"Product Name":"Metal Plate","Category":"Small","Material":"Metal","Color":"Silver","Cost Price (PKR)":100,"Sale Price (PKR)":200,"Opening Stock":5,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":36,"Product Name":"Metal Coin","Material":"Metal","Color":"Silver","Cost Price (PKR)":50,"Sale Price (PKR)":200,"Opening Stock":24,"Min Stock":5,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":37,"Product Name":"Bengal Karra","Material":"Metal","Color":"Golden","Cost Price (PKR)":250,"Sale Price (PKR)":500,"Opening Stock":1,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":38,"Product Name":"Name Lockit","Material":"Metal","Color":"Black","Cost Price (PKR)":200,"Sale Price (PKR)":400,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":39,"Product Name":"Thin Lockit","Material":"Metal","Color":"Black","Cost Price (PKR)":200,"Sale Price (PKR)":400,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":40,"Product Name":"Mens Breclet","Material":"Metal","Color":"Silver","Cost Price (PKR)":200,"Sale Price (PKR)":400,"Opening Stock":2,"Min Stock":1,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":41,"Product Name":"Silver Chains","Material":"Metal","Color":"Silver","Cost Price (PKR)":100,"Sale Price (PKR)":200,"Opening Stock":12,"Min Stock":2,"Supplier":"out source","Location":"Shop","Status":"Active"},{"SKU":"NEON-001","Product Name":"Custom Name Neon","Category":"Neon Signs","Sub-Category":"Name Neon","Size":"2 x 1 ft","Material":"Acrylic + LED","Color":"Blue","Cost Price (PKR)":1500,"Sale Price (PKR)":3500,"Opening Stock":5,"Min Stock":2,"Location":"Shop","Status":"Active"},{"SKU":"ISL-001","Product Name":"Allah Neon Sign","Category":"Islamic Signs","Sub-Category":"Calligraphy","Size":"2 x 2 ft","Material":"Acrylic + LED","Color":"White","Cost Price (PKR)":1200,"Sale Price (PKR)":2999,"Opening Stock":3,"Min Stock":2,"Location":"Shop","Status":"Active"},{"SKU":"CLK-001","Product Name":"Neon Wall Clock","Category":"Neon Clocks","Sub-Category":"Wall Clock","Size":"18 inch","Material":"Acrylic + LED","Color":"Blue","Cost Price (PKR)":1800,"Sale Price (PKR)":3499,"Opening Stock":4,"Min Stock":2,"Location":"Shop","Status":"Active"},{"SKU":"CST-001","Product Name":"Custom Logo Sign","Category":"Customized Products","Sub-Category":"Logo Sign","Size":"2 x 2 ft","Material":"Acrylic","Color":"White","Cost Price (PKR)":2000,"Sale Price (PKR)":4500,"Opening Stock":2,"Min Stock":1,"Location":"Production","Status":"Active"}],"purchases":[{"Date":"2026-10-09","Purchase No":3289,"SKU":1,"Products":"Tempreture bottle","Supplier":"low","Qty":2,"Cost Price (PKR)":600,"Total Cost":1200,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":2,"Products":"Tempreture bottle","Supplier":"high","Qty":2,"Cost Price (PKR)":800,"Total Cost":1600,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":3,"Products":"matka","Qty":1,"Cost Price (PKR)":950,"Total Cost":950,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":4,"Products":"Cola","Qty":1,"Cost Price (PKR)":950,"Total Cost":950,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":5,"Products":"wood","Qty":1,"Cost Price (PKR)":1150,"Total Cost":1150,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":6,"Products":"Pen","Qty":28,"Cost Price (PKR)":100,"Total Cost":2800,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":7,"Products":"Pen","Qty":2,"Cost Price (PKR)":120,"Total Cost":240,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":8,"Products":"Pen Diamond","Qty":3,"Cost Price (PKR)":150,"Total Cost":450,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":9,"Products":"Pencil Diamond","Qty":1,"Cost Price (PKR)":150,"Total Cost":150,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":10,"Products":"Pen","Qty":100,"Cost Price (PKR)":100,"Total Cost":10000,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":11,"Products":"KeyChain","Qty":10,"Cost Price (PKR)":80,"Total Cost":800,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":12,"Products":"KeyChain","Qty":2,"Cost Price (PKR)":200,"Total Cost":400,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":13,"Products":"KeyChain","Qty":4,"Cost Price (PKR)":220,"Total Cost":880,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":14,"Products":"KeyChain","Qty":1,"Cost Price (PKR)":250,"Total Cost":250,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":15,"Products":"KeyChain","Qty":3,"Cost Price (PKR)":260,"Total Cost":780,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":16,"Products":"Pen Box","Qty":50,"Cost Price (PKR)":5,"Total Cost":250,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":17,"Products":"Pen Box","Qty":12,"Cost Price (PKR)":20,"Total Cost":240,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":3289,"SKU":18,"Products":"KeyChain set box","Qty":6,"Cost Price (PKR)":35,"Total Cost":210,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":"-","SKU":19,"Products":"Ring And Challa","Qty":12,"Cost Price (PKR)":100,"Total Cost":1200,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":"-","SKU":20,"Products":"Ring And Challa","Qty":12,"Cost Price (PKR)":100,"Total Cost":1200,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":"-","SKU":21,"Products":"Ring And Challa","Qty":12,"Cost Price (PKR)":100,"Total Cost":1200,"Payment":"Cash"},{"Date":"2026-10-09","Purchase No":"-","SKU":22,"Products":"Engraving","Qty":2,"Cost Price (PKR)":50,"Total Cost":100,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":23,"Products":"Royal Breclet","Qty":7,"Cost Price (PKR)":800,"Total Cost":5600,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":24,"Products":"Lather Breclet","Qty":3,"Cost Price (PKR)":400,"Total Cost":1200,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":25,"Products":"Lather Breclet Twic","Qty":4,"Cost Price (PKR)":300,"Total Cost":1200,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":26,"Products":"Lather Breclet thin","Qty":1,"Cost Price (PKR)":200,"Total Cost":200,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":27,"Products":"Metal Breclet","Qty":6,"Cost Price (PKR)":150,"Total Cost":900,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":28,"Products":"Metal Breclet","Qty":1,"Cost Price (PKR)":600,"Total Cost":600,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":29,"Products":"Metal Breclet","Qty":2,"Cost Price (PKR)":650,"Total Cost":1300,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":30,"Products":"Heart Chain","Qty":3,"Cost Price (PKR)":250,"Total Cost":750,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":31,"Products":"Heart Chain","Qty":2,"Cost Price (PKR)":150,"Total Cost":300,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":32,"Products":"Lockit Chain Twice","Qty":1,"Cost Price (PKR)":250,"Total Cost":250,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":33,"Products":"Metal Lockit","Qty":12,"Cost Price (PKR)":120,"Total Cost":1440,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":34,"Products":"Metal Plate","Qty":6,"Cost Price (PKR)":100,"Total Cost":600,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":35,"Products":"Metal Plate","Qty":5,"Cost Price (PKR)":100,"Total Cost":500,"Payment":"Cash"},{"Date":"2026-10-15","Purchase No":2411,"SKU":36,"Products":"Metal Coin","Qty":24,"Cost Price (PKR)":50,"Total Cost":1200,"Payment":"Cash"},{"Date":"2026-10-19","Purchase No":2515,"SKU":23,"Products":"Royal Breclet","Qty":3,"Cost Price (PKR)":800,"Total Cost":2400,"Payment":"Cash"},{"Date":"2026-10-19","Purchase No":2515,"SKU":37,"Products":"Bengal Karra","Qty":1,"Cost Price (PKR)":250,"Total Cost":250,"Payment":"Cash"},{"Date":"2026-10-19","Purchase No":2515,"SKU":38,"Products":"Name Lockit","Qty":2,"Cost Price (PKR)":200,"Total Cost":400,"Payment":"Cash"},{"Date":"2026-10-19","Purchase No":2515,"SKU":39,"Products":"Thin Lockit","Qty":2,"Cost Price (PKR)":200,"Total Cost":400,"Payment":"Cash"},{"Date":"2026-10-19","Purchase No":2515,"SKU":40,"Products":"Mens Breclet","Qty":2,"Cost Price (PKR)":200,"Total Cost":400,"Payment":"Cash"},{"Date":"2026-10-19","Purchase No":2515,"SKU":21,"Products":"Ring And Challa","Qty":15,"Cost Price (PKR)":100,"Total Cost":1500,"Payment":"Cash"},{"Date":"2026-10-19","Purchase No":2515,"SKU":41,"Products":"Silver Chains","Qty":12,"Cost Price (PKR)":100,"Total Cost":1200,"Payment":"Cash"}],"sales":[{"Date":"2026-10-10","Invoice No":"AR-00001","Customer":"Cash","SKU":10,"Product":"Pen","Qty":6,"Sale Price (PKR)":150,"Total Sale":900,"Customer Paid":900,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-10","Invoice No":"AR-00002","Customer":"Cash","SKU":21,"Product":"Ring And Challa","Qty":3,"Sale Price (PKR)":200,"Total Sale":600,"Customer Paid":600,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-10","Invoice No":"AR-00003","Customer":"Cash","SKU":22,"Product":"Engraving","Qty":2,"Sale Price (PKR)":100,"Total Sale":200,"Customer Paid":200,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-11","Invoice No":"AR-00004","Customer":"Cash","SKU":8,"Product":"Pen Diamond","Qty":1,"Sale Price (PKR)":200,"Total Sale":200,"Customer Paid":200,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-16","Invoice No":"AR-00005","Customer":"Cash","SKU":23,"Product":"Royal Breclet","Qty":3,"Sale Price (PKR)":1200,"Total Sale":3600,"Customer Paid":3000,"Discount":600,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-16","Invoice No":"AR-00006","Customer":"Cash","SKU":8,"Product":"Pen Diamond","Qty":1,"Sale Price (PKR)":200,"Total Sale":200,"Customer Paid":200,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-16","Invoice No":"AR-00007","Customer":"Cash","SKU":15,"Product":"KeyChain","Qty":1,"Sale Price (PKR)":400,"Total Sale":400,"Customer Paid":400,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-17","Invoice No":"AR-00008","Customer":"Cash","SKU":10,"Product":"Pen","Qty":2,"Sale Price (PKR)":150,"Total Sale":300,"Customer Paid":300,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-17","Invoice No":"AR-00009","Customer":"Cash","SKU":6,"Product":"Pen","Qty":1,"Sale Price (PKR)":200,"Total Sale":200,"Customer Paid":200,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-18","Invoice No":"AR-00010","Customer":"Cash","SKU":19,"Product":"Ring And Challa","Qty":1,"Sale Price (PKR)":200,"Total Sale":200,"Customer Paid":200,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-18","Invoice No":"AR-00011","Customer":"Cash","SKU":19,"Product":"Ring And Challa","Qty":1,"Sale Price (PKR)":200,"Total Sale":200,"Customer Paid":200,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-18","Invoice No":"AR-00012","Customer":"Cash","SKU":10,"Product":"Pen","Qty":1,"Sale Price (PKR)":150,"Total Sale":150,"Customer Paid":150,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-18","Invoice No":"AR-00013","Customer":"Cash","SKU":6,"Product":"Pen","Qty":1,"Sale Price (PKR)":200,"Total Sale":200,"Customer Paid":200,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-18","Invoice No":"AR-00014","Customer":"Cash","SKU":10,"Product":"Pen","Qty":1,"Sale Price (PKR)":150,"Total Sale":150,"Customer Paid":150,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-20","Invoice No":"AR-00015","Customer":"Cash","SKU":20,"Product":"Ring And Challa","Qty":1,"Sale Price (PKR)":200,"Total Sale":200,"Customer Paid":200,"Discount":0,"Balance":0,"Payment Status":"Paid","Payment Method":"Cash"},{"Date":"2026-10-22","Invoice No":"AR-00016","Customer":"shaji","SKU":28,"Product":"Metal Breclet","Qty":1,"Sale Price (PKR)":1100,"Total Sale":1100,"Customer Paid":0,"Discount":300,"Balance":800,"Payment Status":"Unpaid","Payment Method":"Cash"},{"Date":"2026-10-23","Invoice No":"AR-00017","Customer":"Sharuk","SKU":23,"Product":"Royal Breclet","Qty":1,"Sale Price (PKR)":1200,"Total Sale":1200,"Customer Paid":1000,"Balance":200,"Payment Status":"Partial","Payment Method":"Cash"}],"expenses":[{"Date":"2026-10-10","Expense":"Persnol","Category":"Personal","Amount (PKR)":400,"Paid To":"naveed","Payment Method":"Cash","Notes":"Penaflex"},{"Date":"2026-10-18","Expense":"Persnol","Category":"Personal","Amount (PKR)":800,"Paid To":"Store","Payment Method":"Cash","Notes":"Window + Cash book"}],"suppliers":[{"Supplier ID":"Naveed","Supplier Name":"Saddar","Contact":"-","Material/Product":"Pen/Bottles/Keychain","Last Purchase Price":13690,"Payable Balance":0}],"customOrders":[]};
 
-const key='ar_customized_pos_v2';
+const key='ar_customized_pos_v3'; // Storage key updated to prevent any old loop/corruption
 function clone(x){return JSON.parse(JSON.stringify(x))}
 function loadState(){
   try{
@@ -413,7 +410,7 @@ function loadState(){
 
 let db=loadState();
 let cart=[];
-let invoiceCounter=Math.max(1000,...db.sales.map(s=>Number(String(s['Invoice No']||'').replace(/\D/g,''))||0))+1;
+let invoiceCounter=Math.max(1000,...(db.sales||[]).map(s=>Number(String(s['Invoice No']||'').replace(/\D/g,''))||0))+1;
 
 const money=n=>'PKR '+Number(n||0).toLocaleString('en-PK',{maximumFractionDigits:2});
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -423,13 +420,15 @@ const num=x=>Number(x)||0;
 function save(){
   try{
     localStorage.setItem(key,JSON.stringify(db));
-    document.getElementById('dbstatus').textContent='Saved in local browser';
+    let status=document.getElementById('dbstatus');
+    if(status) status.textContent='Saved in local browser';
   }catch(e){
-    document.getElementById('dbstatus').textContent='Backup required (storage full)';
+    let status=document.getElementById('dbstatus');
+    if(status) status.textContent='Backup required (storage full)';
   }
 }
 
-function sum(a,f){return a.reduce((n,x)=>n+num(f(x)),0)}
+function sum(a,f){return (a||[]).reduce((n,x)=>n+num(f(x)),0)}
 
 function productStock(p){
   let sku=String(p.SKU??'');
@@ -450,21 +449,27 @@ function prodSKU(p){return p.SKU??''}
 function fmtDate(d){return d?String(d).slice(0,10):'—'}
 
 function toggleSidebar(){
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('sidebarOverlay').classList.toggle('open');
+  let side=document.getElementById('sidebar');
+  let overlay=document.getElementById('sidebarOverlay');
+  if(side) side.classList.toggle('open');
+  if(overlay) overlay.classList.toggle('open');
 }
 
 function go(page){
   document.querySelectorAll('[id^="page-"]').forEach(e=>e.classList.add('hidden'));
-  document.getElementById('page-'+page).classList.remove('hidden');
+  let target=document.getElementById('page-'+page);
+  if(target) target.classList.remove('hidden');
   document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
   let label={dashboard:'Dashboard',pos:'New Sale / POS',sales:'Sales & Invoices',products:'Products & Stock',purchases:'Stock In / Purchases',expenses:'Expenses',customers:'Custom Orders',reports:'Reports'};
-  document.getElementById('crumb').textContent=label[page];
+  let crumb=document.getElementById('crumb');
+  if(crumb) crumb.textContent=label[page]||page;
   renderAll();
   window.scrollTo(0,0);
   if(window.innerWidth<=768){
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('open');
+    let side=document.getElementById('sidebar');
+    let overlay=document.getElementById('sidebarOverlay');
+    if(side) side.classList.remove('open');
+    if(overlay) overlay.classList.remove('open');
   }
 }
 document.querySelectorAll('.nav').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));
@@ -475,42 +480,49 @@ function metricsCard(label,value,icon,note){
 
 // DASHBOARD RENDER
 function renderDashboard(){
+  let m=document.getElementById('metrics');
+  if(!m)return;
   let salesTotal=sum(db.sales,s=>num(s['Total Sale']??s['Total Sale (PKR)'])||num(s['Sale Price (PKR)'])*num(s.Qty));
   let purchases=sum(db.purchases,s=>num(s['Total Cost'])||num(s.Qty)*num(s['Cost Price (PKR)']));
   let expenses=sum(db.expenses,s=>s['Amount (PKR)']);
   let stockValue=sum(db.products,p=>productStock(p)*num(p['Cost Price (PKR)']));
   
-  document.getElementById('metrics').innerHTML=
-    metricsCard('Total Revenue',money(salesTotal),'↗',db.sales.length+' transactions')+
-    metricsCard('Purchases',money(purchases),'⇩',db.purchases.length+' stock entries')+
-    metricsCard('Expenses',money(expenses),'↗',db.expenses.length+' records')+
-    metricsCard('Catalogue Stock',db.products.length,'◈',money(stockValue)+' valuation');
+  m.innerHTML=
+    metricsCard('Total Revenue',money(salesTotal),'↗',(db.sales||[]).length+' transactions')+
+    metricsCard('Purchases',money(purchases),'⇩',(db.purchases||[]).length+' stock entries')+
+    metricsCard('Expenses',money(expenses),'↗',(db.expenses||[]).length+' records')+
+    metricsCard('Catalogue Stock',(db.products||[]).length,'◈',money(stockValue)+' valuation');
 
-  let recent=[...db.sales].slice(-6).reverse();
-  document.getElementById('recentRows').innerHTML=recent.map((s)=>{
-    let idx=db.sales.indexOf(s);
-    let total=num(s['Total Sale']??s['Total Sale (PKR)'])||num(s['Sale Price (PKR)'])*num(s.Qty);
-    let status=s['Payment Status']||(num(s.Balance)>0?'Partial':'Paid');
-    return `<tr>
-      <td><b>${esc(s['Invoice No']||'AR-IMP')}</b></td>
-      <td>${esc(fmtDate(s.Date))}</td>
-      <td>${esc(s.Customer||'Walk-in')}</td>
-      <td>${esc(s.Qty||(s.Items?s.Items.length:1))}</td>
-      <td><b>${money(total)}</b></td>
-      <td><span class="pill ${status==='Unpaid'?'danger':status==='Partial'?'warn':''}">${esc(status)}</span></td>
-      <td class="actions-cell">
-        <button class="secondary btn-sm" onclick="printInvoice(db.sales[${idx}])">Print</button>
-        <button class="secondary btn-sm" onclick="showEditSaleModal(${idx})">Edit</button>
-      </td>
-    </tr>`;
-  }).join('')||'<tr><td colspan="7" class="empty">No sales recorded yet.</td></tr>';
+  let recent=[...(db.sales||[])].slice(-6).reverse();
+  let rRows=document.getElementById('recentRows');
+  if(rRows){
+    rRows.innerHTML=recent.map((s)=>{
+      let idx=db.sales.indexOf(s);
+      let total=num(s['Total Sale']??s['Total Sale (PKR)'])||num(s['Sale Price (PKR)'])*num(s.Qty);
+      let status=s['Payment Status']||(num(s.Balance)>0?'Partial':'Paid');
+      return `<tr>
+        <td><b>${esc(s['Invoice No']||'AR-IMP')}</b></td>
+        <td>${esc(fmtDate(s.Date))}</td>
+        <td>${esc(s.Customer||'Walk-in')}</td>
+        <td>${esc(s.Qty||(s.Items?s.Items.length:1))}</td>
+        <td><b>${money(total)}</b></td>
+        <td><span class="pill ${status==='Unpaid'?'danger':status==='Partial'?'warn':''}">${esc(status)}</span></td>
+        <td class="actions-cell">
+          <button class="secondary btn-sm" onclick="printInvoice(db.sales[${idx}])">Print</button>
+          <button class="secondary btn-sm" onclick="showEditSaleModal(${idx})">Edit</button>
+        </td>
+      </tr>`;
+    }).join('')||'<tr><td colspan="7" class="empty">No sales recorded yet.</td></tr>';
+  }
 }
 
 // POS SCREEN
 function renderProductPicker(){
+  let picker=document.getElementById('productPicker');
+  if(!picker)return;
   let q=(document.getElementById('productSearch')?.value||'').toLowerCase();
-  let arr=db.products.filter(p=>(prodName(p)+' '+prodSKU(p)+' '+(p.Category||'')).toLowerCase().includes(q)).slice(0,90);
-  document.getElementById('productPicker').innerHTML=arr.map(p=>`
+  let arr=(db.products||[]).filter(p=>(prodName(p)+' '+prodSKU(p)+' '+(p.Category||'')).toLowerCase().includes(q)).slice(0,90);
+  picker.innerHTML=arr.map(p=>`
     <div class="product" onclick="addToCart('${esc(String(prodSKU(p))).replace(/'/g,"\\'")}')">
       <div>
         <div class="picon">${/bottle/i.test(prodName(p))?'♧':/pen/i.test(prodName(p))?'✎':/sign|neon/i.test(prodName(p))?'✦':/key/i.test(prodName(p))?'⌘':'◈'}</div>
@@ -523,7 +535,7 @@ function renderProductPicker(){
 }
 
 function addToCart(sku){
-  let p=db.products.find(p=>String(prodSKU(p))===String(sku));
+  let p=(db.products||[]).find(p=>String(prodSKU(p))===String(sku));
   if(!p)return;
   let x=cart.find(x=>String(x.sku)===String(sku));
   if(x) x.qty++;
@@ -536,7 +548,9 @@ function cartSub(){return sum(cart,x=>x.qty*x.price)}
 function renderCart(){
   let box=document.getElementById('cartItems');
   if(!box)return;
-  document.getElementById('cartCount').textContent=cart.reduce((n,x)=>n+x.qty,0)+' items';
+  let countEl=document.getElementById('cartCount');
+  if(countEl) countEl.textContent=cart.reduce((n,x)=>n+x.qty,0)+' items';
+  
   box.innerHTML=cart.length?cart.map((x,i)=>`
     <div class="cartline">
       <div>
@@ -557,13 +571,16 @@ function renderCart(){
   let total=Math.max(0,cartSub()-disc);
   let paid=document.getElementById('paidAmount')?.value;
   let received=paid===''||paid==null?total:Math.max(0,num(paid));
-  document.getElementById('cartTotals').innerHTML=`
-    <div class="totalrow"><span>Subtotal</span><b>${money(cartSub())}</b></div>
-    <div class="totalrow"><span>Discount</span><b>− ${money(disc)}</b></div>
-    <div class="totalrow final"><span>Total Due</span><span>${money(total)}</span></div>
-    <div class="totalrow"><span>Received</span><b>${money(Math.min(received,total))}</b></div>
-    <div class="totalrow"><span>Balance Due</span><b>${money(Math.max(0,total-received))}</b></div>
-  `;
+  let totalsEl=document.getElementById('cartTotals');
+  if(totalsEl){
+    totalsEl.innerHTML=`
+      <div class="totalrow"><span>Subtotal</span><b>${money(cartSub())}</b></div>
+      <div class="totalrow"><span>Discount</span><b>− ${money(disc)}</b></div>
+      <div class="totalrow final"><span>Total Due</span><span>${money(total)}</span></div>
+      <div class="totalrow"><span>Received</span><b>${money(Math.min(received,total))}</b></div>
+      <div class="totalrow"><span>Balance Due</span><b>${money(Math.max(0,total-received))}</b></div>
+    `;
+  }
 }
 
 function changeQty(i,d){
@@ -684,6 +701,7 @@ function invoiceHTML(s){
 
 function printInvoice(s){
   let a=document.getElementById('printArea');
+  if(!a)return;
   a.innerHTML=invoiceHTML(s);
   a.classList.remove('hidden');
   window.print();
@@ -692,14 +710,16 @@ function printInvoice(s){
 
 // SALES & INVOICES MANAGEMENT
 function renderSales(){
+  let sRows=document.getElementById('salesRows');
+  if(!sRows)return;
   let q=(document.getElementById('salesSearch')?.value||'').toLowerCase();
-  let arr=db.sales.filter(s=>
+  let arr=(db.sales||[]).filter(s=>
     String(s['Invoice No']||'').toLowerCase().includes(q) ||
     String(s.Customer||'').toLowerCase().includes(q) ||
     String(s.Product||'').toLowerCase().includes(q)
   ).slice().reverse();
 
-  document.getElementById('salesRows').innerHTML=arr.map(s=>{
+  sRows.innerHTML=arr.map(s=>{
     let idx=db.sales.indexOf(s);
     let total=num(s['Total Sale']??s['Total Sale (PKR)'])||num(s['Sale Price (PKR)'])*num(s.Qty);
     let paid=num(s['Customer Paid']??s.Paid);
@@ -803,10 +823,12 @@ function deleteSale(idx){
 
 // PRODUCTS & STOCK MANAGEMENT
 function renderInventory(){
+  let iRows=document.getElementById('inventoryRows');
+  if(!iRows)return;
   let q=(document.getElementById('inventorySearch')?.value||'').toLowerCase();
-  let arr=db.products.filter(p=>(prodName(p)+' '+prodSKU(p)+' '+(p.Category||'')).toLowerCase().includes(q));
+  let arr=(db.products||[]).filter(p=>(prodName(p)+' '+prodSKU(p)+' '+(p.Category||'')).toLowerCase().includes(q));
 
-  document.getElementById('inventoryRows').innerHTML=arr.map(p=>{
+  iRows.innerHTML=arr.map(p=>{
     let idx=db.products.indexOf(p);
     let stock=productStock(p);
     let isLow=stock<=num(p['Min Stock']);
@@ -855,7 +877,7 @@ function showProductModal(){
 function addProduct(e){
   e.preventDefault();
   let f=new FormData(e.target);
-  let sku=f.get('sku')||('PROD-'+(Math.max(0,...db.products.map(p=>num(p.SKU)))+1));
+  let sku=f.get('sku')||('PROD-'+(Math.max(0,...(db.products||[]).map(p=>num(p.SKU)))+1));
   if(db.products.some(p=>String(p.SKU)===String(sku))){
     toast('Error: A product with this SKU already exists.');
     return;
@@ -934,10 +956,12 @@ function deleteProduct(idx){
 
 // STOCK IN / PURCHASES MANAGEMENT
 function renderPurchases(){
+  let pRows=document.getElementById('purchaseRows');
+  if(!pRows)return;
   let q=(document.getElementById('purchaseSearch')?.value||'').toLowerCase();
-  let arr=db.purchases.filter(p=>[p.Products,p.Supplier,p['Purchase No']].join(' ').toLowerCase().includes(q)).slice().reverse();
+  let arr=(db.purchases||[]).filter(p=>[p.Products,p.Supplier,p['Purchase No']].join(' ').toLowerCase().includes(q)).slice().reverse();
 
-  document.getElementById('purchaseRows').innerHTML=arr.map(p=>{
+  pRows.innerHTML=arr.map(p=>{
     let idx=db.purchases.indexOf(p);
     let total=num(p['Total Cost'])||num(p.Qty)*num(p['Cost Price (PKR)']);
     return `<tr>
@@ -963,7 +987,7 @@ function showPurchaseModal(){
       <div class="field">
         <label>Product *</label>
         <select name="sku" required>
-          ${db.products.map(p=>`<option value="${esc(p.SKU)}">${esc(prodName(p))} (SKU: ${esc(p.SKU)})</option>`).join('')}
+          ${(db.products||[]).map(p=>`<option value="${esc(p.SKU)}">${esc(prodName(p))} (SKU: ${esc(p.SKU)})</option>`).join('')}
         </select>
       </div>
       <div class="formrow">
@@ -990,7 +1014,7 @@ function showPurchaseModal(){
 function addPurchase(e){
   e.preventDefault();
   let f=new FormData(e.target);
-  let p=db.products.find(p=>String(p.SKU)===f.get('sku'));
+  let p=(db.products||[]).find(p=>String(p.SKU)===f.get('sku'));
   db.purchases.push({
     Date: today(),
     'Purchase No': 'PUR-'+Date.now().toString().slice(-6),
@@ -1068,10 +1092,13 @@ function deletePurchase(idx){
 
 // EXPENSES MANAGEMENT
 function renderExpenses(){
+  let eMetric=document.getElementById('expenseMetric');
+  let eRows=document.getElementById('expenseRows');
+  if(!eRows)return;
   let total=sum(db.expenses,x=>x['Amount (PKR)']);
-  document.getElementById('expenseMetric').innerHTML=metricsCard('Total Expenses',money(total),'↗',db.expenses.length+' entries');
+  if(eMetric) eMetric.innerHTML=metricsCard('Total Expenses',money(total),'↗',(db.expenses||[]).length+' entries');
 
-  document.getElementById('expenseRows').innerHTML=db.expenses.map((x,idx)=>`
+  eRows.innerHTML=(db.expenses||[]).map((x,idx)=>`
     <tr>
       <td>${esc(fmtDate(x.Date))}</td>
       <td><b>${esc(x.Expense||'—')}</b></td>
@@ -1211,7 +1238,9 @@ function deleteExpense(idx){
 
 // CUSTOM ORDERS MANAGEMENT
 function renderCustom(){
-  document.getElementById('customRows').innerHTML=db.customOrders.map((x,idx)=>`
+  let cRows=document.getElementById('customRows');
+  if(!cRows)return;
+  cRows.innerHTML=(db.customOrders||[]).map((x,idx)=>`
     <tr>
       <td><b>${esc(x['Order ID'])}</b></td>
       <td>${esc(fmtDate(x.Date))}</td>
@@ -1347,14 +1376,19 @@ function deleteCustom(idx){
 
 // REPORTS SCREEN
 function renderReports(){
-  let lows=db.products.filter(p=>productStock(p)<=num(p['Min Stock']));
-  document.getElementById('reportMetrics').innerHTML=
-    metricsCard('Catalogue Size',db.products.length,'◈','Product items')+
-    metricsCard('Low Stock Items',lows.length,'⚠','Needs reorder')+
-    metricsCard('Recorded Invoices',db.sales.length,'▤','Sales total')+
-    metricsCard('Custom Orders',db.customOrders.length,'✦','Customization tasks');
+  let rMetrics=document.getElementById('reportMetrics');
+  let lowRows=document.getElementById('lowStockRows');
+  if(!lowRows)return;
+  let lows=(db.products||[]).filter(p=>productStock(p)<=num(p['Min Stock']));
+  if(rMetrics){
+    rMetrics.innerHTML=
+      metricsCard('Catalogue Size',(db.products||[]).length,'◈','Product items')+
+      metricsCard('Low Stock Items',lows.length,'⚠','Needs reorder')+
+      metricsCard('Recorded Invoices',(db.sales||[]).length,'▤','Sales total')+
+      metricsCard('Custom Orders',(db.customOrders||[]).length,'✦','Customization tasks');
+  }
 
-  document.getElementById('lowStockRows').innerHTML=lows.map(p=>`
+  lowRows.innerHTML=lows.map(p=>`
     <tr>
       <td>${esc(prodSKU(p))}</td>
       <td><b>${esc(prodName(p))}</b></td>
@@ -1366,40 +1400,52 @@ function renderReports(){
 }
 
 function renderAll(){
-  renderDashboard();
-  renderProductPicker();
-  renderCart();
-  renderSales();
-  renderInventory();
-  renderPurchases();
-  renderExpenses();
-  renderCustom();
-  renderReports();
+  try{
+    renderDashboard();
+    renderProductPicker();
+    renderCart();
+    renderSales();
+    renderInventory();
+    renderPurchases();
+    renderExpenses();
+    renderCustom();
+    renderReports();
+  }catch(err){
+    console.error(err);
+  }
 }
 
 function toast(t){
   let el=document.getElementById('toastRoot');
-  el.innerHTML=`<div class="toast">${esc(t)}</div>`;
-  setTimeout(()=>el.innerHTML='',3200);
+  if(el){
+    el.innerHTML=`<div class="toast">${esc(t)}</div>`;
+    setTimeout(()=>el.innerHTML='',3200);
+  }
 }
 
 function modal(title,body){
-  document.getElementById('modalRoot').innerHTML=
-    `<div class="modalbg" onclick="if(event.target===this)closeModal()">
-      <div class="modal">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-          <h2 style="margin:0">${title}</h2>
-          <button class="secondary btn-sm" onclick="closeModal()">✕</button>
+  let root=document.getElementById('modalRoot');
+  if(root){
+    root.innerHTML=
+      `<div class="modalbg" onclick="if(event.target===this)closeModal()">
+        <div class="modal">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <h2 style="margin:0">${title}</h2>
+            <button class="secondary btn-sm" onclick="closeModal()">✕</button>
+          </div>
+          ${body}
         </div>
-        ${body}
-      </div>
-    </div>`;
+      </div>`;
+  }
 }
 
-function closeModal(){document.getElementById('modalRoot').innerHTML=''}
+function closeModal(){
+  let root=document.getElementById('modalRoot');
+  if(root) root.innerHTML='';
+}
 
 function exportBackup(){
-  let blob=new Blob([JSON.stringify({app:'AR Customized POS',version:2,exportedAt:new Date().toISOString(),data:db},null,2)],{type:'application/json'});
+  let blob=new Blob([JSON.stringify({app:'AR Customized POS',version:3,exportedAt:new Date().toISOString(),data:db},null,2)],{type:'application/json'});
   let a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
   a.download='AR-Customized-POS-backup.json';
@@ -1429,8 +1475,8 @@ function restoreBackup(e){
   r.readAsText(f);
 }
 
+// Initial render call
 renderAll();
 </script>
 </body>
 </html>
-```eof
