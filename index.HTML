@@ -131,7 +131,7 @@ tbody tr:last-child td{border-bottom:0}
     <div class="sidefoot">
       <b style="color:#e5e7eb">AR CUSTOMIZED</b><br>
       Full Editable Management<br>
-      <span id="dbstatus">Cloud & Local ready</span>
+      <span id="dbstatus">Connecting to cloud…</span>
     </div>
   </aside>
 
@@ -399,11 +399,19 @@ tbody tr:last-child td{border-bottom:0}
 const SUPABASE_URL = 'https://zhehtqefcolgsxfczrjl.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_nLTSQAHzjmwi2sp8cBenzg_3_R_MV_t';
 let supabaseClient = null;
+let cloudReady = false;
+let pendingCloudSave = false;
+let cloudWriteQueue = Promise.resolve();
 try {
   if (window.supabase && SUPABASE_URL && SUPABASE_ANON_KEY) {
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   }
 } catch(e) {}
+
+function setCloudStatus(message) {
+  let status = document.getElementById('dbstatus');
+  if (status) status.textContent = message;
+}
 
 const original = {
   "products": [
@@ -553,32 +561,81 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': 
 const today = () => new Date().toISOString().slice(0, 10);
 const num = x => Number(x) || 0;
 
+function syncToCloud(snapshot) {
+  cloudWriteQueue = cloudWriteQueue.then(async () => {
+    const { error } = await supabaseClient.from('pos_storage').upsert({ id: 1, payload: snapshot });
+    if (error) throw error;
+  }).then(() => {
+    setCloudStatus('Cloud synced ✓');
+  }).catch(error => {
+    console.error('Supabase sync error:', error.message);
+    setCloudStatus('Cloud sync error — check setup');
+  });
+  return cloudWriteQueue;
+}
+
 function save() {
   try {
     localStorage.setItem(key, JSON.stringify(db));
-    let status = document.getElementById('dbstatus');
-    if (status) status.textContent = 'Saved locally & Synced';
-  } catch (e) {}
-  
-  // Try syncing to Supabase in background if client is ready
-  if (supabaseClient) {
-    supabaseClient.from('pos_storage').upsert({ id: 1, payload: db }).then(({ error }) => {
-      if (error) console.log('Cloud sync info:', error.message);
-    }).catch(err => {});
+    setCloudStatus(supabaseClient ? 'Saved locally…' : 'Saved locally — cloud not configured');
+  } catch (e) {
+    setCloudStatus('Local save failed');
   }
+
+  if (!supabaseClient) return;
+  if (!cloudReady) {
+    pendingCloudSave = true;
+    return;
+  }
+  syncToCloud(clone(db));
 }
 
-// Try loading remote Supabase state on boot
+// Load the shared database row, then listen for changes made on other devices.
 async function initCloudSync() {
-  if (supabaseClient) {
-    try {
-      let { data, error } = await supabaseClient.from('pos_storage').select('*').eq('id', 1).single();
-      if (data && data.payload) {
-        db = { ...clone(original), ...data.payload };
-        localStorage.setItem(key, JSON.stringify(db));
+  if (!supabaseClient) {
+    setCloudStatus('Saved locally — cloud not configured');
+    return;
+  }
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('pos_storage')
+      .select('payload')
+      .eq('id', 1)
+      .maybeSingle();
+    if (error) throw error;
+
+    if (pendingCloudSave) {
+      await syncToCloud(clone(db));
+    } else if (data && data.payload) {
+      db = { ...clone(original), ...data.payload };
+      localStorage.setItem(key, JSON.stringify(db));
+      renderAll();
+    } else {
+      await syncToCloud(clone(db));
+    }
+    cloudReady = true;
+
+    supabaseClient
+      .channel('pos-storage-live')
+      .on('postgres_changes', {
+        event: '*', schema: 'public', table: 'pos_storage', filter: 'id=eq.1'
+      }, event => {
+        const payload = event.new && event.new.payload;
+        if (!payload) return;
+        db = { ...clone(original), ...payload };
+        try { localStorage.setItem(key, JSON.stringify(db)); } catch (e) {}
         renderAll();
-      }
-    } catch(e) {}
+        setCloudStatus('Live cloud update received ✓');
+      })
+      .subscribe(status => {
+        if (status === 'SUBSCRIBED') setCloudStatus('Cloud connected ✓');
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') setCloudStatus('Realtime connection failed');
+      });
+  } catch (error) {
+    cloudReady = false;
+    console.error('Supabase connection error:', error.message);
+    setCloudStatus('Cloud connection failed — check setup');
   }
 }
 
