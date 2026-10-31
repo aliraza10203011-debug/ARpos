@@ -114,8 +114,10 @@ tbody tr:last-child td{border-bottom:0}
   #printArea{position:absolute;left:0;top:0;width:100%;background:#fff!important;color:#000!important;padding:0!important}
 }
 </style>
-<!-- Supabase CDN -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/13.1.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/13.1.0/firebase-analytics-compat.js"></script>
 </head>
 <body>
 <div class="login-screen" id="loginScreen">
@@ -445,18 +447,28 @@ function logout() {
   document.getElementById('loginPassword').value = '';
 }
 
-// Supabase Configuration
-const SUPABASE_URL = 'https://zhehtqefcolgsxfczrjl.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_nLTSQAHzjmwi2sp8cBenzg_3_R_MV_t';
-let supabaseClient = null;
+// Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBR6DDWJDVrB5s5dj_karYGw0_9t_NHKDI",
+  authDomain: "ar-custom-pos.firebaseapp.com",
+  projectId: "ar-custom-pos",
+  storageBucket: "ar-custom-pos.firebasestorage.app",
+  messagingSenderId: "234926437119",
+  appId: "1:234926437119:web:868e6592b9ec41d86152ca",
+  measurementId: "G-BW5M5LNQJD"
+};
+let firebaseApp = null;
+let firestore = null;
 let cloudReady = false;
 let pendingCloudSave = false;
 let cloudWriteQueue = Promise.resolve();
 try {
-  if (window.supabase && SUPABASE_URL && SUPABASE_ANON_KEY) {
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  }
-} catch(e) {}
+  firebaseApp = firebase.initializeApp(firebaseConfig);
+  firestore = firebase.firestore();
+  try { firebase.analytics(); } catch (e) {}
+} catch (e) {
+  console.error('Firebase initialization error:', e.message);
+}
 
 function setCloudStatus(message) {
   let status = document.getElementById('dbstatus');
@@ -613,13 +625,14 @@ const num = x => Number(x) || 0;
 
 function syncToCloud(snapshot) {
   cloudWriteQueue = cloudWriteQueue.then(async () => {
-    const { error } = await supabaseClient.from('pos_storage').upsert({ id: 1, payload: snapshot });
-    if (error) throw error;
+    if (!firestore) throw new Error('Firebase Firestore is not initialized');
+    await firestore.collection('pos_storage').doc('1').set({ payload: snapshot });
   }).then(() => {
     setCloudStatus('Cloud synced ✓');
   }).catch(error => {
-    console.error('Supabase sync error:', error.message);
-    setCloudStatus('Cloud sync error — check setup');
+    const reason = error.code || error.message || 'unknown error';
+    console.error('Firebase sync error:', error);
+    setCloudStatus('Cloud write failed: ' + reason);
   });
   return cloudWriteQueue;
 }
@@ -627,12 +640,12 @@ function syncToCloud(snapshot) {
 function save() {
   try {
     localStorage.setItem(key, JSON.stringify(db));
-    setCloudStatus(supabaseClient ? 'Saved locally…' : 'Saved locally — cloud not configured');
+    setCloudStatus(firestore ? 'Saved locally…' : 'Saved locally — Firebase not configured');
   } catch (e) {
     setCloudStatus('Local save failed');
   }
 
-  if (!supabaseClient) return;
+  if (!firestore) return;
   if (!cloudReady) {
     pendingCloudSave = true;
     return;
@@ -642,18 +655,15 @@ function save() {
 
 // Load the shared database row, then listen for changes made on other devices.
 async function initCloudSync() {
-  if (!supabaseClient) {
-    setCloudStatus('Saved locally — cloud not configured');
+  if (!firestore) {
+    setCloudStatus('Saved locally — Firebase not configured');
     return;
   }
 
   try {
-    const { data, error } = await supabaseClient
-      .from('pos_storage')
-      .select('payload')
-      .eq('id', 1)
-      .maybeSingle();
-    if (error) throw error;
+    const document = firestore.collection('pos_storage').doc('1');
+    const snapshot = await document.get();
+    const data = snapshot.exists ? snapshot.data() : null;
 
     if (pendingCloudSave) {
       await syncToCloud(clone(db));
@@ -666,26 +676,22 @@ async function initCloudSync() {
     }
     cloudReady = true;
 
-    supabaseClient
-      .channel('pos-storage-live')
-      .on('postgres_changes', {
-        event: '*', schema: 'public', table: 'pos_storage', filter: 'id=eq.1'
-      }, event => {
-        const payload = event.new && event.new.payload;
-        if (!payload) return;
-        db = { ...clone(original), ...payload };
-        try { localStorage.setItem(key, JSON.stringify(db)); } catch (e) {}
-        renderAll();
-        setCloudStatus('Live cloud update received ✓');
-      })
-      .subscribe(status => {
-        if (status === 'SUBSCRIBED') setCloudStatus('Cloud connected ✓');
-        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') setCloudStatus('Realtime connection failed');
-      });
+    document.onSnapshot(snapshot => {
+      const payload = snapshot.exists && snapshot.data().payload;
+      if (!payload) return;
+      db = { ...clone(original), ...payload };
+      try { localStorage.setItem(key, JSON.stringify(db)); } catch (e) {}
+      renderAll();
+      setCloudStatus('Live cloud update received ✓');
+    }, error => {
+      console.error('Firebase realtime error:', error.message);
+      setCloudStatus('Realtime connection failed');
+    });
   } catch (error) {
     cloudReady = false;
-    console.error('Supabase connection error:', error.message);
-    setCloudStatus('Cloud connection failed — check setup');
+    const reason = error.code || error.message || 'unknown error';
+    console.error('Firebase connection error:', error);
+    setCloudStatus('Cloud connection failed: ' + reason);
   }
 }
 
