@@ -850,12 +850,13 @@ function renderDashboard() {
           <td class="actions-cell">
             <button class="secondary btn-sm" onclick="printInvoice(db.sales[${idx}])">Print</button>
             <button class="secondary btn-sm" onclick="showEditSaleModal(${idx})">Edit</button>
+            <button class="danger btn-sm" onclick="deleteSale(${idx})">Delete</button>
           </td>
         </tr>`;
       }).join('') || '<tr><td colspan="7" class="empty">No sales found for this date range.</td></tr>';
     }
   } else {
-    if (tableHead) tableHead.innerHTML = '<tr><th>Date</th><th>Purchase No.</th><th>Product</th><th>Supplier</th><th>Qty</th><th>Total Cost</th><th>Payment</th></tr>';
+    if (tableHead) tableHead.innerHTML = '<tr><th>Date</th><th>Purchase No.</th><th>Product</th><th>Supplier</th><th>Qty</th><th>Total Cost</th><th>Payment</th><th>Actions</th></tr>';
     let filteredPurchases = (db.purchases || []).filter(p => {
       let date = fmtDate(p.Date);
       let matchesDate = (!range.from || date >= range.from) && (!range.to || date <= range.to);
@@ -863,6 +864,7 @@ function renderDashboard() {
     }).slice().reverse();
     if (rRows) {
       rRows.innerHTML = filteredPurchases.map(p => {
+        let idx = db.purchases.indexOf(p);
         let total = num(p['Total Cost']) || num(p.Qty) * num(p['Cost Price (PKR)']);
         return `<tr>
           <td>${esc(fmtDate(p.Date))}</td>
@@ -872,8 +874,13 @@ function renderDashboard() {
           <td>${esc(p.Qty || 0)}</td>
           <td><b>${money(total)}</b></td>
           <td>${esc(p.Payment || '—')}</td>
+          <td class="actions-cell">
+            <button class="secondary btn-sm" onclick="printPurchase(db.purchases[${idx}])">Print</button>
+            <button class="secondary btn-sm" onclick="showEditPurchaseModal(${idx})">Edit</button>
+            <button class="danger btn-sm" onclick="deletePurchase(${idx})">Delete</button>
+          </td>
         </tr>`;
-      }).join('') || '<tr><td colspan="7" class="empty">No purchases found for this date range.</td></tr>';
+      }).join('') || '<tr><td colspan="8" class="empty">No purchases found for this date range.</td></tr>';
     }
   }
 }
@@ -1067,6 +1074,28 @@ function printInvoice(s) {
   a.classList.remove('hidden');
   window.print();
   setTimeout(() => a.classList.add('hidden'), 700);
+}
+
+function printPurchase(p) {
+  let area = document.getElementById('printArea');
+  if (!area) return;
+  let total = num(p['Total Cost']) || num(p.Qty) * num(p['Cost Price (PKR)']);
+  area.innerHTML = `<div style="font-family:Arial,sans-serif;color:#172033;max-width:760px;margin:auto;padding:24px">
+    <div style="display:flex;justify-content:space-between;border-bottom:3px solid #315efb;padding-bottom:16px">
+      <div><div style="font-size:22px;font-weight:900">AR CUSTOMIZED</div><div style="color:#667085;font-size:12px">Stock Purchase Record</div></div>
+      <div style="text-align:right"><div style="font-size:22px;font-weight:800">PURCHASE</div><div style="font-weight:700">${esc(p['Purchase No'] || '—')}</div><div style="color:#667085;font-size:12px">${esc(fmtDate(p.Date))}</div></div>
+    </div>
+    <div style="margin:20px 0;font-size:13px"><b>Supplier:</b> ${esc(p.Supplier || '—')}</div>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:20px">
+      <thead><tr style="background:#f2f5ff"><th style="padding:10px;text-align:left">Product</th><th style="padding:10px;text-align:left">SKU</th><th style="padding:10px;text-align:right">Qty</th><th style="padding:10px;text-align:right">Unit Cost</th><th style="padding:10px;text-align:right">Total</th></tr></thead>
+      <tbody><tr><td style="padding:10px;border-bottom:1px solid #e5e7eb">${esc(p.Products || '—')}</td><td style="padding:10px;border-bottom:1px solid #e5e7eb">${esc(p.SKU || '—')}</td><td style="padding:10px;text-align:right;border-bottom:1px solid #e5e7eb">${esc(p.Qty || 0)}</td><td style="padding:10px;text-align:right;border-bottom:1px solid #e5e7eb">${money(p['Cost Price (PKR)'])}</td><td style="padding:10px;text-align:right;border-bottom:1px solid #e5e7eb">${money(total)}</td></tr></tbody>
+    </table>
+    <div style="text-align:right;font-size:16px;font-weight:800">Total: ${money(total)}</div>
+    <div style="text-align:right;margin-top:6px;font-size:13px">Payment: ${esc(p.Payment || '—')}</div>
+  </div>`;
+  area.classList.remove('hidden');
+  window.print();
+  setTimeout(() => area.classList.add('hidden'), 700);
 }
 
 function localDateString(date) {
