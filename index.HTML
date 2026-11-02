@@ -148,7 +148,6 @@ tbody tr:last-child td{border-bottom:0}
     <button class="nav" data-page="products"><span class="ico">◈</span> Products & Stock</button>
     <button class="nav" data-page="purchases"><span class="ico">⇩</span> Stock In / Purchases</button>
     <button class="nav" data-page="expenses"><span class="ico">↗</span> Expenses</button>
-    <button class="nav" data-page="customers"><span class="ico">♙</span> Custom Orders</button>
     <button class="nav" data-page="reports"><span class="ico">▥</span> Reports</button>
     <div class="sidefoot">
       <b style="color:#e5e7eb">AR CUSTOMIZED</b><br>
@@ -352,27 +351,6 @@ tbody tr:last-child td{border-bottom:0}
                 <tr><th>Date</th><th>Expense</th><th>Category</th><th>Paid To</th><th>Amount</th><th>Method</th><th>Actions</th></tr>
               </thead>
               <tbody id="expenseRows"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- CUSTOM ORDERS -->
-      <section id="page-customers" class="hidden">
-        <div class="head">
-          <div>
-            <h1>Custom Orders</h1>
-            <div class="sub">Track personalized designs, advances, and pending balances.</div>
-          </div>
-          <button class="primary" onclick="showCustomModal()">＋ New Custom Order</button>
-        </div>
-        <div class="panel">
-          <div class="tablewrap">
-            <table>
-              <thead>
-                <tr><th>Order ID</th><th>Date</th><th>Customer</th><th>Phone</th><th>Total</th><th>Received</th><th>Balance</th><th>Status</th><th>Actions</th></tr>
-              </thead>
-              <tbody id="customRows"></tbody>
             </table>
           </div>
         </div>
@@ -700,8 +678,10 @@ function sum(a, f) { return (a || []).reduce((n, x) => n + num(f(x)), 0); }
 function productStock(p) {
   let sku = String(p.SKU ?? '');
   let opening = num(p['Opening Stock']);
-  let bought = sum(db.purchases, x => String(x.SKU ?? '') === sku ? x.Qty : 0);
+  // Opening Stock is the imported on-hand balance; only count movements created after that snapshot.
+  let bought = sum(db.purchases, x => x['Affects Stock'] === true && String(x.SKU ?? '') === sku ? x.Qty : 0);
   let sold = sum(db.sales, s => {
+    if (s['Affects Stock'] !== true) return 0;
     if (s.Items) {
       return sum(s.Items, item => String(item.sku ?? '') === sku ? item.qty : 0);
     }
@@ -727,7 +707,7 @@ function go(page) {
   let target = document.getElementById('page-' + page);
   if (target) target.classList.remove('hidden');
   document.querySelectorAll('.nav').forEach(b => b.classList.toggle('active', b.dataset.page === page));
-  let label = { dashboard: 'Dashboard', pos: 'New Sale / POS', sales: 'Sales & Invoices', products: 'Products & Stock', purchases: 'Stock In / Purchases', expenses: 'Expenses', customers: 'Custom Orders', reports: 'Reports' };
+  let label = { dashboard: 'Dashboard', pos: 'New Sale / POS', sales: 'Sales & Invoices', products: 'Products & Stock', purchases: 'Stock In / Purchases', expenses: 'Expenses', reports: 'Reports' };
   let crumb = document.getElementById('crumb');
   if (crumb) crumb.textContent = label[page] || page;
   renderAll();
@@ -870,6 +850,7 @@ function completeSale() {
     'Invoice No': invoice,
     Customer: customer,
     Phone: document.getElementById('customerPhone').value,
+    'Affects Stock': true,
     Items: clone(cart),
     Qty: cart.reduce((n, x) => n + x.qty, 0),
     'Total Sale': total,
@@ -1281,6 +1262,7 @@ function addPurchase(e) {
     'Purchase No': 'PUR-' + Date.now().toString().slice(-6),
     SKU: p ? p.SKU : f.get('sku'),
     Products: p ? prodName(p) : 'Purchased Item',
+    'Affects Stock': true,
     Supplier: f.get('supplier'),
     Qty: num(f.get('qty')),
     'Cost Price (PKR)': num(f.get('cost')),
@@ -1642,8 +1624,7 @@ function renderReports() {
     rMetrics.innerHTML =
       metricsCard('Catalogue Size', (db.products || []).length, '◈', 'Product items') +
       metricsCard('Low Stock Items', lows.length, '⚠', 'Needs reorder') +
-      metricsCard('Recorded Invoices', (db.sales || []).length, '▤', 'Sales total') +
-      metricsCard('Custom Orders', (db.customOrders || []).length, '✦', 'Customization tasks');
+      metricsCard('Recorded Invoices', (db.sales || []).length, '▤', 'Sales total');
   }
 
   lowRows.innerHTML = lows.map(p => `
