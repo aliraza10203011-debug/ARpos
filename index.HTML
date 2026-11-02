@@ -825,20 +825,27 @@ function saleNetRevenue(sale) {
 function renderDashboard() {
   let m = document.getElementById('metrics');
   if (!m) return;
-  let salesTotal = sum(db.sales, s => num(s['Total Sale'] ?? s['Total Sale (PKR)']) || num(s['Sale Price (PKR)']) * num(s.Qty));
-  let purchases = sum(db.purchases, s => num(s['Total Cost']) || num(s.Qty) * num(s['Cost Price (PKR)']));
-  let expenses = sum(db.expenses, s => s['Amount (PKR)']);
-  let grossProfit = sum(db.sales, s => saleNetRevenue(s) - saleCost(s));
+  let range = dashboardDateRange();
+  let isInRange = record => {
+    let date = fmtDate(record.Date);
+    return (!range.from || date >= range.from) && (!range.to || date <= range.to);
+  };
+  let dashboardSales = (db.sales || []).filter(isInRange);
+  let dashboardPurchases = (db.purchases || []).filter(isInRange);
+  let dashboardExpenses = (db.expenses || []).filter(isInRange);
+  let salesTotal = sum(dashboardSales, s => num(s['Total Sale'] ?? s['Total Sale (PKR)']) || num(s['Sale Price (PKR)']) * num(s.Qty));
+  let purchases = sum(dashboardPurchases, s => num(s['Total Cost']) || num(s.Qty) * num(s['Cost Price (PKR)']));
+  let expenses = sum(dashboardExpenses, s => s['Amount (PKR)']);
+  let grossProfit = sum(dashboardSales, s => saleNetRevenue(s) - saleCost(s));
   let netProfit = grossProfit - expenses;
   
   m.innerHTML =
-    metricsCard('Total Revenue', money(salesTotal), '↗', (db.sales || []).length + ' transactions') +
+    metricsCard('Total Revenue', money(salesTotal), '↗', dashboardSales.length + ' transactions') +
     metricsCard('Net Profit', money(netProfit), '◉', 'Sales − item costs − expenses') +
-    metricsCard('Purchases', money(purchases), '⇩', (db.purchases || []).length + ' stock entries') +
-    metricsCard('Expenses', money(expenses), '↗', (db.expenses || []).length + ' records');
+    metricsCard('Purchases', money(purchases), '⇩', dashboardPurchases.length + ' stock entries') +
+    metricsCard('Expenses', money(expenses), '↗', dashboardExpenses.length + ' records');
 
   let type = document.getElementById('dashboardRecentType')?.value || 'sales';
-  let range = dashboardDateRange();
   let heading = document.getElementById('dashboardRecentHeading');
   let tableHead = document.getElementById('dashboardRecentHead');
   let viewAll = document.getElementById('dashboardRecentViewAll');
