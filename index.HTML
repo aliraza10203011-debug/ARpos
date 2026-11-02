@@ -144,9 +144,7 @@ tbody tr:last-child td{border-bottom:0}
     <div class="navlabel">WORKSPACE</div>
     <button class="nav active" data-page="dashboard"><span class="ico">▦</span> Dashboard</button>
     <button class="nav" data-page="pos"><span class="ico">▣</span> New Sale / POS</button>
-    <button class="nav" data-page="sales"><span class="ico">▤</span> Sales & Invoices</button>
     <button class="nav" data-page="products"><span class="ico">◈</span> Products & Stock</button>
-    <button class="nav" data-page="purchases"><span class="ico">⇩</span> Stock In / Purchases</button>
     <button class="nav" data-page="expenses"><span class="ico">↗</span> Expenses</button>
     <button class="nav" data-page="reports"><span class="ico">▥</span> Reports</button>
     <div class="sidefoot">
@@ -185,12 +183,30 @@ tbody tr:last-child td{border-bottom:0}
         <div class="cards" id="metrics"></div>
         <div class="panel">
           <div class="panelhead">
-            <h2>Recent Sales</h2>
-            <button class="secondary btn-sm" onclick="go('sales')">View all sales →</button>
+            <h2 id="dashboardRecentHeading">Recent Sales</h2>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <select id="dashboardRecentType" class="search" aria-label="Recent data type" onchange="renderDashboard()">
+                <option value="sales">Sales</option>
+                <option value="purchases">Purchases</option>
+              </select>
+              <select id="dashboardRecentPreset" class="search" aria-label="Recent date preset" onchange="applyDashboardDatePreset(this.value)">
+                <option value="7">Last 7 days</option>
+                <option value="1">Last 1 day</option>
+                <option value="30">Last 1 month</option>
+                <option value="365">Last 1 year</option>
+                <option value="all">All dates</option>
+                <option value="custom">Custom range</option>
+              </select>
+              <label class="muted" for="dashboardRecentFrom">From</label>
+              <input id="dashboardRecentFrom" type="date" class="search" aria-label="Recent data from date" onchange="setDashboardCustomRange()">
+              <label class="muted" for="dashboardRecentTo">To</label>
+              <input id="dashboardRecentTo" type="date" class="search" aria-label="Recent data to date" onchange="setDashboardCustomRange()">
+              <button id="dashboardRecentViewAll" class="secondary btn-sm" onclick="go('sales')">View all sales →</button>
+            </div>
           </div>
           <div class="tablewrap">
             <table>
-              <thead>
+              <thead id="dashboardRecentHead">
                 <tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status</th><th>Actions</th></tr>
               </thead>
               <tbody id="recentRows"></tbody>
@@ -271,7 +287,15 @@ tbody tr:last-child td{border-bottom:0}
         <div class="panel">
           <div class="panelhead">
             <h2>All Transactions</h2>
-            <input id="salesSearch" class="search" placeholder="Search invoice or customer…" oninput="renderSales()">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <label class="muted" for="salesFrom">From</label>
+              <input id="salesFrom" type="date" class="search" aria-label="Sales from date" onchange="renderSales()">
+              <label class="muted" for="salesTo">To</label>
+              <input id="salesTo" type="date" class="search" aria-label="Sales to date" onchange="renderSales()">
+              <button class="secondary btn-sm" onclick="salesLast7Days()">Last 7 days</button>
+              <button class="secondary btn-sm" onclick="clearSalesDateFilter()">All dates</button>
+              <input id="salesSearch" class="search" placeholder="Search invoice or customer…" oninput="renderSales()">
+            </div>
           </div>
           <div class="tablewrap">
             <table>
@@ -345,6 +369,10 @@ tbody tr:last-child td{border-bottom:0}
         </div>
         <div class="cards" id="expenseMetric"></div>
         <div class="panel">
+          <div class="panelhead">
+            <h2>Expense Records</h2>
+            <input id="expenseSearch" class="search" placeholder="Search all expense details…" oninput="renderExpenses()">
+          </div>
           <div class="tablewrap">
             <table>
               <thead>
@@ -695,6 +723,20 @@ function prodName(p) { return p['Product Name'] || 'Unnamed product'; }
 function prodSKU(p) { return p.SKU ?? ''; }
 function fmtDate(d) { return d ? String(d).slice(0, 10) : '—'; }
 
+function searchText(value) {
+  if (value == null) return '';
+  if (Array.isArray(value)) return value.map(searchText).join(' ');
+  if (typeof value === 'object') return Object.entries(value).map(([key, item]) => `${key} ${searchText(item)}`).join(' ');
+  return String(value);
+}
+
+function matchesSearch(record, query, extra = '') {
+  const text = `${searchText(record)} ${searchText(extra)}`.toLocaleLowerCase();
+  const term = String(query || '').trim().toLocaleLowerCase();
+  const compact = value => value.replace(/[\s,]/g, '').replace(/pkr/g, '');
+  return !term || text.includes(term) || compact(text).includes(compact(term));
+}
+
 function toggleSidebar() {
   let side = document.getElementById('sidebar');
   let overlay = document.getElementById('sidebarOverlay');
@@ -725,6 +767,39 @@ function metricsCard(label, value, icon, note) {
   return `<div class="metric"><div class="metric-top"><span>${label}</span><span class="metric-icon">${icon}</span></div><strong>${value}</strong><small>${note}</small></div>`;
 }
 
+function dashboardDateRange() {
+  return {
+    from: document.getElementById('dashboardRecentFrom')?.value || '',
+    to: document.getElementById('dashboardRecentTo')?.value || ''
+  };
+}
+
+function applyDashboardDatePreset(preset) {
+  let from = document.getElementById('dashboardRecentFrom');
+  let to = document.getElementById('dashboardRecentTo');
+  if (!from || !to) return;
+  if (preset === 'all') {
+    from.value = '';
+    to.value = '';
+  } else if (preset !== 'custom') {
+    let end = new Date();
+    let start = new Date(end);
+    if (preset === '1') start.setDate(start.getDate());
+    else if (preset === '7') start.setDate(start.getDate() - 6);
+    else if (preset === '30') start.setMonth(start.getMonth() - 1);
+    else if (preset === '365') start.setFullYear(start.getFullYear() - 1);
+    from.value = localDateString(start);
+    to.value = localDateString(end);
+  }
+  renderDashboard();
+}
+
+function setDashboardCustomRange() {
+  let preset = document.getElementById('dashboardRecentPreset');
+  if (preset) preset.value = 'custom';
+  renderDashboard();
+}
+
 function renderDashboard() {
   let m = document.getElementById('metrics');
   if (!m) return;
@@ -739,34 +814,75 @@ function renderDashboard() {
     metricsCard('Expenses', money(expenses), '↗', (db.expenses || []).length + ' records') +
     metricsCard('Catalogue Stock', (db.products || []).length, '◈', money(stockValue) + ' valuation');
 
-  let recent = [...(db.sales || [])].slice(-6).reverse();
+  let type = document.getElementById('dashboardRecentType')?.value || 'sales';
+  let range = dashboardDateRange();
+  let heading = document.getElementById('dashboardRecentHeading');
+  let tableHead = document.getElementById('dashboardRecentHead');
+  let viewAll = document.getElementById('dashboardRecentViewAll');
   let rRows = document.getElementById('recentRows');
-  if (rRows) {
-    rRows.innerHTML = recent.map((s) => {
-      let idx = db.sales.indexOf(s);
-      let total = num(s['Total Sale'] ?? s['Total Sale (PKR)']) || num(s['Sale Price (PKR)']) * num(s.Qty);
-      let status = s['Payment Status'] || (num(s.Balance) > 0 ? 'Partial' : 'Paid');
-      return `<tr>
-        <td><b>${esc(s['Invoice No'] || 'AR-IMP')}</b></td>
-        <td>${esc(fmtDate(s.Date))}</td>
-        <td>${esc(s.Customer || 'Walk-in')}</td>
-        <td>${esc(s.Qty || (s.Items ? s.Items.length : 1))}</td>
-        <td><b>${money(total)}</b></td>
-        <td><span class="pill ${status === 'Unpaid' ? 'danger' : status === 'Partial' ? 'warn' : ''}">${esc(status)}</span></td>
-        <td class="actions-cell">
-          <button class="secondary btn-sm" onclick="printInvoice(db.sales[${idx}])">Print</button>
-          <button class="secondary btn-sm" onclick="showEditSaleModal(${idx})">Edit</button>
-        </td>
-      </tr>`;
-    }).join('') || '<tr><td colspan="7" class="empty">No sales recorded yet.</td></tr>';
+
+  if (heading) heading.textContent = 'Recent';
+  if (viewAll) {
+    viewAll.textContent = type === 'sales' ? 'View all sales →' : 'View all purchases →';
+    viewAll.onclick = () => go(type);
+  }
+
+  if (type === 'sales') {
+    if (tableHead) tableHead.innerHTML = '<tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status</th><th>Actions</th></tr>';
+    let filteredSales = (db.sales || []).filter(s => {
+      let date = fmtDate(s.Date);
+      let matchesDate = (!range.from || date >= range.from) && (!range.to || date <= range.to);
+      return matchesDate;
+    }).slice().reverse();
+    if (rRows) {
+      rRows.innerHTML = filteredSales.map(s => {
+        let idx = db.sales.indexOf(s);
+        let total = num(s['Total Sale'] ?? s['Total Sale (PKR)']) || num(s['Sale Price (PKR)']) * num(s.Qty);
+        let status = s['Payment Status'] || (num(s.Balance) > 0 ? 'Partial' : 'Paid');
+        let qty = s.Qty || (s.Items ? sum(s.Items, item => item.qty) : 1);
+        return `<tr>
+          <td><b>${esc(s['Invoice No'] || 'AR-IMP')}</b></td>
+          <td>${esc(fmtDate(s.Date))}</td>
+          <td>${esc(s.Customer || 'Walk-in')}</td>
+          <td>${esc(qty)}</td>
+          <td><b>${money(total)}</b></td>
+          <td><span class="pill ${status === 'Unpaid' ? 'danger' : status === 'Partial' ? 'warn' : ''}">${esc(status)}</span></td>
+          <td class="actions-cell">
+            <button class="secondary btn-sm" onclick="printInvoice(db.sales[${idx}])">Print</button>
+            <button class="secondary btn-sm" onclick="showEditSaleModal(${idx})">Edit</button>
+          </td>
+        </tr>`;
+      }).join('') || '<tr><td colspan="7" class="empty">No sales found for this date range.</td></tr>';
+    }
+  } else {
+    if (tableHead) tableHead.innerHTML = '<tr><th>Date</th><th>Purchase No.</th><th>Product</th><th>Supplier</th><th>Qty</th><th>Total Cost</th><th>Payment</th></tr>';
+    let filteredPurchases = (db.purchases || []).filter(p => {
+      let date = fmtDate(p.Date);
+      let matchesDate = (!range.from || date >= range.from) && (!range.to || date <= range.to);
+      return matchesDate;
+    }).slice().reverse();
+    if (rRows) {
+      rRows.innerHTML = filteredPurchases.map(p => {
+        let total = num(p['Total Cost']) || num(p.Qty) * num(p['Cost Price (PKR)']);
+        return `<tr>
+          <td>${esc(fmtDate(p.Date))}</td>
+          <td>${esc(p['Purchase No'] || '—')}</td>
+          <td>${esc(p.Products || '—')}</td>
+          <td>${esc(p.Supplier || '—')}</td>
+          <td>${esc(p.Qty || 0)}</td>
+          <td><b>${money(total)}</b></td>
+          <td>${esc(p.Payment || '—')}</td>
+        </tr>`;
+      }).join('') || '<tr><td colspan="7" class="empty">No purchases found for this date range.</td></tr>';
+    }
   }
 }
 
 function renderProductPicker() {
   let picker = document.getElementById('productPicker');
   if (!picker) return;
-  let q = (document.getElementById('productSearch')?.value || '').toLowerCase();
-  let arr = (db.products || []).filter(p => (prodName(p) + ' ' + prodSKU(p) + ' ' + (p.Category || '')).toLowerCase().includes(q)).slice(0, 90);
+  let q = document.getElementById('productSearch')?.value || '';
+  let arr = (db.products || []).filter(p => matchesSearch(p, q, `Stock ${productStock(p)}`)).slice(0, 90);
   picker.innerHTML = arr.map(p => `
     <div class="product" onclick="addToCart('${esc(String(prodSKU(p))).replace(/'/g, "\\'")}')">
       <div>
@@ -953,15 +1069,42 @@ function printInvoice(s) {
   setTimeout(() => a.classList.add('hidden'), 700);
 }
 
+function localDateString(date) {
+  let year = date.getFullYear();
+  let month = String(date.getMonth() + 1).padStart(2, '0');
+  let day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function salesLast7Days() {
+  let from = document.getElementById('salesFrom');
+  let to = document.getElementById('salesTo');
+  if (!from || !to) return;
+  let start = new Date();
+  start.setDate(start.getDate() - 6);
+  from.value = localDateString(start);
+  to.value = localDateString(new Date());
+  renderSales();
+}
+
+function clearSalesDateFilter() {
+  document.getElementById('salesFrom').value = '';
+  document.getElementById('salesTo').value = '';
+  renderSales();
+}
+
 function renderSales() {
   let sRows = document.getElementById('salesRows');
   if (!sRows) return;
-  let q = (document.getElementById('salesSearch')?.value || '').toLowerCase();
-  let arr = (db.sales || []).filter(s =>
-    String(s['Invoice No'] || '').toLowerCase().includes(q) ||
-    String(s.Customer || '').toLowerCase().includes(q) ||
-    String(s.Product || '').toLowerCase().includes(q)
-  ).slice().reverse();
+  let q = document.getElementById('salesSearch')?.value || '';
+  let from = document.getElementById('salesFrom')?.value || '';
+  let to = document.getElementById('salesTo')?.value || '';
+  let arr = (db.sales || []).filter(s => {
+    let date = fmtDate(s.Date);
+    let matchesDate = (!from || date >= from) && (!to || date <= to);
+    let matchesRecord = matchesSearch(s, q, `Sale Price ${s['Sale Price (PKR)'] || ''} Total ${s['Total Sale'] || s['Total Sale (PKR)'] || ''}`);
+    return matchesDate && matchesRecord;
+  }).slice().reverse();
 
   sRows.innerHTML = arr.map(s => {
     let idx = db.sales.indexOf(s);
@@ -1068,8 +1211,8 @@ function deleteSale(idx) {
 function renderInventory() {
   let iRows = document.getElementById('inventoryRows');
   if (!iRows) return;
-  let q = (document.getElementById('inventorySearch')?.value || '').toLowerCase();
-  let arr = (db.products || []).filter(p => (prodName(p) + ' ' + prodSKU(p) + ' ' + (p.Category || '')).toLowerCase().includes(q));
+  let q = document.getElementById('inventorySearch')?.value || '';
+  let arr = (db.products || []).filter(p => matchesSearch(p, q, `Stock ${productStock(p)} Sale Price ${prodPrice(p)}`));
 
   iRows.innerHTML = arr.map(p => {
     let idx = db.products.indexOf(p);
@@ -1200,8 +1343,8 @@ function deleteProduct(idx) {
 function renderPurchases() {
   let pRows = document.getElementById('purchaseRows');
   if (!pRows) return;
-  let q = (document.getElementById('purchaseSearch')?.value || '').toLowerCase();
-  let arr = (db.purchases || []).filter(p => [p.Products, p.Supplier, p['Purchase No']].join(' ').toLowerCase().includes(q)).slice().reverse();
+  let q = document.getElementById('purchaseSearch')?.value || '';
+  let arr = (db.purchases || []).filter(p => matchesSearch(p, q)).slice().reverse();
 
   pRows.innerHTML = arr.map(p => {
     let idx = db.purchases.indexOf(p);
@@ -1339,8 +1482,10 @@ function renderExpenses() {
   if (!eRows) return;
   let total = sum(db.expenses, x => x['Amount (PKR)']);
   if (eMetric) eMetric.innerHTML = metricsCard('Total Expenses', money(total), '↗', (db.expenses || []).length + ' entries');
+  let query = document.getElementById('expenseSearch')?.value || '';
+  let arr = (db.expenses || []).map((x, idx) => ({ x, idx })).filter(({ x }) => matchesSearch(x, query));
 
-  eRows.innerHTML = (db.expenses || []).map((x, idx) => `
+  eRows.innerHTML = arr.map(({ x, idx }) => `
     <tr>
       <td>${esc(fmtDate(x.Date))}</td>
       <td><b>${esc(x.Expense || '—')}</b></td>
@@ -1716,6 +1861,8 @@ function restoreBackup(e) {
 
 // Restore this tab's login state, then render and initialize cloud sync.
 setLoginView(sessionStorage.getItem(LOGIN_SESSION_KEY) === 'yes');
+applyDashboardDatePreset('7');
+salesLast7Days();
 renderAll();
 initCloudSync();
 </script>
