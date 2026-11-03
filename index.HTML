@@ -310,7 +310,7 @@ tbody tr:last-child td{border-bottom:0}
               <input id="salesTo" type="date" class="search" aria-label="Sales to date" onchange="renderSales()">
               <button class="secondary btn-sm" onclick="salesLast7Days()">Last 7 days</button>
               <button class="secondary btn-sm" onclick="clearSalesDateFilter()">All dates</button>
-              <input id="salesSearch" class="search" placeholder="Search invoice or customer…" oninput="renderSales()">
+              <input id="salesSearch" class="search" placeholder="Search invoice, customer, product or SKU…" oninput="renderSales()">
             </div>
           </div>
           <div class="tablewrap">
@@ -1162,7 +1162,13 @@ function renderSales() {
   let arr = (db.sales || []).filter(s => {
     let date = fmtDate(s.Date);
     let matchesDate = (!from || date >= from) && (!to || date <= to);
-    let matchesRecord = matchesSearch(s, q, `Sale Price ${s['Sale Price (PKR)'] || ''} Total ${s['Total Sale'] || s['Total Sale (PKR)'] || ''}`);
+    let saleItems = Array.isArray(s.Items) ? s.Items : [s];
+    let productDetails = saleItems.map(item => {
+      let sku = item.sku ?? item.SKU ?? s.SKU;
+      let product = (db.products || []).find(p => String(p.SKU) === String(sku ?? ''));
+      return `${sku ?? ''} ${item.name || item.Product || product?.['Product Name'] || ''}`;
+    }).join(' ');
+    let matchesRecord = matchesSearch(s, q, `${productDetails} Sale Price ${s['Sale Price (PKR)'] || ''} Total ${s['Total Sale'] || s['Total Sale (PKR)'] || ''}`);
     return matchesDate && matchesRecord;
   }).slice().reverse();
 
@@ -1928,3 +1934,4 @@ initCloudSync();
 </script>
 </body>
 </html>
+
