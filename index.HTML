@@ -128,6 +128,12 @@ tbody tr:last-child td{border-bottom:0}
   .invoice-copy .invoice-totals{margin-left:auto;width:48%;font-size:8.5pt}
   .invoice-copy .invoice-totals div{display:flex;justify-content:space-between;padding:.7mm 0}
   .invoice-copy .invoice-thanks{margin-top:auto;padding-top:2mm;text-align:center;border-top:1px solid #ddd;font-size:8pt}
+  .print-report{font-family:Arial,sans-serif;color:#111;padding:10mm;background:#fff}
+  .print-report h1{margin:0 0 4mm;font-size:18pt}
+  .print-report .report-meta{margin-bottom:5mm;font-size:9pt;color:#444}
+  .print-report table{font-size:9pt}
+  .print-report th,.print-report td{padding:2mm;border-bottom:1px solid #ddd;white-space:normal}
+  .print-report th{background:#f1f3f7!important;color:#222}
 }
 </style>
 <!-- Firebase SDKs -->
@@ -410,6 +416,36 @@ tbody tr:last-child td{border-bottom:0}
           <button class="secondary" onclick="exportBackup()">Export Backup</button>
         </div>
         <div class="cards" id="reportMetrics"></div>
+        <div class="panel">
+          <div class="panelhead">
+            <div><h2>Sales, Purchases & Stock Reports</h2><div class="sub">Filter records by date and product, then print the results.</div></div>
+            <button class="primary" onclick="printFilteredReport()">Print Report</button>
+          </div>
+          <div class="formrow">
+            <div class="field">
+              <label for="reportType">Report Type</label>
+              <select id="reportType" onchange="renderFilteredReport()">
+                <option value="sales">Sales Invoices</option>
+                <option value="purchases">Purchase Invoices</option>
+                <option value="stock">Product Stock</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="reportProduct">Product</label>
+              <select id="reportProduct" onchange="renderFilteredReport()"><option value="">All products</option></select>
+            </div>
+          </div>
+          <div class="formrow">
+            <div class="field"><label for="reportFrom">From date</label><input id="reportFrom" type="date" onchange="renderFilteredReport()"></div>
+            <div class="field"><label for="reportTo">To date</label><input id="reportTo" type="date" onchange="renderFilteredReport()"></div>
+          </div>
+          <div class="tablewrap">
+            <table>
+              <thead id="reportTableHead"></thead>
+              <tbody id="reportTableRows"></tbody>
+            </table>
+          </div>
+        </div>
         <div class="panel">
           <div class="panelhead"><h2>Stock Alerts</h2></div>
           <div class="tablewrap">
@@ -1425,6 +1461,7 @@ function renderPurchases() {
       <td><b>${money(total)}</b></td>
       <td>${esc(p.Payment || '—')}</td>
       <td class="actions-cell">
+        <button class="secondary btn-sm" onclick="printPurchase(db.purchases[${idx}])">Print</button>
         <button class="secondary btn-sm" onclick="showEditPurchaseModal(${idx})">Edit</button>
         <button class="danger btn-sm" onclick="deletePurchase(${idx})">Delete</button>
       </td>
@@ -1826,6 +1863,94 @@ function deleteCustom(idx) {
   }
 }
 
+function reportSaleItems(sale) {
+  if (Array.isArray(sale.Items) && sale.Items.length) return sale.Items;
+  return [{ sku: sale.SKU, name: sale.Product || sale.Products || '', qty: sale.Qty || 1, price: sale['Sale Price (PKR)'] || 0 }];
+}
+
+function renderFilteredReport() {
+  let head = document.getElementById('reportTableHead');
+  let rows = document.getElementById('reportTableRows');
+  let productSelect = document.getElementById('reportProduct');
+  if (!head || !rows || !productSelect) return;
+
+  let selectedProduct = productSelect.value;
+  productSelect.innerHTML = '<option value="">All products</option>' + (db.products || []).map(p =>
+    `<option value="${esc(prodSKU(p))}">${esc(prodName(p))} (SKU: ${esc(prodSKU(p))})</option>`
+  ).join('');
+  if ([...productSelect.options].some(option => option.value === selectedProduct)) productSelect.value = selectedProduct;
+
+  let type = document.getElementById('reportType')?.value || 'sales';
+  let skuFilter = productSelect.value;
+  let from = document.getElementById('reportFrom')?.value || '';
+  let to = document.getElementById('reportTo')?.value || '';
+  let inDateRange = record => {
+    let date = fmtDate(record.Date);
+    return (!from || date >= from) && (!to || date <= to);
+  };
+
+  if (type === 'sales') {
+    head.innerHTML = '<tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Product / SKU</th><th>Qty</th><th>Invoice Total</th><th>Paid</th><th>Balance</th></tr>';
+    let sales = (db.sales || []).filter(inDateRange).filter(s =>
+      !skuFilter || reportSaleItems(s).some(item => String(item.sku ?? item.SKU ?? s.SKU ?? '') === skuFilter)
+    );
+    rows.innerHTML = sales.map(s => {
+      let items = reportSaleItems(s).filter(item => !skuFilter || String(item.sku ?? item.SKU ?? s.SKU ?? '') === skuFilter);
+      let names = items.map(item => {
+        let sku = item.sku ?? item.SKU ?? s.SKU ?? '';
+        let product = (db.products || []).find(p => String(p.SKU) === String(sku));
+        return `${esc(item.name || item.Product || product?.['Product Name'] || s.Product || 'Item')} (SKU: ${esc(sku || '—')})`;
+      }).join('<br>');
+      let qty = sum(items, item => item.qty ?? item.Qty ?? 1);
+      let invoiceTotal = num(s['Total Sale'] ?? s['Total Sale (PKR)']) || num(s['Sale Price (PKR)']) * num(s.Qty);
+      let shownTotal = skuFilter ? sum(items, item => num(item.price ?? item['Sale Price (PKR)']) * num(item.qty ?? item.Qty ?? 1)) : invoiceTotal;
+      let paid = num(s['Customer Paid'] ?? s.Paid);
+      let balance = num(s.Balance);
+      return `<tr><td>${esc(s['Invoice No'] || 'AR-IMP')}</td><td>${esc(fmtDate(s.Date))}</td><td>${esc(s.Customer || 'Cash')}</td><td>${names}</td><td>${qty}</td><td>${money(shownTotal)}</td><td>${money(paid)}</td><td>${money(balance)}</td></tr>`;
+    }).join('') || '<tr><td colspan="8" class="empty">No sales invoices match these filters.</td></tr>';
+    return;
+  }
+
+  if (type === 'purchases') {
+    head.innerHTML = '<tr><th>Date</th><th>Purchase No.</th><th>Product</th><th>SKU</th><th>Supplier</th><th>Qty</th><th>Unit Cost</th><th>Total Cost</th><th>Payment</th></tr>';
+    let purchases = (db.purchases || []).filter(p => inDateRange(p) && (!skuFilter || String(p.SKU ?? '') === skuFilter));
+    rows.innerHTML = purchases.map(p => {
+      let total = num(p['Total Cost']) || num(p.Qty) * num(p['Cost Price (PKR)']);
+      return `<tr><td>${esc(fmtDate(p.Date))}</td><td>${esc(p['Purchase No'] || '—')}</td><td>${esc(p.Products || '—')}</td><td>${esc(p.SKU ?? '—')}</td><td>${esc(p.Supplier || '—')}</td><td>${esc(p.Qty || 0)}</td><td>${money(p['Cost Price (PKR)'])}</td><td>${money(total)}</td><td>${esc(p.Payment || '—')}</td></tr>`;
+    }).join('') || '<tr><td colspan="9" class="empty">No purchases match these filters.</td></tr>';
+    return;
+  }
+
+  head.innerHTML = '<tr><th>SKU</th><th>Product</th><th>Opening Stock</th><th>Purchased in Period</th><th>Sold in Period</th><th>Net Movement</th><th>Current Stock</th></tr>';
+  let products = (db.products || []).filter(p => !skuFilter || String(p.SKU) === skuFilter);
+  rows.innerHTML = products.map(p => {
+    let sku = String(p.SKU ?? '');
+    let purchased = sum(db.purchases, purchase => purchase['Affects Stock'] === true && String(purchase.SKU ?? '') === sku && inDateRange(purchase) ? purchase.Qty : 0);
+    let sold = sum(db.sales, sale => {
+      if (sale['Affects Stock'] !== true || !inDateRange(sale)) return 0;
+      if (Array.isArray(sale.Items)) return sum(sale.Items, item => String(item.sku ?? item.SKU ?? '') === sku ? item.qty ?? item.Qty : 0);
+      return String(sale.SKU ?? '') === sku ? sale.Qty : 0;
+    });
+    return `<tr><td>${esc(sku)}</td><td>${esc(prodName(p))}</td><td>${num(p['Opening Stock'])}</td><td>${purchased}</td><td>${sold}</td><td>${purchased - sold}</td><td><b>${productStock(p)}</b></td></tr>`;
+  }).join('') || '<tr><td colspan="7" class="empty">No products match these filters.</td></tr>';
+}
+
+function printFilteredReport() {
+  renderFilteredReport();
+  let area = document.getElementById('printArea');
+  let title = document.getElementById('reportType');
+  if (!area || !title) return;
+  let product = document.getElementById('reportProduct');
+  let from = document.getElementById('reportFrom')?.value || 'Any';
+  let to = document.getElementById('reportTo')?.value || 'Any';
+  let productLabel = product?.value ? product.options[product.selectedIndex]?.text : 'All products';
+  let reportName = title.options[title.selectedIndex]?.text || 'Report';
+  area.innerHTML = `<div class="print-report"><h1>AR CUSTOMIZED — ${esc(reportName)}</h1><div class="report-meta">Product: ${esc(productLabel)} &nbsp; | &nbsp; From: ${esc(from)} &nbsp; | &nbsp; To: ${esc(to)} &nbsp; | &nbsp; Printed: ${esc(today())}</div><table style="width:100%;border-collapse:collapse"><thead>${document.getElementById('reportTableHead').innerHTML}</thead><tbody>${document.getElementById('reportTableRows').innerHTML}</tbody></table></div>`;
+  area.classList.remove('hidden');
+  window.print();
+  setTimeout(() => area.classList.add('hidden'), 700);
+}
+
 function renderReports() {
   let rMetrics = document.getElementById('reportMetrics');
   let lowRows = document.getElementById('lowStockRows');
@@ -1860,6 +1985,7 @@ function renderAll() {
     renderExpenses();
     renderCustom();
     renderReports();
+    renderFilteredReport();
   } catch (err) {
     console.error(err);
   }
@@ -1934,4 +2060,3 @@ initCloudSync();
 </script>
 </body>
 </html>
-
