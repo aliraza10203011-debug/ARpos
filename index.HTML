@@ -661,15 +661,46 @@ const original = {
 const key = 'ar_customized_pos_v4';
 function clone(x) { return JSON.parse(JSON.stringify(x)); }
 
+const openingStockBySKU = {
+  '1': 2, '2': 2, '3': 1, '4': 1, '5': 1, '6': 28, '7': 2, '8': 3, '9': 1,
+  '10': 100, '11': 10, '12': 2, '13': 4, '14': 1, '15': 3, '16': 50, '17': 12,
+  '18': 6, '19': 12, '20': 12, '21': 27, '22': 2, '23': 10, '24': 3, '25': 4,
+  '26': 1, '27': 6, '28': 1, '29': 2, '30': 3, '31': 2, '32': 1, '33': 12,
+  '34': 6, '35': 5, '36': 24, '37': 6, '38': 2, '39': 2, '40': 2, '41': 12
+};
+
+function applyOpeningStockTable(state) {
+  // The listed quantities are the stock baseline; keep them authoritative on every load.
+  (state.products || []).forEach(product => {
+    let sku = normalizedSKU(product.SKU);
+    if (Object.prototype.hasOwnProperty.call(openingStockBySKU, sku)) {
+      product['Opening Stock'] = openingStockBySKU[sku];
+    }
+  });
+  state._openingStockTableApplied = true;
+
+  // Historical/legacy purchases are records only. New purchases are explicitly marked true.
+  const seedPurchaseKeys = new Set((original.purchases || []).map(p =>
+    [p.Date, p['Purchase No'], normalizedSKU(p.SKU), p.Qty].join('|')
+  ));
+  (state.purchases || []).forEach(purchase => {
+    let signature = [purchase.Date, purchase['Purchase No'], normalizedSKU(purchase.SKU), purchase.Qty].join('|');
+    if (seedPurchaseKeys.has(signature) || purchase['Affects Stock'] == null) {
+      purchase['Affects Stock'] = false;
+    }
+  });
+  return state;
+}
+
 function loadState() {
   try {
     let saved = localStorage.getItem(key);
     if (saved) {
       let x = JSON.parse(saved);
-      return { ...clone(original), ...x };
+      return applyOpeningStockTable({ ...clone(original), ...x });
     }
   } catch (e) {}
-  return clone(original);
+  return applyOpeningStockTable(clone(original));
 }
 
 let db = loadState();
@@ -726,7 +757,7 @@ async function initCloudSync() {
     if (pendingCloudSave) {
       await syncToCloud(clone(db));
     } else if (data && data.payload) {
-      db = { ...clone(original), ...data.payload };
+      db = applyOpeningStockTable({ ...clone(original), ...data.payload });
       localStorage.setItem(key, JSON.stringify(db));
       renderAll();
     } else {
@@ -737,7 +768,7 @@ async function initCloudSync() {
     document.onSnapshot(snapshot => {
       const payload = snapshot.exists && snapshot.data().payload;
       if (!payload) return;
-      db = { ...clone(original), ...payload };
+      db = applyOpeningStockTable({ ...clone(original), ...payload });
       try { localStorage.setItem(key, JSON.stringify(db)); } catch (e) {}
       renderAll();
       setCloudStatus('Live cloud update received ✓');
@@ -755,25 +786,65 @@ async function initCloudSync() {
 
 function sum(a, f) { return (a || []).reduce((n, x) => n + num(f(x)), 0); }
 
-function productStock(p) {
-  let sku = String(p.SKU ?? '');
-  let opening = num(p['Opening Stock']);
-  // Opening Stock is the imported on-hand balance; only count movements created after that snapshot.
-  let bought = sum(db.purchases, x => x['Affects Stock'] === true && String(x.SKU ?? '') === sku ? x.Qty : 0);
-  let sold = sum(db.sales, s => {
-    if (s['Affects Stock'] !== true) return 0;
-    if (s.Items) {
-      return sum(s.Items, item => String(item.sku ?? '') === sku ? item.qty : 0);
-    }
-    return String(s.SKU ?? '') === sku ? s.Qty : 0;
-  });
+function normalizedSKU(value) {
+  return String(value ?? '').trim().toLocaleUpperCase();
+}
+
+function purchaseQuantityForSku(purchase, sku) {
+  if (purchase['Affects Stock'] === false) return 0;
+  const purchaseSKU = purchase.SKU ?? purchase.sku ?? purchase['Product SKU'];
+  return normalizedSKU(purchaseSKU) === normalizedSKU(sku)
+    ? num(purchase.Qty ?? purchase.qty ?? purchase.Quantity ?? purchase.quantity)
+    : 0;
+}
+
+function saleQuantityForSku(sale, sku) {
+  const items = Array.isArray(sale.Items) ? sale.Items : Array.isArray(sale.items) ? sale.items : null;
+  if (items) {
+    return sum(items, item => {
+      const itemSKU = item.sku ?? item.SKU ?? item.productSku ?? item.productSKU ?? item['Product SKU'] ??
+        (item.product && (item.product.SKU ?? item.product.sku)) ??
+        (items.length === 1 ? sale.SKU ?? sale.sku : '');
+      const quantity = item.qty ?? item.Qty ?? item.quantity ?? item.Quantity ?? item.count ??
+        (items.length === 1 ? sale.Qty ?? sale.qty ?? sale.Quantity : 0);
+      return normalizedSKU(itemSKU) === normalizedSKU(sku) ? num(quantity) : 0;
+    });
+  }
+  const saleSKU = sale.SKU ?? sale.sku ?? sale['Product SKU'];
+  return normalizedSKU(saleSKU) === normalizedSKU(sku)
+    ? num(sale.Qty ?? sale.qty ?? sale.Quantity ?? sale.quantity)
+    : 0;
+}
+
+function productStockBase(p) {
+  const sku = prodSKU(p);
+  const opening = num(p['Opening Stock']);
+  const bought = sum(db.purchases, purchase => purchaseQuantityForSku(purchase, sku));
+  const sold = sum(db.sales, sale => saleQuantityForSku(sale, sku));
   return opening + bought - sold;
+}
+
+function productStock(p) {
+  return productStockBase(p) + num(p['Stock Adjustment']);
 }
 
 function prodPrice(p) { return num(p['Sale Price (PKR)']); }
 function prodName(p) { return p['Product Name'] || 'Unnamed product'; }
 function prodSKU(p) { return p.SKU ?? ''; }
 function fmtDate(d) { return d ? String(d).slice(0, 10) : '—'; }
+
+function saleDue(sale) {
+  let rawTotal = num(sale['Total Sale'] ?? sale['Total Sale (PKR)']) || num(sale['Sale Price (PKR)']) * num(sale.Qty);
+  if (!rawTotal && Array.isArray(sale.Items)) {
+    rawTotal = sum(sale.Items, item => num(item.price ?? item['Sale Price (PKR)']) * num(item.qty ?? item.Qty ?? 1));
+  }
+  let discount = num(sale.Discount ?? sale['Dis Rate']);
+  let accounted = num(sale['Customer Paid'] ?? sale.Paid) + num(sale.Balance);
+  if (discount > 0 && Math.abs(accounted - (rawTotal - discount)) < 0.01) {
+    return Math.max(0, rawTotal - discount);
+  }
+  return Math.max(0, rawTotal);
+}
 
 function searchText(value) {
   if (value == null) return '';
@@ -865,13 +936,7 @@ function saleCost(sale) {
 }
 
 function saleNetRevenue(sale) {
-  let total = num(sale['Total Sale'] ?? sale['Total Sale (PKR)']) || num(sale['Sale Price (PKR)']) * num(sale.Qty);
-  let discount = num(sale.Discount ?? sale['Dis Rate']);
-  if (Array.isArray(sale.Items) && sale.Items.length) {
-    let itemsTotal = sum(sale.Items, item => num(item.price ?? item['Sale Price (PKR)']) * num(item.qty ?? item.Qty ?? 1));
-    return Math.max(0, total || itemsTotal - discount);
-  }
-  return Math.max(0, total - discount);
+  return saleDue(sale);
 }
 
 function renderDashboard() {
@@ -885,7 +950,10 @@ function renderDashboard() {
   let dashboardSales = (db.sales || []).filter(isInRange);
   let dashboardPurchases = (db.purchases || []).filter(isInRange);
   let dashboardExpenses = (db.expenses || []).filter(isInRange);
-  let salesTotal = sum(dashboardSales, s => num(s['Total Sale'] ?? s['Total Sale (PKR)']) || num(s['Sale Price (PKR)']) * num(s.Qty));
+  let salesTotal = sum(dashboardSales, saleDue);
+  let amountReceived = sum(dashboardSales, sale =>
+    sale['Customer Paid'] ?? sale.Paid ?? Math.max(0, saleDue(sale) - num(sale.Balance))
+  );
   let purchases = sum(dashboardPurchases, s => num(s['Total Cost']) || num(s.Qty) * num(s['Cost Price (PKR)']));
   let expenses = sum(dashboardExpenses, s => s['Amount (PKR)']);
   let grossProfit = sum(dashboardSales, s => saleNetRevenue(s) - saleCost(s));
@@ -893,6 +961,7 @@ function renderDashboard() {
   
   m.innerHTML =
     metricsCard('Total Revenue', money(salesTotal), '↗', dashboardSales.length + ' transactions') +
+    metricsCard('Amount Received', money(amountReceived), '✓', 'Total paid by customers') +
     metricsCard('Net Profit', money(netProfit), '◉', 'Sales − item costs − expenses') +
     metricsCard('Purchases', money(purchases), '⇩', dashboardPurchases.length + ' stock entries') +
     metricsCard('Expenses', money(expenses), '↗', dashboardExpenses.length + ' records');
@@ -919,7 +988,7 @@ function renderDashboard() {
     if (rRows) {
       rRows.innerHTML = filteredSales.map(s => {
         let idx = db.sales.indexOf(s);
-        let total = num(s['Total Sale'] ?? s['Total Sale (PKR)']) || num(s['Sale Price (PKR)']) * num(s.Qty);
+        let total = saleDue(s);
         let status = s['Payment Status'] || (num(s.Balance) > 0 ? 'Partial' : 'Paid');
         let qty = s.Qty || (s.Items ? sum(s.Items, item => item.qty) : 1);
         return `<tr>
@@ -988,6 +1057,11 @@ function addToCart(sku) {
   let p = (db.products || []).find(p => String(prodSKU(p)) === String(sku));
   if (!p) return;
   let x = cart.find(x => String(x.sku) === String(sku));
+  let inCart = x ? x.qty : 0;
+  if (inCart >= productStock(p)) {
+    toast('Not enough stock available for ' + prodName(p) + '.');
+    return;
+  }
   if (x) x.qty++;
   else cart.push({ sku: p.SKU, name: prodName(p), price: prodPrice(p), qty: 1, cost: num(p['Cost Price (PKR)']) });
   renderCart();
@@ -1034,14 +1108,32 @@ function renderCart() {
 }
 
 function changeQty(i, d) {
-  cart[i].qty += d;
-  if (cart[i].qty <= 0) cart.splice(i, 1);
+  let nextQty = cart[i].qty + d;
+  if (d > 0) {
+    let p = (db.products || []).find(p => String(prodSKU(p)) === String(cart[i].sku));
+    if (!p || nextQty > productStock(p)) {
+      toast('Not enough stock available for ' + (p ? prodName(p) : cart[i].name) + '.');
+      return;
+    }
+  }
+  if (nextQty <= 0) cart.splice(i, 1);
+  else cart[i].qty = nextQty;
   renderCart();
 }
 function clearCart() { cart = []; renderCart(); }
 
 function completeSale() {
   if (!cart.length) { toast('Please select at least one item.'); return; }
+  let unavailable = cart.find(item => {
+    let p = (db.products || []).find(product => String(prodSKU(product)) === String(item.sku));
+    return !p || item.qty > productStock(p);
+  });
+  if (unavailable) {
+    toast('Insufficient stock for ' + unavailable.name + '. Update the cart before completing the sale.');
+    renderProductPicker();
+    renderCart();
+    return;
+  }
   let sub = cartSub();
   let disc = Math.min(sub, Math.max(0, num(document.getElementById('discount').value)));
   let total = sub - disc;
@@ -1081,7 +1173,7 @@ function completeSale() {
 
 function invoiceHTML(s) {
   let items = s.Items || [{ name: s.Product || s.Products || 'Item', qty: s.Qty || 1, price: num(s['Sale Price (PKR)']), sku: s.SKU || '' }];
-  let total = num(s['Total Sale'] ?? s['Total Sale (PKR)']) || sum(items, x => num(x.qty) * num(x.price));
+  let total = saleDue(s);
   let paid = num(s['Customer Paid'] ?? s.Paid);
   let disc = num(s.Discount ?? s['Dis Rate']);
   if (!s.Items && s['Customer Paid'] == null) paid = total - num(s.Balance);
@@ -1210,7 +1302,7 @@ function renderSales() {
 
   sRows.innerHTML = arr.map(s => {
     let idx = db.sales.indexOf(s);
-    let total = num(s['Total Sale'] ?? s['Total Sale (PKR)']) || num(s['Sale Price (PKR)']) * num(s.Qty);
+    let total = saleDue(s);
     let paid = num(s['Customer Paid'] ?? s.Paid);
     let bal = num(s.Balance);
     let status = s['Payment Status'] || (bal > 0 ? 'Partial' : 'Paid');
@@ -1219,7 +1311,7 @@ function renderSales() {
       <td><b>${esc(s['Invoice No'] || 'AR-IMP')}</b></td>
       <td>${esc(fmtDate(s.Date))}</td>
       <td>${esc(s.Customer || 'Cash')}</td>
-      <td>${esc(s.Qty || (s.Items ? s.Items.length : 1))}</td>
+      <td>${sum(Array.isArray(s.Items) ? s.Items : [s], item => item.qty ?? item.Qty ?? 1)}</td>
       <td><b>${money(total)}</b></td>
       <td>${money(paid)}</td>
       <td>${money(bal)}</td>
@@ -1235,7 +1327,7 @@ function renderSales() {
 
 function showEditSaleModal(idx) {
   let s = db.sales[idx];
-  let total = num(s['Total Sale'] ?? s['Total Sale (PKR)']) || num(s['Sale Price (PKR)']) * num(s.Qty);
+  let total = saleDue(s);
   let paid = num(s['Customer Paid'] ?? s.Paid);
   
   modal('Edit Sale / Invoice', `
@@ -1330,6 +1422,7 @@ function renderInventory() {
       <td><span class="pill ${isLow ? 'warn' : ''}">${stock}</span></td>
       <td class="actions-cell">
         <button class="secondary btn-sm" onclick="addToCart('${esc(String(prodSKU(p))).replace(/'/g, "\\'")}');go('pos')">Sell</button>
+        <button class="secondary btn-sm" onclick="showSetStockModal(${idx})">Set Stock</button>
         <button class="secondary btn-sm" onclick="showEditProductModal(${idx})">Edit</button>
         <button class="danger btn-sm" onclick="deleteProduct(${idx})">Delete</button>
       </td>
@@ -1388,6 +1481,31 @@ function addProduct(e) {
   toast('Product added to catalogue.');
 }
 
+function showSetStockModal(idx) {
+  let p = db.products[idx];
+  if (!p) return;
+  modal('Set Current Stock', `
+    <form onsubmit="saveSetStock(event, ${idx})">
+      <p class="sub">Enter the quantity you physically counted. Future purchases and sales will adjust this stock automatically.</p>
+      <div class="field"><label>Current physical stock *</label><input name="stock" type="number" min="0" step="1" value="${Math.max(0, productStock(p))}" required></div>
+      <button class="primary" style="width:100%;margin-top:10px">Save Stock Count</button>
+    </form>
+  `);
+}
+
+function saveSetStock(e, idx) {
+  e.preventDefault();
+  let p = db.products[idx];
+  if (!p) return;
+  let f = new FormData(e.target);
+  let countedStock = Math.max(0, num(f.get('stock')));
+  p['Stock Adjustment'] = countedStock - productStockBase(p);
+  save();
+  closeModal();
+  renderAll();
+  toast('Current stock count saved.');
+}
+
 function showEditProductModal(idx) {
   let p = db.products[idx];
   modal('Edit Product Details', `
@@ -1406,7 +1524,7 @@ function showEditProductModal(idx) {
         <div class="field"><label>Sale Price (PKR) *</label><input name="price" type="number" min="0" value="${prodPrice(p)}" required></div>
       </div>
       <div class="formrow">
-        <div class="field"><label>Opening Stock</label><input name="stock" type="number" value="${num(p['Opening Stock'])}"></div>
+        <div class="field"><label>Current Physical Stock</label><input name="stock" type="number" min="0" step="1" value="${Math.max(0, productStock(p))}"></div>
         <div class="field"><label>Min Stock Alert</label><input name="min" type="number" min="0" value="${num(p['Min Stock'])}"></div>
       </div>
       <button class="primary" style="width:100%;margin-top:10px">Save Changes</button>
@@ -1424,7 +1542,8 @@ function saveEditProduct(e, idx) {
   p.Color = f.get('color');
   p['Cost Price (PKR)'] = num(f.get('cost'));
   p['Sale Price (PKR)'] = num(f.get('price'));
-  p['Opening Stock'] = num(f.get('stock'));
+  let countedStock = Math.max(0, num(f.get('stock')));
+  p['Stock Adjustment'] = countedStock - productStockBase(p);
   p['Min Stock'] = num(f.get('min'));
 
   save();
@@ -1902,10 +2021,21 @@ function renderFilteredReport() {
         return `${esc(item.name || item.Product || product?.['Product Name'] || s.Product || 'Item')} (SKU: ${esc(sku || '—')})`;
       }).join('<br>');
       let qty = sum(items, item => item.qty ?? item.Qty ?? 1);
-      let invoiceTotal = num(s['Total Sale'] ?? s['Total Sale (PKR)']) || num(s['Sale Price (PKR)']) * num(s.Qty);
-      let shownTotal = skuFilter ? sum(items, item => num(item.price ?? item['Sale Price (PKR)']) * num(item.qty ?? item.Qty ?? 1)) : invoiceTotal;
+      let allItems = reportSaleItems(s);
+      let allGross = sum(allItems, item => num(item.price ?? item['Sale Price (PKR)']) * num(item.qty ?? item.Qty ?? 1));
+      let selectedGross = sum(items, item => num(item.price ?? item['Sale Price (PKR)']) * num(item.qty ?? item.Qty ?? 1));
+      let invoiceTotal = saleDue(s);
+      let discount = Math.max(0, num(s.Discount ?? s['Dis Rate']) || allGross - invoiceTotal);
+      let shownTotal = skuFilter && allGross > 0
+        ? Math.max(0, selectedGross - Math.min(selectedGross, discount * selectedGross / allGross))
+        : invoiceTotal;
       let paid = num(s['Customer Paid'] ?? s.Paid);
       let balance = num(s.Balance);
+      if (skuFilter && invoiceTotal > 0) {
+        let share = shownTotal / invoiceTotal;
+        paid *= share;
+        balance *= share;
+      }
       return `<tr><td>${esc(s['Invoice No'] || 'AR-IMP')}</td><td>${esc(fmtDate(s.Date))}</td><td>${esc(s.Customer || 'Cash')}</td><td>${names}</td><td>${qty}</td><td>${money(shownTotal)}</td><td>${money(paid)}</td><td>${money(balance)}</td></tr>`;
     }).join('') || '<tr><td colspan="8" class="empty">No sales invoices match these filters.</td></tr>';
     return;
@@ -1921,18 +2051,14 @@ function renderFilteredReport() {
     return;
   }
 
-  head.innerHTML = '<tr><th>SKU</th><th>Product</th><th>Opening Stock</th><th>Purchased in Period</th><th>Sold in Period</th><th>Net Movement</th><th>Current Stock</th></tr>';
+  head.innerHTML = '<tr><th>SKU</th><th>Product</th><th>Opening Stock</th><th>Purchased in Period</th><th>Sold in Period</th><th>Net Movement</th><th>Stock Adjustment</th><th>Current Stock</th></tr>';
   let products = (db.products || []).filter(p => !skuFilter || String(p.SKU) === skuFilter);
   rows.innerHTML = products.map(p => {
     let sku = String(p.SKU ?? '');
-    let purchased = sum(db.purchases, purchase => purchase['Affects Stock'] === true && String(purchase.SKU ?? '') === sku && inDateRange(purchase) ? purchase.Qty : 0);
-    let sold = sum(db.sales, sale => {
-      if (sale['Affects Stock'] !== true || !inDateRange(sale)) return 0;
-      if (Array.isArray(sale.Items)) return sum(sale.Items, item => String(item.sku ?? item.SKU ?? '') === sku ? item.qty ?? item.Qty : 0);
-      return String(sale.SKU ?? '') === sku ? sale.Qty : 0;
-    });
-    return `<tr><td>${esc(sku)}</td><td>${esc(prodName(p))}</td><td>${num(p['Opening Stock'])}</td><td>${purchased}</td><td>${sold}</td><td>${purchased - sold}</td><td><b>${productStock(p)}</b></td></tr>`;
-  }).join('') || '<tr><td colspan="7" class="empty">No products match these filters.</td></tr>';
+    let purchased = sum(db.purchases, purchase => inDateRange(purchase) ? purchaseQuantityForSku(purchase, sku) : 0);
+    let sold = sum(db.sales, sale => inDateRange(sale) ? saleQuantityForSku(sale, sku) : 0);
+    return `<tr><td>${esc(sku)}</td><td>${esc(prodName(p))}</td><td>${num(p['Opening Stock'])}</td><td>${purchased}</td><td>${sold}</td><td>${purchased - sold}</td><td>${num(p['Stock Adjustment'])}</td><td><b>${productStock(p)}</b></td></tr>`;
+  }).join('') || '<tr><td colspan="8" class="empty">No products match these filters.</td></tr>';
 }
 
 function printFilteredReport() {
