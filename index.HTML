@@ -172,7 +172,6 @@ tbody tr:last-child td{border-bottom:0}
     <div class="sidefoot">
       <b style="color:#e5e7eb">AR CUSTOMIZED</b><br>
       Full Editable Management<br>
-      <a href="https://rddsdigitalsolution.vercel.app/" target="_blank" rel="noopener noreferrer" style="color:#cbd5e1;text-decoration:none">Developed by Rdds Digital Solution ↗</a><br>
       <span id="dbstatus">Connecting to cloud…</span>
     </div>
   </aside>
@@ -662,46 +661,15 @@ const original = {
 const key = 'ar_customized_pos_v4';
 function clone(x) { return JSON.parse(JSON.stringify(x)); }
 
-const openingStockBySKU = {
-  '1': 2, '2': 2, '3': 1, '4': 1, '5': 1, '6': 28, '7': 2, '8': 3, '9': 1,
-  '10': 100, '11': 10, '12': 2, '13': 4, '14': 1, '15': 3, '16': 50, '17': 12,
-  '18': 6, '19': 12, '20': 12, '21': 27, '22': 2, '23': 10, '24': 3, '25': 4,
-  '26': 1, '27': 6, '28': 1, '29': 2, '30': 3, '31': 2, '32': 1, '33': 12,
-  '34': 6, '35': 5, '36': 24, '37': 6, '38': 2, '39': 2, '40': 2, '41': 12
-};
-
-function applyOpeningStockTable(state) {
-  // The listed quantities are the stock baseline; keep them authoritative on every load.
-  (state.products || []).forEach(product => {
-    let sku = normalizedSKU(product.SKU);
-    if (Object.prototype.hasOwnProperty.call(openingStockBySKU, sku)) {
-      product['Opening Stock'] = openingStockBySKU[sku];
-    }
-  });
-  state._openingStockTableApplied = true;
-
-  // Historical/legacy purchases are records only. New purchases are explicitly marked true.
-  const seedPurchaseKeys = new Set((original.purchases || []).map(p =>
-    [p.Date, p['Purchase No'], normalizedSKU(p.SKU), p.Qty].join('|')
-  ));
-  (state.purchases || []).forEach(purchase => {
-    let signature = [purchase.Date, purchase['Purchase No'], normalizedSKU(purchase.SKU), purchase.Qty].join('|');
-    if (seedPurchaseKeys.has(signature) || purchase['Affects Stock'] == null) {
-      purchase['Affects Stock'] = false;
-    }
-  });
-  return state;
-}
-
 function loadState() {
   try {
     let saved = localStorage.getItem(key);
     if (saved) {
       let x = JSON.parse(saved);
-      return applyOpeningStockTable({ ...clone(original), ...x });
+      return { ...clone(original), ...x };
     }
   } catch (e) {}
-  return applyOpeningStockTable(clone(original));
+  return clone(original);
 }
 
 let db = loadState();
@@ -758,7 +726,7 @@ async function initCloudSync() {
     if (pendingCloudSave) {
       await syncToCloud(clone(db));
     } else if (data && data.payload) {
-      db = applyOpeningStockTable({ ...clone(original), ...data.payload });
+      db = { ...clone(original), ...data.payload };
       localStorage.setItem(key, JSON.stringify(db));
       renderAll();
     } else {
@@ -769,7 +737,7 @@ async function initCloudSync() {
     document.onSnapshot(snapshot => {
       const payload = snapshot.exists && snapshot.data().payload;
       if (!payload) return;
-      db = applyOpeningStockTable({ ...clone(original), ...payload });
+      db = { ...clone(original), ...payload };
       try { localStorage.setItem(key, JSON.stringify(db)); } catch (e) {}
       renderAll();
       setCloudStatus('Live cloud update received ✓');
@@ -792,7 +760,6 @@ function normalizedSKU(value) {
 }
 
 function purchaseQuantityForSku(purchase, sku) {
-  if (purchase['Affects Stock'] === false) return 0;
   const purchaseSKU = purchase.SKU ?? purchase.sku ?? purchase['Product SKU'];
   return normalizedSKU(purchaseSKU) === normalizedSKU(sku)
     ? num(purchase.Qty ?? purchase.qty ?? purchase.Quantity ?? purchase.quantity)
@@ -2045,10 +2012,13 @@ function renderFilteredReport() {
   if (type === 'purchases') {
     head.innerHTML = '<tr><th>Date</th><th>Purchase No.</th><th>Product</th><th>SKU</th><th>Supplier</th><th>Qty</th><th>Unit Cost</th><th>Total Cost</th><th>Payment</th></tr>';
     let purchases = (db.purchases || []).filter(p => inDateRange(p) && (!skuFilter || String(p.SKU ?? '') === skuFilter));
+    let purchaseTotal = sum(purchases, p => num(p['Total Cost']) || num(p.Qty) * num(p['Cost Price (PKR)']));
     rows.innerHTML = purchases.map(p => {
       let total = num(p['Total Cost']) || num(p.Qty) * num(p['Cost Price (PKR)']);
       return `<tr><td>${esc(fmtDate(p.Date))}</td><td>${esc(p['Purchase No'] || '—')}</td><td>${esc(p.Products || '—')}</td><td>${esc(p.SKU ?? '—')}</td><td>${esc(p.Supplier || '—')}</td><td>${esc(p.Qty || 0)}</td><td>${money(p['Cost Price (PKR)'])}</td><td>${money(total)}</td><td>${esc(p.Payment || '—')}</td></tr>`;
-    }).join('') || '<tr><td colspan="9" class="empty">No purchases match these filters.</td></tr>';
+    }).join('') + (purchases.length
+      ? `<tr><td colspan="7" style="text-align:right"><b>Total Purchase Amount</b></td><td><b>${money(purchaseTotal)}</b></td><td></td></tr>`
+      : '<tr><td colspan="9" class="empty">No purchases match these filters.</td></tr>');
     return;
   }
 
