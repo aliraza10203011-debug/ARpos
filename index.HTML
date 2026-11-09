@@ -384,6 +384,8 @@ tbody tr:last-child td{border-bottom:0}
               <input id="purchaseFrom" type="date" class="search" aria-label="Purchases from date" onchange="renderPurchases()">
               <label class="muted" for="purchaseTo">To</label>
               <input id="purchaseTo" type="date" class="search" aria-label="Purchases to date" onchange="renderPurchases()">
+              <button class="secondary btn-sm" onclick="setLast7Days('purchaseFrom','purchaseTo',renderPurchases)">Last 7 days</button>
+              <button class="secondary btn-sm" onclick="clearDateFilter('purchaseFrom','purchaseTo',renderPurchases)">All dates</button>
               <select id="purchasePaymentFilter" class="search" aria-label="Filter purchases by payment method" onchange="renderPurchases()">
                 <option value="">All payment methods</option>
                 <option>Cash</option><option>Bank Transfer</option><option>Credit</option><option>Easypaisa</option>
@@ -420,6 +422,8 @@ tbody tr:last-child td{border-bottom:0}
               <input id="expenseFrom" type="date" class="search" aria-label="Expenses from date" onchange="renderExpenses()">
               <label class="muted" for="expenseTo">To</label>
               <input id="expenseTo" type="date" class="search" aria-label="Expenses to date" onchange="renderExpenses()">
+              <button class="secondary btn-sm" onclick="setLast7Days('expenseFrom','expenseTo',renderExpenses)">Last 7 days</button>
+              <button class="secondary btn-sm" onclick="clearDateFilter('expenseFrom','expenseTo',renderExpenses)">All dates</button>
               <select id="expenseCategoryFilter" class="search" aria-label="Filter expenses by category" onchange="renderExpenses()">
                 <option value="">All categories</option>
                 <option>General</option><option>Rent</option><option>Electricity</option><option>Salaries</option><option>Transport</option><option>Personal</option><option>Supplies</option>
@@ -474,6 +478,10 @@ tbody tr:last-child td{border-bottom:0}
           <div class="formrow">
             <div class="field"><label for="reportFrom">From date</label><input id="reportFrom" type="date" onchange="renderFilteredReport()"></div>
             <div class="field"><label for="reportTo">To date</label><input id="reportTo" type="date" onchange="renderFilteredReport()"></div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+            <button class="secondary btn-sm" onclick="setLast7Days('reportFrom','reportTo',renderFilteredReport)">Last 7 days</button>
+            <button class="secondary btn-sm" onclick="clearDateFilter('reportFrom','reportTo',renderFilteredReport)">All dates</button>
           </div>
           <div class="tablewrap">
             <table>
@@ -1452,7 +1460,6 @@ function renderInventory() {
       <td><span class="pill ${isLow ? 'warn' : ''}">${stock}</span></td>
       <td class="actions-cell">
         <button class="secondary btn-sm" onclick="addToCart('${esc(String(prodSKU(p))).replace(/'/g, "\\'")}');go('pos')">Sell</button>
-        <button class="secondary btn-sm" onclick="showSetStockModal(${idx})">Set Stock</button>
         <button class="secondary btn-sm" onclick="showEditProductModal(${idx})">Edit</button>
         <button class="danger btn-sm" onclick="deleteProduct(${idx})">Delete</button>
       </td>
