@@ -168,7 +168,6 @@ tbody tr:last-child td{border-bottom:0}
     <button class="nav" data-page="pos"><span class="ico">▣</span> New Sale / POS</button>
     <button class="nav" data-page="sales"><span class="ico">▤</span> Sales & Invoices</button>
     <button class="nav" data-page="products"><span class="ico">◈</span> Products & Stock</button>
-    <button class="nav" data-page="purchases"><span class="ico">⇩</span> Stock In / Purchases</button>
     <button class="nav" data-page="expenses"><span class="ico">↗</span> Expenses</button>
     <button class="nav" data-page="reports"><span class="ico">▥</span> Reports</button>
     <div class="sidefoot">
@@ -347,7 +346,10 @@ tbody tr:last-child td{border-bottom:0}
             <h1>Products & Stock</h1>
             <div class="sub">Manage stock levels, categories and pricing.</div>
           </div>
-          <button class="primary" onclick="showProductModal()">＋ Add Product</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="secondary" onclick="showPurchaseModal()">＋ Add Stock / Purchase</button>
+            <button class="primary" onclick="showProductModal()">＋ Add Product</button>
+          </div>
         </div>
         <div class="panel">
           <div class="panelhead">
@@ -374,20 +376,9 @@ tbody tr:last-child td{border-bottom:0}
             </table>
           </div>
         </div>
-      </section>
-
-      <!-- PURCHASES -->
-      <section id="page-purchases" class="hidden">
-        <div class="head">
-          <div>
-            <h1>Stock In / Purchases</h1>
-            <div class="sub">Record and manage stock receiving records.</div>
-          </div>
-          <button class="primary" onclick="showPurchaseModal()">＋ Record Purchase</button>
-        </div>
         <div class="panel">
           <div class="panelhead">
-            <h2>Purchase Records</h2>
+            <h2>Stock Purchases</h2>
             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
               <label class="muted" for="purchaseFrom">From</label>
               <input id="purchaseFrom" type="date" class="search" aria-label="Purchases from date" onchange="renderPurchases()">
@@ -885,7 +876,7 @@ function go(page) {
   let target = document.getElementById('page-' + page);
   if (target) target.classList.remove('hidden');
   document.querySelectorAll('.nav').forEach(b => b.classList.toggle('active', b.dataset.page === page));
-  let label = { dashboard: 'Dashboard', pos: 'New Sale / POS', sales: 'Sales & Invoices', products: 'Products & Stock', purchases: 'Stock In / Purchases', expenses: 'Expenses', reports: 'Reports' };
+  let label = { dashboard: 'Dashboard', pos: 'New Sale / POS', sales: 'Sales & Invoices', products: 'Products & Stock', expenses: 'Expenses', reports: 'Reports' };
   let crumb = document.getElementById('crumb');
   if (crumb) crumb.textContent = label[page] || page;
   renderAll();
@@ -968,6 +959,10 @@ function renderDashboard() {
     sale['Customer Paid'] ?? sale.Paid ?? Math.max(0, saleDue(sale) - num(sale.Balance))
   );
   let purchases = sum(dashboardPurchases, s => num(s['Total Cost']) || num(s.Qty) * num(s['Cost Price (PKR)']));
+  let purchaseInvoices = new Set(dashboardPurchases.map((purchase, index) => {
+    let number = String(purchase['Purchase No'] ?? '').trim();
+    return number && number !== '-' ? `${fmtDate(purchase.Date)}|${number}` : `entry|${index}`;
+  })).size;
   let expenses = sum(dashboardExpenses, s => s['Amount (PKR)']);
   let grossProfit = sum(dashboardSales, s => saleNetRevenue(s) - saleCost(s));
   let netProfit = grossProfit - expenses;
@@ -976,7 +971,7 @@ function renderDashboard() {
     metricsCard('Total Revenue', money(salesTotal), '↗', dashboardSales.length + ' transactions') +
     metricsCard('Amount Received', money(amountReceived), '✓', 'Total paid by customers') +
     metricsCard('Net Profit', money(netProfit), '◉', 'Sales − item costs − expenses') +
-    metricsCard('Purchases', money(purchases), '⇩', dashboardPurchases.length + ' stock entries') +
+    metricsCard('Purchase Invoices', money(purchases), '⇩', purchaseInvoices + ' invoices · ' + dashboardPurchases.length + ' stock entries') +
     metricsCard('Expenses', money(expenses), '↗', dashboardExpenses.length + ' records');
 
   let type = document.getElementById('dashboardRecentType')?.value || 'sales';
@@ -988,7 +983,7 @@ function renderDashboard() {
   if (heading) heading.textContent = 'Recent';
   if (viewAll) {
     viewAll.textContent = type === 'sales' ? 'View all sales →' : 'View all purchases →';
-    viewAll.onclick = () => go(type);
+    viewAll.onclick = () => go(type === 'sales' ? 'sales' : 'products');
   }
 
   if (type === 'sales') {
