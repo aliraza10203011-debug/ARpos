@@ -204,38 +204,6 @@ tbody tr:last-child td{border-bottom:0}
           <button class="primary" onclick="go('pos')">＋ Create New Bill</button>
         </div>
         <div class="cards" id="metrics"></div>
-        <div class="panel">
-          <div class="panelhead">
-            <h2 id="dashboardRecentHeading">Recent Sales</h2>
-            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-              <select id="dashboardRecentType" class="search" aria-label="Recent data type" onchange="renderDashboard()">
-                <option value="sales">Sales</option>
-                <option value="purchases">Purchases</option>
-              </select>
-              <select id="dashboardRecentPreset" class="search" aria-label="Recent date preset" onchange="applyDashboardDatePreset(this.value)">
-                <option value="7">Last 7 days</option>
-                <option value="1">Last 1 day</option>
-                <option value="30">Last 1 month</option>
-                <option value="365">Last 1 year</option>
-                <option value="all">All dates</option>
-                <option value="custom">Custom range</option>
-              </select>
-              <label class="muted" for="dashboardRecentFrom">From</label>
-              <input id="dashboardRecentFrom" type="date" class="search" aria-label="Recent data from date" onchange="setDashboardCustomRange()">
-              <label class="muted" for="dashboardRecentTo">To</label>
-              <input id="dashboardRecentTo" type="date" class="search" aria-label="Recent data to date" onchange="setDashboardCustomRange()">
-              <button id="dashboardRecentViewAll" class="secondary btn-sm" onclick="go('sales')">View all sales →</button>
-            </div>
-          </div>
-          <div class="tablewrap">
-            <table>
-              <thead id="dashboardRecentHead">
-                <tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status</th><th>Actions</th></tr>
-              </thead>
-              <tbody id="recentRows"></tbody>
-            </table>
-          </div>
-        </div>
       </section>
 
       <!-- POS SCREEN -->
@@ -272,6 +240,16 @@ tbody tr:last-child td{border-bottom:0}
               <div class="empty">Your cart is empty.<br>Select a product to begin.</div>
             </div>
             <div style="padding-top:12px">
+              <div class="formrow">
+                <div class="field">
+                  <label>Additional Charge (e.g. engraving) (PKR)</label>
+                  <input id="additionalCharge" type="number" min="0" value="0" oninput="renderCart()">
+                </div>
+                <div class="field">
+                  <label>Charge Description</label>
+                  <input id="additionalChargeNote" value="Engraving" placeholder="Engraving / customization" oninput="renderCart()">
+                </div>
+              </div>
               <div class="field">
                 <label>Discount (PKR)</label>
                 <input id="discount" type="number" min="0" value="0" oninput="renderCart()">
@@ -468,6 +446,7 @@ tbody tr:last-child td{border-bottom:0}
                 <option value="sales">Sales Invoices</option>
                 <option value="purchases">Purchase Invoices</option>
                 <option value="stock">Stock Report</option>
+                <option value="expenses">Expenses</option>
               </select>
             </div>
             <div class="field">
@@ -902,39 +881,6 @@ function metricsCard(label, value, icon, note) {
   return `<div class="metric"><div class="metric-top"><span>${label}</span><span class="metric-icon">${icon}</span></div><strong>${value}</strong><small>${note}</small></div>`;
 }
 
-function dashboardDateRange() {
-  return {
-    from: document.getElementById('dashboardRecentFrom')?.value || '',
-    to: document.getElementById('dashboardRecentTo')?.value || ''
-  };
-}
-
-function applyDashboardDatePreset(preset) {
-  let from = document.getElementById('dashboardRecentFrom');
-  let to = document.getElementById('dashboardRecentTo');
-  if (!from || !to) return;
-  if (preset === 'all') {
-    from.value = '';
-    to.value = '';
-  } else if (preset !== 'custom') {
-    let end = new Date();
-    let start = new Date(end);
-    if (preset === '1') start.setDate(start.getDate());
-    else if (preset === '7') start.setDate(start.getDate() - 6);
-    else if (preset === '30') start.setMonth(start.getMonth() - 1);
-    else if (preset === '365') start.setFullYear(start.getFullYear() - 1);
-    from.value = localDateString(start);
-    to.value = localDateString(end);
-  }
-  renderDashboard();
-}
-
-function setDashboardCustomRange() {
-  let preset = document.getElementById('dashboardRecentPreset');
-  if (preset) preset.value = 'custom';
-  renderDashboard();
-}
-
 function saleCost(sale) {
   if (Array.isArray(sale.Items) && sale.Items.length) {
     return sum(sale.Items, item => {
@@ -954,14 +900,9 @@ function saleNetRevenue(sale) {
 function renderDashboard() {
   let m = document.getElementById('metrics');
   if (!m) return;
-  let range = dashboardDateRange();
-  let isInRange = record => {
-    let date = fmtDate(record.Date);
-    return (!range.from || date >= range.from) && (!range.to || date <= range.to);
-  };
-  let dashboardSales = (db.sales || []).filter(isInRange);
-  let dashboardPurchases = (db.purchases || []).filter(isInRange);
-  let dashboardExpenses = (db.expenses || []).filter(isInRange);
+  let dashboardSales = db.sales || [];
+  let dashboardPurchases = db.purchases || [];
+  let dashboardExpenses = db.expenses || [];
   let salesTotal = sum(dashboardSales, saleDue);
   let amountReceived = sum(dashboardSales, sale =>
     sale['Customer Paid'] ?? sale.Paid ?? Math.max(0, saleDue(sale) - num(sale.Balance))
@@ -982,74 +923,6 @@ function renderDashboard() {
     metricsCard('Purchase Invoices', money(purchases), '⇩', purchaseInvoices + ' invoices · ' + dashboardPurchases.length + ' stock entries') +
     metricsCard('Expenses', money(expenses), '↗', dashboardExpenses.length + ' records');
 
-  let type = document.getElementById('dashboardRecentType')?.value || 'sales';
-  let heading = document.getElementById('dashboardRecentHeading');
-  let tableHead = document.getElementById('dashboardRecentHead');
-  let viewAll = document.getElementById('dashboardRecentViewAll');
-  let rRows = document.getElementById('recentRows');
-
-  if (heading) heading.textContent = 'Recent';
-  if (viewAll) {
-    viewAll.textContent = type === 'sales' ? 'View all sales →' : 'View all purchases →';
-    viewAll.onclick = () => go(type === 'sales' ? 'sales' : 'products');
-  }
-
-  if (type === 'sales') {
-    if (tableHead) tableHead.innerHTML = '<tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status</th><th>Actions</th></tr>';
-    let filteredSales = (db.sales || []).filter(s => {
-      let date = fmtDate(s.Date);
-      let matchesDate = (!range.from || date >= range.from) && (!range.to || date <= range.to);
-      return matchesDate;
-    }).slice().reverse();
-    if (rRows) {
-      rRows.innerHTML = filteredSales.map(s => {
-        let idx = db.sales.indexOf(s);
-        let total = saleDue(s);
-        let status = s['Payment Status'] || (num(s.Balance) > 0 ? 'Partial' : 'Paid');
-        let qty = s.Qty || (s.Items ? sum(s.Items, item => item.qty) : 1);
-        return `<tr>
-          <td><b>${esc(s['Invoice No'] || 'AR-IMP')}</b></td>
-          <td>${esc(fmtDate(s.Date))}</td>
-          <td>${esc(s.Customer || 'Walk-in')}</td>
-          <td>${esc(qty)}</td>
-          <td><b>${money(total)}</b></td>
-          <td><span class="pill ${status === 'Unpaid' ? 'danger' : status === 'Partial' ? 'warn' : ''}">${esc(status)}</span></td>
-          <td class="actions-cell">
-            <button class="secondary btn-sm" onclick="printInvoice(db.sales[${idx}])">Invoice</button>
-            <button class="secondary btn-sm" onclick="showEditSaleModal(${idx})">Edit</button>
-            <button class="danger btn-sm" onclick="deleteSale(${idx})">Delete</button>
-          </td>
-        </tr>`;
-      }).join('') || '<tr><td colspan="7" class="empty">No sales found for this date range.</td></tr>';
-    }
-  } else {
-    if (tableHead) tableHead.innerHTML = '<tr><th>Date</th><th>Purchase No.</th><th>Product</th><th>Supplier</th><th>Qty</th><th>Total Cost</th><th>Payment</th><th>Actions</th></tr>';
-    let filteredPurchases = (db.purchases || []).filter(p => {
-      let date = fmtDate(p.Date);
-      let matchesDate = (!range.from || date >= range.from) && (!range.to || date <= range.to);
-      return matchesDate;
-    }).slice().reverse();
-    if (rRows) {
-      rRows.innerHTML = filteredPurchases.map(p => {
-        let idx = db.purchases.indexOf(p);
-        let total = num(p['Total Cost']) || num(p.Qty) * num(p['Cost Price (PKR)']);
-        return `<tr>
-          <td>${esc(fmtDate(p.Date))}</td>
-          <td>${esc(p['Purchase No'] || '—')}</td>
-          <td>${esc(p.Products || '—')}</td>
-          <td>${esc(p.Supplier || '—')}</td>
-          <td>${esc(p.Qty || 0)}</td>
-          <td><b>${money(total)}</b></td>
-          <td>${esc(p.Payment || '—')}</td>
-          <td class="actions-cell">
-            <button class="secondary btn-sm" onclick="printPurchase(db.purchases[${idx}])">Invoice</button>
-            <button class="secondary btn-sm" onclick="showEditPurchaseModal(${idx})">Edit</button>
-            <button class="danger btn-sm" onclick="deletePurchase(${idx})">Delete</button>
-          </td>
-        </tr>`;
-      }).join('') || '<tr><td colspan="8" class="empty">No purchases found for this date range.</td></tr>';
-    }
-  }
 }
 
 function renderProductPicker() {
@@ -1107,14 +980,17 @@ function renderCart() {
     </div>
   `).join('') : '<div class="empty">Cart is currently empty.</div>';
   
-  let disc = Math.min(Math.max(0, num(document.getElementById('discount')?.value)), cartSub());
-  let total = Math.max(0, cartSub() - disc);
+  let additional = Math.max(0, num(document.getElementById('additionalCharge')?.value));
+  let subtotal = cartSub() + additional;
+  let disc = Math.min(Math.max(0, num(document.getElementById('discount')?.value)), subtotal);
+  let total = Math.max(0, subtotal - disc);
   let paid = document.getElementById('paidAmount')?.value;
   let received = paid === '' || paid == null ? total : Math.max(0, num(paid));
   let totalsEl = document.getElementById('cartTotals');
   if (totalsEl) {
     totalsEl.innerHTML = `
-      <div class="totalrow"><span>Subtotal</span><b>${money(cartSub())}</b></div>
+      <div class="totalrow"><span>Products Subtotal</span><b>${money(cartSub())}</b></div>
+      ${additional > 0 ? `<div class="totalrow"><span>${esc(document.getElementById('additionalChargeNote')?.value.trim() || 'Additional Charge')}</span><b>${money(additional)}</b></div>` : ''}
       <div class="totalrow"><span>Discount</span><b>− ${money(disc)}</b></div>
       <div class="totalrow final"><span>Total Due</span><span>${money(total)}</span></div>
       <div class="totalrow"><span>Received</span><b>${money(Math.min(received, total))}</b></div>
@@ -1136,7 +1012,14 @@ function changeQty(i, d) {
   else cart[i].qty = nextQty;
   renderCart();
 }
-function clearCart() { cart = []; renderCart(); }
+function clearCart() {
+  cart = [];
+  document.getElementById('additionalCharge').value = 0;
+  document.getElementById('additionalChargeNote').value = 'Engraving';
+  document.getElementById('discount').value = 0;
+  document.getElementById('paidAmount').value = '';
+  renderCart();
+}
 
 function completeSale() {
   if (!cart.length) { toast('Please select at least one item.'); return; }
@@ -1151,8 +1034,11 @@ function completeSale() {
     return;
   }
   let sub = cartSub();
-  let disc = Math.min(sub, Math.max(0, num(document.getElementById('discount').value)));
-  let total = sub - disc;
+  let additional = Math.max(0, num(document.getElementById('additionalCharge').value));
+  let chargeNote = document.getElementById('additionalChargeNote').value.trim();
+  let beforeDiscount = sub + additional;
+  let disc = Math.min(beforeDiscount, Math.max(0, num(document.getElementById('discount').value)));
+  let total = beforeDiscount - disc;
   let paidRaw = document.getElementById('paidAmount').value;
   let paid = paidRaw === '' ? total : Math.min(total, Math.max(0, num(paidRaw)));
   let invoice = 'AR-' + String(invoiceCounter++).padStart(5, '0');
@@ -1167,6 +1053,8 @@ function completeSale() {
     Items: clone(cart),
     Qty: cart.reduce((n, x) => n + x.qty, 0),
     'Total Sale': total,
+    'Additional Charge': additional,
+    'Additional Charge Note': chargeNote,
     'Customer Paid': paid,
     Discount: disc,
     Balance: total - paid,
@@ -1180,6 +1068,8 @@ function completeSale() {
   cart = [];
   document.getElementById('customerName').value = 'Cash';
   document.getElementById('customerPhone').value = '';
+  document.getElementById('additionalCharge').value = 0;
+  document.getElementById('additionalChargeNote').value = 'Engraving';
   document.getElementById('discount').value = 0;
   document.getElementById('paidAmount').value = '';
   renderCart();
@@ -1220,7 +1110,8 @@ function invoiceHTML(s) {
       </tr>`).join('')}</tbody>
     </table>
     <div class="invoice-totals">
-      <div><span>Subtotal</span><b>${money(total + disc)}</b></div>
+      <div><span>Products Subtotal</span><b>${money(Math.max(0, total + disc - num(s['Additional Charge'])))}</b></div>
+      ${num(s['Additional Charge']) > 0 ? `<div><span>${esc(s['Additional Charge Note'] || 'Additional Charge')}</span><b>${money(s['Additional Charge'])}</b></div>` : ''}
       <div><span>Discount</span><b>− ${money(disc)}</b></div>
       <div style="border-top:1px solid #222;padding-top:1.5mm;font-size:10pt"><b>Total Due</b><b>${money(total)}</b></div>
       <div><span>Paid Amount</span><b>${money(paid)}</b></div>
@@ -2111,13 +2002,26 @@ function renderFilteredReport() {
   if ([...productSelect.options].some(option => option.value === selectedProduct)) productSelect.value = selectedProduct;
 
   let type = document.getElementById('reportType')?.value || 'sales';
-  let skuFilter = productSelect.value;
+  productSelect.disabled = type === 'expenses';
+  let skuFilter = type === 'expenses' ? '' : productSelect.value;
   let from = document.getElementById('reportFrom')?.value || '';
   let to = document.getElementById('reportTo')?.value || '';
   let inDateRange = record => {
     let date = fmtDate(record.Date);
     return (!from || date >= from) && (!to || date <= to);
   };
+
+  if (type === 'expenses') {
+    head.innerHTML = '<tr><th>Date</th><th>Expense</th><th>Category</th><th>Paid To</th><th>Amount</th><th>Payment Method</th><th>Notes</th></tr>';
+    let expenses = (db.expenses || []).filter(inDateRange);
+    let expenseTotal = sum(expenses, expense => expense['Amount (PKR)']);
+    rows.innerHTML = expenses.map(expense =>
+      `<tr><td>${esc(fmtDate(expense.Date))}</td><td>${esc(expense.Expense || '—')}</td><td>${esc(expense.Category || '—')}</td><td>${esc(expense['Paid To'] || '—')}</td><td>${money(expense['Amount (PKR)'])}</td><td>${esc(expense['Payment Method'] || '—')}</td><td>${esc(expense.Notes || '—')}</td></tr>`
+    ).join('') + (expenses.length
+      ? `<tr><td colspan="4" style="text-align:right"><b>Total Expenses</b></td><td><b>${money(expenseTotal)}</b></td><td colspan="2"></td></tr>`
+      : '<tr><td colspan="7" class="empty">No expenses match these dates.</td></tr>');
+    return;
+  }
 
   if (type === 'sales') {
     head.innerHTML = '<tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Product / SKU</th><th>Qty</th><th>Invoice Total</th><th>Paid</th><th>Balance</th></tr>';
@@ -2293,7 +2197,6 @@ function restoreBackup(e) {
 
 // Restore this tab's login state, then render and initialize cloud sync.
 setLoginView(sessionStorage.getItem(LOGIN_SESSION_KEY) === 'yes');
-applyDashboardDatePreset('7');
 salesLast7Days();
 renderAll();
 initCloudSync();
