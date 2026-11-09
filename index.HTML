@@ -166,6 +166,7 @@ tbody tr:last-child td{border-bottom:0}
     <div class="navlabel">WORKSPACE</div>
     <button class="nav active" data-page="dashboard"><span class="ico">▦</span> Dashboard</button>
     <button class="nav" data-page="pos"><span class="ico">▣</span> New Sale / POS</button>
+    <button class="nav" data-page="sales"><span class="ico">▤</span> Sales & Invoices</button>
     <button class="nav" data-page="products"><span class="ico">◈</span> Products & Stock</button>
     <button class="nav" data-page="purchases"><span class="ico">⇩</span> Stock In / Purchases</button>
     <button class="nav" data-page="expenses"><span class="ico">↗</span> Expenses</button>
@@ -317,6 +318,14 @@ tbody tr:last-child td{border-bottom:0}
               <input id="salesTo" type="date" class="search" aria-label="Sales to date" onchange="renderSales()">
               <button class="secondary btn-sm" onclick="salesLast7Days()">Last 7 days</button>
               <button class="secondary btn-sm" onclick="clearSalesDateFilter()">All dates</button>
+              <select id="salesStatusFilter" class="search" aria-label="Filter sales by payment status" onchange="renderSales()">
+                <option value="">All statuses</option>
+                <option>Paid</option><option>Partial</option><option>Unpaid</option>
+              </select>
+              <select id="salesMethodFilter" class="search" aria-label="Filter sales by payment method" onchange="renderSales()">
+                <option value="">All payment methods</option>
+                <option>Cash</option><option>Bank Transfer</option><option>Easypaisa</option><option>JazzCash</option><option>Card</option><option>Credit</option>
+              </select>
               <input id="salesSearch" class="search" placeholder="Search invoice, customer, product or SKU…" oninput="renderSales()">
             </div>
           </div>
@@ -343,7 +352,18 @@ tbody tr:last-child td{border-bottom:0}
         <div class="panel">
           <div class="panelhead">
             <h2>Product Catalogue</h2>
-            <input id="inventorySearch" class="search" placeholder="Search product / SKU…" oninput="renderInventory()">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <select id="inventoryCategoryFilter" class="search" aria-label="Filter products by category" onchange="renderInventory()">
+                <option value="">All categories</option>
+              </select>
+              <select id="inventoryStockFilter" class="search" aria-label="Filter products by stock level" onchange="renderInventory()">
+                <option value="">All stock levels</option>
+                <option value="in">In stock</option>
+                <option value="low">Low stock</option>
+                <option value="out">Out of stock</option>
+              </select>
+              <input id="inventorySearch" class="search" placeholder="Search product / SKU…" oninput="renderInventory()">
+            </div>
           </div>
           <div class="tablewrap">
             <table>
@@ -368,7 +388,17 @@ tbody tr:last-child td{border-bottom:0}
         <div class="panel">
           <div class="panelhead">
             <h2>Purchase Records</h2>
-            <input id="purchaseSearch" class="search" placeholder="Search supplier or product…" oninput="renderPurchases()">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <label class="muted" for="purchaseFrom">From</label>
+              <input id="purchaseFrom" type="date" class="search" aria-label="Purchases from date" onchange="renderPurchases()">
+              <label class="muted" for="purchaseTo">To</label>
+              <input id="purchaseTo" type="date" class="search" aria-label="Purchases to date" onchange="renderPurchases()">
+              <select id="purchasePaymentFilter" class="search" aria-label="Filter purchases by payment method" onchange="renderPurchases()">
+                <option value="">All payment methods</option>
+                <option>Cash</option><option>Bank Transfer</option><option>Credit</option><option>Easypaisa</option>
+              </select>
+              <input id="purchaseSearch" class="search" placeholder="Search supplier or product…" oninput="renderPurchases()">
+            </div>
           </div>
           <div class="tablewrap">
             <table>
@@ -394,7 +424,21 @@ tbody tr:last-child td{border-bottom:0}
         <div class="panel">
           <div class="panelhead">
             <h2>Expense Records</h2>
-            <input id="expenseSearch" class="search" placeholder="Search all expense details…" oninput="renderExpenses()">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <label class="muted" for="expenseFrom">From</label>
+              <input id="expenseFrom" type="date" class="search" aria-label="Expenses from date" onchange="renderExpenses()">
+              <label class="muted" for="expenseTo">To</label>
+              <input id="expenseTo" type="date" class="search" aria-label="Expenses to date" onchange="renderExpenses()">
+              <select id="expenseCategoryFilter" class="search" aria-label="Filter expenses by category" onchange="renderExpenses()">
+                <option value="">All categories</option>
+                <option>General</option><option>Rent</option><option>Electricity</option><option>Salaries</option><option>Transport</option><option>Personal</option><option>Supplies</option>
+              </select>
+              <select id="expenseMethodFilter" class="search" aria-label="Filter expenses by payment method" onchange="renderExpenses()">
+                <option value="">All payment methods</option>
+                <option>Cash</option><option>Bank Transfer</option><option>Easypaisa</option><option>JazzCash</option>
+              </select>
+              <input id="expenseSearch" class="search" placeholder="Search all expense details…" oninput="renderExpenses()">
+            </div>
           </div>
           <div class="tablewrap">
             <table>
@@ -428,7 +472,7 @@ tbody tr:last-child td{border-bottom:0}
               <select id="reportType" onchange="renderFilteredReport()">
                 <option value="sales">Sales Invoices</option>
                 <option value="purchases">Purchase Invoices</option>
-                <option value="stock">Product Stock</option>
+                <option value="stock">Stock Report</option>
               </select>
             </div>
             <div class="field">
@@ -968,7 +1012,7 @@ function renderDashboard() {
           <td><b>${money(total)}</b></td>
           <td><span class="pill ${status === 'Unpaid' ? 'danger' : status === 'Partial' ? 'warn' : ''}">${esc(status)}</span></td>
           <td class="actions-cell">
-            <button class="secondary btn-sm" onclick="printInvoice(db.sales[${idx}])">Print</button>
+            <button class="secondary btn-sm" onclick="printInvoice(db.sales[${idx}])">Invoice</button>
             <button class="secondary btn-sm" onclick="showEditSaleModal(${idx})">Edit</button>
             <button class="danger btn-sm" onclick="deleteSale(${idx})">Delete</button>
           </td>
@@ -995,7 +1039,7 @@ function renderDashboard() {
           <td><b>${money(total)}</b></td>
           <td>${esc(p.Payment || '—')}</td>
           <td class="actions-cell">
-            <button class="secondary btn-sm" onclick="printPurchase(db.purchases[${idx}])">Print</button>
+            <button class="secondary btn-sm" onclick="printPurchase(db.purchases[${idx}])">Invoice</button>
             <button class="secondary btn-sm" onclick="showEditPurchaseModal(${idx})">Edit</button>
             <button class="danger btn-sm" onclick="deletePurchase(${idx})">Delete</button>
           </td>
@@ -1256,9 +1300,14 @@ function renderSales() {
   let q = document.getElementById('salesSearch')?.value || '';
   let from = document.getElementById('salesFrom')?.value || '';
   let to = document.getElementById('salesTo')?.value || '';
+  let statusFilter = document.getElementById('salesStatusFilter')?.value || '';
+  let methodFilter = document.getElementById('salesMethodFilter')?.value || '';
   let arr = (db.sales || []).filter(s => {
     let date = fmtDate(s.Date);
     let matchesDate = (!from || date >= from) && (!to || date <= to);
+    let status = s['Payment Status'] || (num(s.Balance) > 0 ? 'Partial' : 'Paid');
+    let matchesStatus = !statusFilter || status === statusFilter;
+    let matchesMethod = !methodFilter || (s['Payment Method'] || 'Cash') === methodFilter;
     let saleItems = Array.isArray(s.Items) ? s.Items : [s];
     let productDetails = saleItems.map(item => {
       let sku = item.sku ?? item.SKU ?? s.SKU;
@@ -1266,7 +1315,7 @@ function renderSales() {
       return `${sku ?? ''} ${item.name || item.Product || product?.['Product Name'] || ''}`;
     }).join(' ');
     let matchesRecord = matchesSearch(s, q, `${productDetails} Sale Price ${s['Sale Price (PKR)'] || ''} Total ${s['Total Sale'] || s['Total Sale (PKR)'] || ''}`);
-    return matchesDate && matchesRecord;
+    return matchesDate && matchesStatus && matchesMethod && matchesRecord;
   }).slice().reverse();
 
   sRows.innerHTML = arr.map(s => {
@@ -1286,7 +1335,7 @@ function renderSales() {
       <td>${money(bal)}</td>
       <td><span class="pill ${status === 'Unpaid' ? 'danger' : status === 'Partial' ? 'warn' : ''}">${esc(status)}</span></td>
       <td class="actions-cell">
-        <button class="secondary btn-sm" onclick="printInvoice(db.sales[${idx}])">Print</button>
+        <button class="secondary btn-sm" onclick="printInvoice(db.sales[${idx}])">Invoice</button>
         <button class="secondary btn-sm" onclick="showEditSaleModal(${idx})">Edit</button>
         <button class="danger btn-sm" onclick="deleteSale(${idx})">Delete</button>
       </td>
@@ -1375,7 +1424,24 @@ function renderInventory() {
   let iRows = document.getElementById('inventoryRows');
   if (!iRows) return;
   let q = document.getElementById('inventorySearch')?.value || '';
-  let arr = (db.products || []).filter(p => matchesSearch(p, q, `Stock ${productStock(p)} Sale Price ${prodPrice(p)}`));
+  let stockFilter = document.getElementById('inventoryStockFilter')?.value || '';
+  let categorySelect = document.getElementById('inventoryCategoryFilter');
+  let selectedCategory = categorySelect?.value || '';
+  if (categorySelect) {
+    let categories = [...new Set((db.products || []).map(p => String(p.Category || '').trim()).filter(Boolean))].sort();
+    categorySelect.innerHTML = '<option value="">All categories</option>' + categories.map(category => `<option value="${esc(category)}">${esc(category)}</option>`).join('');
+    if (categories.includes(selectedCategory)) categorySelect.value = selectedCategory;
+  }
+  let categoryFilter = categorySelect?.value || '';
+  let arr = (db.products || []).filter(p => {
+    let stock = productStock(p);
+    let matchesStock = !stockFilter ||
+      (stockFilter === 'out' && stock <= 0) ||
+      (stockFilter === 'low' && stock > 0 && stock <= num(p['Min Stock'])) ||
+      (stockFilter === 'in' && stock > 0);
+    return (!categoryFilter || String(p.Category || '') === categoryFilter) && matchesStock &&
+      matchesSearch(p, q, `Stock ${stock} Sale Price ${prodPrice(p)}`);
+  });
 
   iRows.innerHTML = arr.map(p => {
     let idx = db.products.indexOf(p);
@@ -1534,7 +1600,14 @@ function renderPurchases() {
   let pRows = document.getElementById('purchaseRows');
   if (!pRows) return;
   let q = document.getElementById('purchaseSearch')?.value || '';
-  let arr = (db.purchases || []).filter(p => matchesSearch(p, q)).slice().reverse();
+  let from = document.getElementById('purchaseFrom')?.value || '';
+  let to = document.getElementById('purchaseTo')?.value || '';
+  let payment = document.getElementById('purchasePaymentFilter')?.value || '';
+  let arr = (db.purchases || []).filter(p => {
+    let date = fmtDate(p.Date);
+    return (!from || date >= from) && (!to || date <= to) &&
+      (!payment || p.Payment === payment) && matchesSearch(p, q);
+  }).slice().reverse();
 
   pRows.innerHTML = arr.map(p => {
     let idx = db.purchases.indexOf(p);
@@ -1549,7 +1622,7 @@ function renderPurchases() {
       <td><b>${money(total)}</b></td>
       <td>${esc(p.Payment || '—')}</td>
       <td class="actions-cell">
-        <button class="secondary btn-sm" onclick="printPurchase(db.purchases[${idx}])">Print</button>
+        <button class="secondary btn-sm" onclick="printPurchase(db.purchases[${idx}])">Invoice</button>
         <button class="secondary btn-sm" onclick="showEditPurchaseModal(${idx})">Edit</button>
         <button class="danger btn-sm" onclick="deletePurchase(${idx})">Delete</button>
       </td>
@@ -1562,9 +1635,26 @@ function showPurchaseModal() {
     <form onsubmit="addPurchase(event)">
       <div class="field">
         <label>Product *</label>
-        <select name="sku" required>
+        <select name="sku" id="purchaseProductSelect" required onchange="toggleNewPurchaseProduct()">
+          <option value="">Select a product</option>
           ${(db.products || []).map(p => `<option value="${esc(p.SKU)}">${esc(prodName(p))} (SKU: ${esc(p.SKU)})</option>`).join('')}
+          <option value="__new__">＋ Add new product to catalogue</option>
         </select>
+      </div>
+      <div id="newPurchaseProductFields" class="hidden">
+        <div class="field"><label>New Product Name *</label><input name="newName" disabled></div>
+        <div class="formrow">
+          <div class="field"><label>SKU / Item Code</label><input name="newSku" placeholder="Auto-generated if blank" disabled></div>
+          <div class="field"><label>Category</label><input name="newCategory" disabled></div>
+        </div>
+        <div class="formrow">
+          <div class="field"><label>Material</label><input name="newMaterial" disabled></div>
+          <div class="field"><label>Color</label><input name="newColor" disabled></div>
+        </div>
+        <div class="formrow">
+          <div class="field"><label>Sale Price (PKR) *</label><input name="newPrice" type="number" min="0" disabled></div>
+          <div class="field"><label>Min. Stock Alert</label><input name="newMin" type="number" min="0" value="1" disabled></div>
+        </div>
       </div>
       <div class="formrow">
         <div class="field"><label>Quantity Received *</label><input name="qty" type="number" min="1" value="1" required></div>
@@ -1587,15 +1677,56 @@ function showPurchaseModal() {
   `);
 }
 
+function toggleNewPurchaseProduct() {
+  let select = document.getElementById('purchaseProductSelect');
+  let fields = document.getElementById('newPurchaseProductFields');
+  if (!select || !fields) return;
+  let isNew = select.value === '__new__';
+  fields.classList.toggle('hidden', !isNew);
+  fields.querySelectorAll('input').forEach(input => {
+    input.disabled = !isNew;
+    input.required = isNew && input.name === 'newName' || isNew && input.name === 'newPrice';
+  });
+}
+
 function addPurchase(e) {
   e.preventDefault();
   let f = new FormData(e.target);
-  let p = (db.products || []).find(p => String(p.SKU) === f.get('sku'));
+  let sku = f.get('sku');
+  let p;
+  if (sku === '__new__') {
+    let newSku = String(f.get('newSku') || '').trim();
+    if (!newSku) newSku = 'PROD-' + Date.now().toString().slice(-8);
+    if (db.products.some(product => normalizedSKU(product.SKU) === normalizedSKU(newSku))) {
+      toast('A product with this SKU already exists. Choose a different SKU.');
+      return;
+    }
+    p = {
+      SKU: isNaN(newSku) ? newSku : num(newSku),
+      'Product Name': String(f.get('newName') || '').trim(),
+      Category: f.get('newCategory'),
+      Material: f.get('newMaterial'),
+      Color: f.get('newColor'),
+      'Cost Price (PKR)': num(f.get('cost')),
+      'Sale Price (PKR)': num(f.get('newPrice')),
+      'Opening Stock': 0,
+      'Min Stock': num(f.get('newMin')),
+      Status: 'Active'
+    };
+    db.products.push(p);
+  } else {
+    p = (db.products || []).find(product => String(product.SKU) === String(sku));
+    if (!p) {
+      toast('Please select a valid product.');
+      return;
+    }
+  }
+
   db.purchases.push({
     Date: today(),
     'Purchase No': 'PUR-' + Date.now().toString().slice(-6),
-    SKU: p ? p.SKU : f.get('sku'),
-    Products: p ? prodName(p) : 'Purchased Item',
+    SKU: p.SKU,
+    Products: prodName(p),
     'Affects Stock': true,
     Supplier: f.get('supplier'),
     Qty: num(f.get('qty')),
@@ -1606,7 +1737,7 @@ function addPurchase(e) {
   save();
   closeModal();
   renderAll();
-  toast('Stock purchase recorded.');
+  toast('Purchase recorded' + (sku === '__new__' ? ' and product added to catalogue.' : '.'));
 }
 
 function showEditPurchaseModal(idx) {
@@ -1674,7 +1805,16 @@ function renderExpenses() {
   let total = sum(db.expenses, x => x['Amount (PKR)']);
   if (eMetric) eMetric.innerHTML = metricsCard('Total Expenses', money(total), '↗', (db.expenses || []).length + ' entries');
   let query = document.getElementById('expenseSearch')?.value || '';
-  let arr = (db.expenses || []).map((x, idx) => ({ x, idx })).filter(({ x }) => matchesSearch(x, query));
+  let from = document.getElementById('expenseFrom')?.value || '';
+  let to = document.getElementById('expenseTo')?.value || '';
+  let category = document.getElementById('expenseCategoryFilter')?.value || '';
+  let method = document.getElementById('expenseMethodFilter')?.value || '';
+  let arr = (db.expenses || []).map((x, idx) => ({ x, idx })).filter(({ x }) => {
+    let date = fmtDate(x.Date);
+    return (!from || date >= from) && (!to || date <= to) &&
+      (!category || x.Category === category) &&
+      (!method || x['Payment Method'] === method) && matchesSearch(x, query);
+  });
 
   eRows.innerHTML = arr.map(({ x, idx }) => `
     <tr>
