@@ -203,6 +203,23 @@ tbody tr:last-child td{border-bottom:0}
           </div>
           <button class="primary" onclick="go('pos')">＋ Create New Bill</button>
         </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px">
+          <label class="muted" for="dashboardPeriod">Period</label>
+          <select id="dashboardPeriod" class="search" aria-label="Dashboard date period" onchange="setDashboardPeriod()">
+            <option value="custom">Custom range</option>
+            <option value="today">Today</option>
+            <option value="yesterday">Yesterday</option>
+            <option value="7">Last 7 days</option>
+            <option value="30">Last 30 days</option>
+            <option value="month">This month</option>
+            <option value="year">This year</option>
+            <option value="all">All dates</option>
+          </select>
+          <label class="muted" for="dashboardFrom">From</label>
+          <input id="dashboardFrom" type="date" class="search" aria-label="Dashboard from date" onchange="document.getElementById('dashboardPeriod').value='custom';renderDashboard()">
+          <label class="muted" for="dashboardTo">To</label>
+          <input id="dashboardTo" type="date" class="search" aria-label="Dashboard to date" onchange="document.getElementById('dashboardPeriod').value='custom';renderDashboard()">
+        </div>
         <div class="cards" id="metrics"></div>
       </section>
 
@@ -701,7 +718,7 @@ let invoiceCounter = Math.max(1000, ...(db.sales || []).map(s => Number(String(s
 
 const money = n => 'PKR ' + Number(n || 0).toLocaleString('en-PK', { maximumFractionDigits: 2 });
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => localDateString(new Date());
 const num = x => Number(x) || 0;
 
 function syncToCloud(snapshot) {
@@ -897,12 +914,49 @@ function saleNetRevenue(sale) {
   return saleDue(sale);
 }
 
+function setDashboardPeriod() {
+  let period = document.getElementById('dashboardPeriod')?.value || 'custom';
+  let from = document.getElementById('dashboardFrom');
+  let to = document.getElementById('dashboardTo');
+  if (!from || !to) return;
+
+  let start = new Date();
+  let end = new Date();
+  if (period === 'all') {
+    from.value = '';
+    to.value = '';
+  } else if (period === 'custom') {
+    renderDashboard();
+    return;
+  } else {
+    if (period === 'yesterday') {
+      start.setDate(start.getDate() - 1);
+      end = new Date(start);
+    } else if (period === 'month') {
+      start = new Date(end.getFullYear(), end.getMonth(), 1);
+    } else if (period === 'year') {
+      start = new Date(end.getFullYear(), 0, 1);
+    } else if (/^\d+$/.test(period)) {
+      start.setDate(start.getDate() - Number(period) + 1);
+    }
+    from.value = localDateString(start);
+    to.value = localDateString(end);
+  }
+  renderDashboard();
+}
+
 function renderDashboard() {
   let m = document.getElementById('metrics');
   if (!m) return;
-  let dashboardSales = db.sales || [];
-  let dashboardPurchases = db.purchases || [];
-  let dashboardExpenses = db.expenses || [];
+  let from = document.getElementById('dashboardFrom')?.value || '';
+  let to = document.getElementById('dashboardTo')?.value || '';
+  let inDateRange = record => {
+    let date = fmtDate(record.Date);
+    return (!from || date >= from) && (!to || date <= to);
+  };
+  let dashboardSales = (db.sales || []).filter(inDateRange);
+  let dashboardPurchases = (db.purchases || []).filter(inDateRange);
+  let dashboardExpenses = (db.expenses || []).filter(inDateRange);
   let salesTotal = sum(dashboardSales, saleDue);
   let amountReceived = sum(dashboardSales, sale =>
     sale['Customer Paid'] ?? sale.Paid ?? Math.max(0, saleDue(sale) - num(sale.Balance))
