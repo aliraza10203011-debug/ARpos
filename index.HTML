@@ -707,12 +707,14 @@ const PRODUCT_COST_UPDATES = {
   38: 130, 39: 120, 40: 140, 41: 40
 };
 function applyProductCostUpdates(state) {
-  if (Number(state._productCostUpdateVersion) >= 2) return false;
+  const version = Number(state._productCostUpdateVersion) || 0;
+  let changed = version < 3;
   const costsBySku = new Map();
   (state.products || []).forEach(product => {
     const sku = String(product.SKU ?? '');
-    if (Object.prototype.hasOwnProperty.call(PRODUCT_COST_UPDATES, sku)) {
+    if (version < 2 && Object.prototype.hasOwnProperty.call(PRODUCT_COST_UPDATES, sku)) {
       product['Cost Price (PKR)'] = PRODUCT_COST_UPDATES[sku];
+      changed = true;
     }
     costsBySku.set(normalizedSKU(sku), Number(product['Cost Price (PKR)']) || 0);
   });
@@ -722,18 +724,22 @@ function applyProductCostUpdates(state) {
       items.forEach(item => {
         const sku = item.sku ?? item.SKU ?? item.productSku ?? item.productSKU ?? item['Product SKU'];
         const cost = costsBySku.get(normalizedSKU(sku));
-        if (cost !== undefined) item.cost = cost;
+        if (cost !== undefined && Number(item.cost ?? item['Cost Price (PKR)']) !== cost) {
+          item.cost = cost;
+          changed = true;
+        }
       });
     } else {
       const sku = sale.SKU ?? sale.sku ?? sale['Product SKU'];
       const cost = costsBySku.get(normalizedSKU(sku));
-      if (cost !== undefined && Object.prototype.hasOwnProperty.call(sale, 'Cost Price (PKR)')) {
+      if (cost !== undefined && Number(sale['Cost Price (PKR)']) !== cost) {
         sale['Cost Price (PKR)'] = cost;
+        changed = true;
       }
     }
   });
-  state._productCostUpdateVersion = 2;
-  return true;
+  state._productCostUpdateVersion = 3;
+  return changed;
 }
 function clone(x) { return JSON.parse(JSON.stringify(x)); }
 
@@ -775,6 +781,7 @@ function syncToCloud(snapshot) {
 }
 
 function save() {
+  applyProductCostUpdates(db);
   try {
     localStorage.setItem(key, JSON.stringify(db));
     setCloudStatus(firestore ? 'Saved locally…' : 'Saved locally — Firebase not configured');
@@ -945,13 +952,15 @@ function metricsCard(label, value, icon, note) {
 function saleCost(sale) {
   if (Array.isArray(sale.Items) && sale.Items.length) {
     return sum(sale.Items, item => {
-      let product = (db.products || []).find(p => String(p.SKU) === String(item.sku ?? item.SKU ?? sale.SKU ?? ''));
-      let unitCost = item.cost ?? item['Cost Price (PKR)'] ?? product?.['Cost Price (PKR)'];
+      let sku = item.sku ?? item.SKU ?? item.productSku ?? item.productSKU ?? item['Product SKU'] ?? sale.SKU ?? '';
+      let product = (db.products || []).find(p => normalizedSKU(p.SKU) === normalizedSKU(sku));
+      let unitCost = product ? product['Cost Price (PKR)'] : item.cost ?? item['Cost Price (PKR)'];
       return num(item.qty ?? item.Qty ?? sale.Qty ?? 1) * num(unitCost);
     });
   }
-  let product = (db.products || []).find(p => String(p.SKU) === String(sale.SKU ?? ''));
-  return num(sale.Qty || 1) * num(sale['Cost Price (PKR)'] ?? product?.['Cost Price (PKR)']);
+  let product = (db.products || []).find(p => normalizedSKU(p.SKU) === normalizedSKU(sale.SKU ?? sale.sku ?? sale['Product SKU'] ?? ''));
+  let unitCost = product ? product['Cost Price (PKR)'] : sale['Cost Price (PKR)'];
+  return num(sale.Qty || sale.qty || 1) * num(unitCost);
 }
 
 function saleNetRevenue(sale) {
@@ -1005,7 +1014,15 @@ function renderDashboard() {
   let amountReceived = sum(dashboardSales, sale =>
     sale['Customer Paid'] ?? sale.Paid ?? Math.max(0, saleDue(sale) - num(sale.Balance))
   );
-  let purchases = sum(dashboardPurchases, s => num(s['Total Cost']) || num(s.Qty) * num(s['Cost Price (PKR)']));
+  let purchases = sum(dashboardPurchases, purchase => {
+    let sku = purchase.SKU ?? purchase.sku ?? purchase['Product SKU'];
+    let product = (db.products || []).find(item => normalizedSKU(item.SKU) === normalizedSKU(sku));
+    let quantity = num(purchase.Qty ?? purchase.qty ?? purchase.Quantity);
+    let currentUnitCost = product ? num(product['Cost Price (PKR)']) : num(purchase['Cost Price (PKR)']);
+    return product
+      ? quantity * currentUnitCost
+      : num(purchase['Total Cost']) || quantity * currentUnitCost;
+  });
   let purchaseInvoices = new Set(dashboardPurchases.map((purchase, index) => {
     let number = String(purchase['Purchase No'] ?? '').trim();
     return number && number !== '-' ? `${fmtDate(purchase.Date)}|${number}` : `entry|${index}`;
