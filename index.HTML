@@ -699,6 +699,42 @@ const original = {
 };
 
 const key = 'ar_customized_pos_v4';
+const PRODUCT_COST_UPDATES = {
+  1: 550, 2: 750, 3: 900, 4: 900, 5: 1100, 6: 60, 7: 80, 8: 100, 9: 120,
+  10: 60, 11: 35, 12: 150, 13: 180, 14: 200, 15: 270, 16: 5, 17: 20, 18: 35,
+  19: 70, 20: 70, 21: 70, 23: 650, 24: 280, 25: 180, 26: 100, 27: 70, 28: 450,
+  29: 570, 30: 160, 31: 90, 32: 140, 33: 50, 34: 50, 35: 50, 36: 15, 37: 420,
+  38: 130, 39: 120, 40: 140, 41: 40
+};
+function applyProductCostUpdates(state) {
+  if (Number(state._productCostUpdateVersion) >= 2) return false;
+  const costsBySku = new Map();
+  (state.products || []).forEach(product => {
+    const sku = String(product.SKU ?? '');
+    if (Object.prototype.hasOwnProperty.call(PRODUCT_COST_UPDATES, sku)) {
+      product['Cost Price (PKR)'] = PRODUCT_COST_UPDATES[sku];
+    }
+    costsBySku.set(normalizedSKU(sku), Number(product['Cost Price (PKR)']) || 0);
+  });
+  (state.sales || []).forEach(sale => {
+    const items = Array.isArray(sale.Items) ? sale.Items : null;
+    if (items) {
+      items.forEach(item => {
+        const sku = item.sku ?? item.SKU ?? item.productSku ?? item.productSKU ?? item['Product SKU'];
+        const cost = costsBySku.get(normalizedSKU(sku));
+        if (cost !== undefined) item.cost = cost;
+      });
+    } else {
+      const sku = sale.SKU ?? sale.sku ?? sale['Product SKU'];
+      const cost = costsBySku.get(normalizedSKU(sku));
+      if (cost !== undefined && Object.prototype.hasOwnProperty.call(sale, 'Cost Price (PKR)')) {
+        sale['Cost Price (PKR)'] = cost;
+      }
+    }
+  });
+  state._productCostUpdateVersion = 2;
+  return true;
+}
 function clone(x) { return JSON.parse(JSON.stringify(x)); }
 
 function loadState() {
@@ -713,6 +749,9 @@ function loadState() {
 }
 
 let db = loadState();
+if (applyProductCostUpdates(db)) {
+  try { localStorage.setItem(key, JSON.stringify(db)); } catch (e) {}
+}
 let cart = [];
 let invoiceCounter = Math.max(1000, ...(db.sales || []).map(s => Number(String(s['Invoice No'] || '').replace(/\D/g, '')) || 0)) + 1;
 
@@ -772,12 +811,17 @@ async function initCloudSync() {
     } else {
       await syncToCloud(clone(db));
     }
+    if (applyProductCostUpdates(db)) {
+      try { localStorage.setItem(key, JSON.stringify(db)); } catch (e) {}
+      await syncToCloud(clone(db));
+    }
     cloudReady = true;
 
     document.onSnapshot(snapshot => {
       const payload = snapshot.exists && snapshot.data().payload;
       if (!payload) return;
       db = { ...clone(original), ...payload };
+      if (applyProductCostUpdates(db)) syncToCloud(clone(db));
       try { localStorage.setItem(key, JSON.stringify(db)); } catch (e) {}
       renderAll();
       setCloudStatus('Live cloud update received ✓');
